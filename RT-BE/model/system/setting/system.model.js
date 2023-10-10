@@ -1,0 +1,151 @@
+const {Schema,model} = require("mongoose")
+
+const schema = new Schema({
+    system:{
+        name:{
+            type:String
+        },
+        defaultCurrency:{
+            type:Schema.Types.ObjectId,ref:"currencyConstant"
+        },
+        defaultCurrencyPosition:{
+            type:String
+        },
+        employeeLogin:{
+            type:String,
+            enum:["username","email"]
+        },
+        footerText:{
+            type:String
+        },
+        timezone:{
+            type:String
+        },
+        currentyearFooter:{
+            type:Boolean
+        },
+        statutoryAmountFixed:{
+            type:Boolean
+        },
+        defaultLanguage:{
+            type:String
+        },
+        googleMapApiKey:{
+            type:String
+        },
+        staffDashboard:{
+            type:String
+        },
+        projectDashboard:{
+            type:String
+        },
+        estimateTermsAndCondition:{
+            type:String
+        },
+        invoiceTermsAndCondition:{
+            type:String
+        },
+    },
+    company:{
+        name:String,
+        address:{
+            line1:{
+                type:String
+            },
+            line2:{
+                type:String
+            },
+            country:{
+                type:String
+            },
+            state:{
+                type:String
+            },
+            city:{
+                type:String
+            },
+            zipcode:{
+                type:String
+            }
+        },
+        client:{
+            type:String
+        },
+        email:{
+            type:String
+        },
+        phone:{
+            type:String
+        },
+    },
+    role:{
+        manageOwnContact:{
+            type:Boolean,
+            default:false
+        },
+        manageOwnDocuments:{
+            type:Boolean,
+            default:false
+        },
+        manageOwnBankAccount:{
+            type:Boolean,
+            default:false
+        },
+        manageOwnProfilePicture :{
+            type:Boolean,
+            default:false
+        },
+        manageOwnQualification :{
+            type:Boolean,
+            default:false
+        },
+        manageOwnProfileInformation :{
+            type:Boolean,
+            default:false
+        },
+        manageOwnWorkExperience :{
+            type:Boolean,
+            default:false
+        },
+        manageOwnSocialInformation  :{
+            type:Boolean,
+            default:false
+        },
+    },
+    payroll:{
+        passwordFormat:{
+            type:String
+        },
+        passwordForPayslip:{type:Boolean},
+        halfMonthly:{
+            type:Boolean
+        }
+    },
+    emailNotification:{
+        enableEmailNotifiction:{
+            type:Boolean
+        },
+        emailType:{
+            type:String
+        },
+    },
+    fileManager:{
+        maxFileSize:{
+            type:String
+        },
+        allowedExtension:[{type:String}],
+        employeeCanDownload:{type:String}
+    },
+    performance:{
+        allowedExtension:[{type:String}],
+        
+        organizationalCompetencies:{type:String}
+    }
+
+
+},{
+    collection:"system"
+})
+
+
+module.exports = model("system",schema)

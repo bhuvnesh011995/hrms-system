@@ -1,0 +1,20 @@
+module.exports = {
+    contract:require("./contract.model"),
+    education:require("./education.model"),
+    language:require("./language.model"),
+    skill:require("./skill.model"),
+    document:require("./document.model"),
+    award:require("./award.model"),
+    religion:require("./religion.model"),
+    leave:require("./leave.model"),
+    warning:require("./warning.model"),
+    termination:require("./termination.model"),
+    expense:require("./expense.model"),
+    income:require("./incom.model"),
+    employeeExit:require("./employeeExit.model"),
+    security:require("./security.model"),
+    claim:require("./claim.model"),
+    company:require("./company.model"),
+    travelArrangement:require("./travelArrangement.model"),
+    currency:require("./currency.model")
+}
