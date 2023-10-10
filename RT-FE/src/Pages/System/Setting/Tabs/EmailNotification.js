@@ -1,9 +1,16 @@
 import { useCallback ,useState} from "react"
 import { updateSetting } from "../../../../Utility/API/system"
-
+import { Toast, ToastContainer } from "react-bootstrap";
+	  
+    
+	
+	
+	
+                      
 export default function EmailNotification({data,getSettingData}) {
     
-
+  const [show,setShow] = useState(false)
+  const [toast,setToast] = useState({})
 
 const [isLoading,setIsLoading] = useState(false)
     const [isError,setIsError] = useState(false)
@@ -29,9 +36,14 @@ const [isLoading,setIsLoading] = useState(false)
                     let res = await updateSetting({emailNotification:updateData})
                     console.log(res)
                     if(res.status===204){
+                      setToast({message:"system updated successfully",bg:"success"})
+                      setShow(true)
+				
                         getSettingData()
                         setUpdateData(null)
-                    }
+                    }else{
+                      setToast({message:"erorr occured",bg:"danger"})
+					  }
                 } catch (error) {
                     
                 }
@@ -76,24 +88,30 @@ const [isLoading,setIsLoading] = useState(false)
             </div>
           </div>
         </div>
-        <div>
+      
         <button
         onClick={()=>handleSubmit()}
           type="button"
-          class="btn btn-primary waves-effect waves-light w-15 me-2"
+          class="btn btn-primary waves-effect waves-light w-25"
         >
           SAVE
         </button>
-        <button
-        onClick={()=>setUpdateData(null)}
-          type="button"
-          class="btn btn-danger waves-effect waves-light w-15 me-2"
-        >
-          Cancel
-        </button>
-        </div>
+        
         
       </form>
+      <div 
+      aria-live="polite"
+      aria-atomic="true"
+      className="d-flex justify-content-end">
+          <ToastContainer containerPosition="bottom-end" position="bottom-end" style={{zIndex:1}}>
+              <Toast style={{width:"auto"}} className="p-1" onClose={()=>setShow(false)} show={show} delay={3000} bg={toast.bg} autohide>
+                <Toast.Body className="text-white">
+                  {toast.message}
+                </Toast.Body>
+              </Toast>
+            </ToastContainer>
+      </div>
+	  
     </div>
   );
 }

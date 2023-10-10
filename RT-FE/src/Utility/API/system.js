@@ -49,3 +49,27 @@ export const updateSetting = async (data)=>{
         return error.response
     }
 }
+
+
+export const getModulesSetting = async ()=>{
+    try {
+      let response = await api.get("/system/modules")
+      return response
+    } catch (error) {
+        console.log(error)
+        return error.response
+    }
+    
+
+}
+
+
+export const updateModulesSetting = async (data)=>{
+    try {
+        let response = await api.put("/system/modules",data)
+        return response
+    } catch (error) {
+        console.log(error)
+        return error.response
+    }
+}

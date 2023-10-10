@@ -173,7 +173,7 @@ const [isLoading,setIsLoading] = useState(false)
           <button
           onClick={()=>handleSubmit()}
             type="button"
-            class="btn btn-primary waves-effect waves-light w-15 me-2"
+            class="btn btn-primary waves-effect waves-light w-25"
           >
             SAVE
           </button>

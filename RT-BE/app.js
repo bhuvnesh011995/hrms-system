@@ -132,7 +132,14 @@ mongoose.connect(dbConfig.URI, {
       console.log("empty system created")
     }else console.log("system already exist")
 
-    
+
+    // checking seup modules of system in database
+    let modules = await dbs.modules.findOne({})
+  
+    if(!modules){
+      await dbs.modules.create({})
+      console.log("modules setting created")
+    }else console.log("setup modules already present in database")
     return
   } catch (error) {
       console.log(error)
@@ -181,4 +188,5 @@ async function findfiles(){
   require("./route/coreHR/transfer.route")(app)
   require("./route/system/paymentGateway.route")(app)
   require("./route/system/setting/system.route")(app)
+  require("./route/system/modules.route")(app)
 exports.app = app

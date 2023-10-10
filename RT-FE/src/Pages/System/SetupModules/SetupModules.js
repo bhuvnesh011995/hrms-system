@@ -1,6 +1,57 @@
+import { useState } from "react";
 import MainPage from "../../../Components/Common/MainPage";
+import { getModulesSetting } from "../../../Utility/API/system";
 
 export default function SetupModules() {
+      const [data,setData] = useState({})  
+const [isLoading,setIsLoading] = useState(false)
+const [isError,setIsError] = useState(false)
+const [show,setShow] = useState(false)
+const [toast,setToast] = useState({})
+const [updateData,setUpdateData] = useState(null)
+const getValue = useCallback((field)=>{
+    if(updateData&&updateData[field] !=undefined) return updateData[field] ? true : false
+    else if(data&&data[field]!=undefined) return data[field] ? true : false
+    else return false
+},[updateData,data])
+
+        const handleSubmit = useCallback(async ()=>{
+            try {
+                if(!updateData) return
+                let res = await updateSetting({role:updateData})
+                if(res.status===204){
+                  setToast({message:"system updated successfully",bg:"success"})
+                  setShow(true)
+
+                    getSettingData()
+                    setUpdateData(null)
+                }else{
+                  setToast({message:"erorr occured",bg:"danger"})
+                  setShow(true)
+                }
+            } catch (error) {
+                
+            }
+        },[updateData])
+
+        const getmodulesdata = useCallback(async ()=>{
+            try {
+                setIsLoading(true)
+                let res = await getModulesSetting();
+                if(res.status===200){
+                    setData(res.data.system)
+                    setIsLoading(false)
+                }else{
+                    setIsLoading(false)
+                    setIsError(true)
+                }
+            } catch (error) {
+                console.log(error)
+            }
+        },[])
+        useEffect(()=>{
+            getmodulesdata()
+        },[])
     return(
         <MainPage title={"Modules"}>
             <div class="container-fluid">
