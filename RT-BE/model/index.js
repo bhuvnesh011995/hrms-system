@@ -15,5 +15,6 @@ module.exports = {
     transfer:require("./coreHR/transfer.model"),
     paymentGateway:require("./system/paymentGateway.model"),
     system:require("./system/setting/system.model"),
-    constants:require("./system/constatntModels")
+    constants:require("./system/constatntModels"),
+    themes:require('./system/themeSetting.model')
 }
