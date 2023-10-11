@@ -74,13 +74,13 @@ export default function ThemeSetting() {
               <Row>
                 <Col md={12}>
                   <Tab.Content>
-                  <Tab.Pane eventKey={"pageLayout"}><PageLayout getThemeSettingData={getThemeSettingData}/></Tab.Pane>
-                  <Tab.Pane eventKey={"notiPo"}><NotificationPosition getThemeSettingData={getThemeSettingData}/></Tab.Pane>
-                  <Tab.Pane eventKey={"sysLogo"}><SystemLogo getThemeSettingData={getThemeSettingData}/></Tab.Pane>
-                  <Tab.Pane eventKey={"signl"}><SignInLogo getThemeSettingData={getThemeSettingData}/></Tab.Pane>
-                  <Tab.Pane eventKey={"recLogo"}><RecruitmetLogo getThemeSettingData={getThemeSettingData}/></Tab.Pane>
-                  <Tab.Pane eventKey={"payroLogo"}><PayrollLogo getThemeSettingData={getThemeSettingData}/></Tab.Pane>
-                  <Tab.Pane eventKey={"orgcha"}><OrganizationChart getThemeSettingData={getThemeSettingData}/></Tab.Pane>
+                  <Tab.Pane eventKey={"pageLayout"}><PageLayout getThemeSettingData={getThemeSettingData} data={data}/></Tab.Pane>
+                  <Tab.Pane eventKey={"notiPo"}><NotificationPosition getThemeSettingData={getThemeSettingData} data={data}/></Tab.Pane>
+                  <Tab.Pane eventKey={"sysLogo"}><SystemLogo getThemeSettingData={getThemeSettingData} data={data}/></Tab.Pane>
+                  <Tab.Pane eventKey={"signl"}><SignInLogo getThemeSettingData={getThemeSettingData} data={data}/></Tab.Pane>
+                  <Tab.Pane eventKey={"recLogo"}><RecruitmetLogo getThemeSettingData={getThemeSettingData} data={data}/></Tab.Pane>
+                  <Tab.Pane eventKey={"payroLogo"}><PayrollLogo getThemeSettingData={getThemeSettingData} data={data}/></Tab.Pane>
+                  <Tab.Pane eventKey={"orgcha"}><OrganizationChart getThemeSettingData={getThemeSettingData} data={data}/></Tab.Pane>
                   </Tab.Content>
                   </Col>
               </Row>

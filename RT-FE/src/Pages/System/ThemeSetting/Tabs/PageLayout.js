@@ -1,6 +1,14 @@
-export default function PageLayout() {
+export default function PageLayout({data,getThemeSettingData}) {
+
   return (
     <div class="tab-pane">
+      <ToastContainer containerPosition="bottom-end" position="top-right" style={{zIndex:1,position:"fixed",top:"100px", right:"5px"}}>
+              <Toast style={{width:"auto"}} className="p-1" onClose={()=>setShow(false)} show={show} delay={3000} bg={toast.bg} autohide>
+                <Toast.Body className="text-white">
+                  {toast.message}
+                </Toast.Body>
+              </Toast>
+            </ToastContainer>
       <h4>Page Layouts</h4>
       <form action="">
         <div class="row">
@@ -70,28 +78,28 @@ export default function PageLayout() {
             </div>
           </div>
           {/* <div class="col-md-4">
-                                                                    <div class="mb-3">
-                                                                        <label for="formrow-firstname-input" class="form-label">Sub menu icons </label>
-                                                                        <ul class="setting-drop-icon">
-                                                                            <li><i class="fas fa-circle-notch"></i></li>
-                                                                            <li><i class="fas fa-circle"></i></li>
-                                                                            <li><i class="fas fa-check"></i></li>
-                                                                            <li><i class="fas fa-ellipsis-h"></i></li>
-                                                                            <li><i class="far fa-check-circle"></i></li>
-                                                                            <li><i class="fas fa-arrow-right"></i></li>
+                <div class="mb-3">
+                    <label for="formrow-firstname-input" class="form-label">Sub menu icons </label>
+                    <ul class="setting-drop-icon">
+                        <li><i class="fas fa-circle-notch"></i></li>
+                        <li><i class="fas fa-circle"></i></li>
+                        <li><i class="fas fa-check"></i></li>
+                        <li><i class="fas fa-ellipsis-h"></i></li>
+                        <li><i class="far fa-check-circle"></i></li>
+                        <li><i class="fas fa-arrow-right"></i></li>
 
-                                                                        </ul>
-                                                                        <ul class="setting-drop-icon">
+                    </ul>
+                    <ul class="setting-drop-icon">
 
-                                                                            <input name="fontawesome-icon" value="" id="" type="radio" >
-                                                                            <input name="fontawesome-icon" value="" id="" type="radio" >
-                                                                            <input name="fontawesome-icon" value="" id="" type="radio" >
-                                                                            <input name="fontawesome-icon" value="" id="" type="radio" >
-                                                                            <input name="fontawesome-icon" value="" id="" type="radio" >
-                                                                            <input name="fontawesome-icon" value="" id="" type="radio" >
-                                                                        </ul>
-                                                                    </div>
-                                                                </div> */}
+                        <input name="fontawesome-icon" value="" id="" type="radio" >
+                        <input name="fontawesome-icon" value="" id="" type="radio" >
+                        <input name="fontawesome-icon" value="" id="" type="radio" >
+                        <input name="fontawesome-icon" value="" id="" type="radio" >
+                        <input name="fontawesome-icon" value="" id="" type="radio" >
+                        <input name="fontawesome-icon" value="" id="" type="radio" >
+                    </ul>
+                </div>
+            </div> */}
         </div>
         <button
           type="button"

@@ -41,7 +41,6 @@ export const getSetting = async ()=>{
 
 export const updateSetting = async (data)=>{
     try {
-        console.log(data)
         let response = api.put("/system",data)
         return response
     } catch (error) {
