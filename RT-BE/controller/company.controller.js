@@ -21,7 +21,7 @@ exports.addCompany = async function(req,res,next){
         password:bcrypt.hashSync(req.body.password,8),
         timeZone:req.body.timeZone,
         currency:req.body.currency,
-        logo:req.file.filename
+        logo:req.file?.filename || null
     };
 
 
@@ -83,20 +83,7 @@ exports.updateCompany = async function(req,res,next){
     if(req.body.timeZone) companyObj.timeZone = req.body.timeZone
     if(req.body.username) companyObj.username = req.body.username
     if(req.body.currency) companyObj.currency = req.body.currency
-    if(req.file) {
-        let dbs = mongoose.connection.db
-        let gridfsBucket = new mongoose.mongo.GridFSBucket(dbs,{
-            bucketName: 'uploads'
-          })
-        let company = await db.company.findOne({_id:req.params.id}).select("logo")
-        let file = await gridfsBucket.find({filename:company.logo}).toArray()
-        if(file || file.length){
-            gridfsBucket.delete(file[0]._id,(err,gridStore)=>{
-                if(err) console.log(err)
-            })
-        }
-        companyObj.logo = req.file.filename
-    }
+    if(req.file) companyObj.logo = req.file.filename
 
 
     await db.company.findOneAndUpdate({_id:req.params.id},{

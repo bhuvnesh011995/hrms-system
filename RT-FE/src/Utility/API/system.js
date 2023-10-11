@@ -41,7 +41,7 @@ export const getSetting = async ()=>{
 
 export const updateSetting = async (data)=>{
     try {
-        console.log(DataTransfer)
+        console.log(data)
         let response = api.put("/system",data)
         return response
     } catch (error) {
@@ -71,5 +71,26 @@ export const updateModulesSetting = async (data)=>{
     } catch (error) {
         console.log(error)
         return error.response
+    }
+}
+
+
+export const getThemeSetting = async ()=>{
+    try {
+        let response = await api.get("/system/theme")
+        return response
+    } catch (error) {
+        console.log(error)
+        return error.response
+    }
+}
+
+
+export const updateThemeSetting = async (data)=>{
+    try {
+        let response = await api.put("/system/theme",data)
+
+    } catch (error) {
+        
     }
 }
