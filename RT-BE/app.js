@@ -7,16 +7,16 @@ const dbs = require("./model")
 const path = require("path")
 const multer = require('multer');
 const bcrypt = require("bcrypt")
-const {GridFsStorage} = require('multer-gridfs-storage');
-const crypto = require("crypto")
-const methodOverride = require('method-override');
-
+const express=require('express')
+// const {GridFsStorage} = require('multer-gridfs-storage');
+// const crypto = require("crypto")
+// const methodOverride = require('method-override');
 
 // connecting to database
 mongoose.connect(dbConfig.URI, {
-    serverSelectionTimeoutMS: 30000,
     useNewUrlParser: true,
-    useUnifiedTopology: true
+    useUnifiedTopology: true,
+    serverSelectionTimeoutMS: 30000
   })
   const conn = mongoose.connection;
 
@@ -25,53 +25,25 @@ mongoose.connect(dbConfig.URI, {
     console.log(error)
     console.log("Error while connecting to db")
   })
-
-
-
-  let gridfsBucket;
-
-
-  conn.once("open",()=>{
-
-    gridfsBucket = new mongoose.mongo.GridFSBucket(conn.db, {
-      bucketName: 'uploads'
-    });
-
+  conn.once("open",()=>{ 
     console.log("connected to db")
     init()
 
   })
-
-
-  const storage = new GridFsStorage({
-    url: dbConfig.URI,
-    file: (req, file) => {
-      return new Promise((resolve, reject) => {
-        crypto.randomBytes(16, (err, buf) => {
-          if (err) {
-            return reject(err);
-          }
-          const filename = buf.toString('hex') + path.extname(file.originalname);
-          const fileInfo = {
-            filename: filename,
-            bucketName: 'uploads'
-          };
-          if(req.body.type){
-            fileInfo.metadata = {
-              type:req.body.type
-            }
-          }
-          resolve(fileInfo);
-        });
-      });
+  let storage = multer.diskStorage({
+    destination:(req,file,cb)=>{
+      cb(null,"public")
+    },
+    filename:(req,file,cb)=>{
+      let uniqueName
+      console.log(file)
+      uniqueName = "Img-"+Date.now()+"."+file.mimetype.split("/")[1]
+      cb(null,"uploads/"+uniqueName)
     }
-  });
+  })
 
   exports.upload = multer({ storage });
 
-
-
-  
 
 // checking initial things if not present create one
   async function init(){
@@ -130,6 +102,7 @@ mongoose.connect(dbConfig.URI, {
       await dbs.system.create({})
 
       console.log("empty system created")
+
     }else console.log("system already exist")
 
 
@@ -140,6 +113,15 @@ mongoose.connect(dbConfig.URI, {
       await dbs.modules.create({})
       console.log("modules setting created")
     }else console.log("setup modules already present in database")
+
+    }else console.log("themes is already present")
+        let themeExist=await dbs.themes.exists({})
+         console.log(themeExist)
+      if(!themeExist){
+           await dbs.themes.create({}) 
+           console.log("empty theme is created");
+      }
+
     return
   } catch (error) {
       console.log(error)
@@ -152,7 +134,7 @@ mongoose.connect(dbConfig.URI, {
 
 // middleware
 
-  app.use(methodOverride("_method"))
+  // app.use(methodOverride("_method"))
 
   app.use(bodyParser.urlencoded({extended: false}))
 
@@ -161,15 +143,8 @@ mongoose.connect(dbConfig.URI, {
   app.use(cors());
 
 
-async function findfiles(){
-  let files = await gridfsBucket.find({}).toArray() // it takes a filename to filter
-  console.log(files) //all files metadata
-}
-
-
-
-
 // all routes
+  app.use("/image",express.static("public"))
   require("./route/auth.route")(app)
   require("./route/role.route")(app)
   require("./route/system/constant.route")(app)
@@ -188,5 +163,9 @@ async function findfiles(){
   require("./route/coreHR/transfer.route")(app)
   require("./route/system/paymentGateway.route")(app)
   require("./route/system/setting/system.route")(app)
+
   require("./route/system/modules.route")(app)
+
+  require("./route/system/themeSetting.route")(app)
+
 exports.app = app
