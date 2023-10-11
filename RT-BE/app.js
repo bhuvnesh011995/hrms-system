@@ -114,13 +114,13 @@ mongoose.connect(dbConfig.URI, {
       console.log("modules setting created")
     }else console.log("setup modules already present in database")
 
-    }else console.log("themes is already present")
+    
         let themeExist=await dbs.themes.exists({})
          console.log(themeExist)
       if(!themeExist){
            await dbs.themes.create({}) 
            console.log("empty theme is created");
-      }
+      }else console.log("themes is already present")
 
     return
   } catch (error) {
