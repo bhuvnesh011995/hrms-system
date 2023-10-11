@@ -198,25 +198,31 @@ export default function General({getSettingData,data}) {
               />
             </div>
           </div>
-          {updateData?<div>
+       
           <button
           onClick={()=>handleSubmit()}
             type="button"
-            class="btn btn-primary waves-effect waves-light w-15 me-2"
+            class="btn btn-primary waves-effect waves-light w-25"
           >
             SAVE
           </button>  
-          <button
-          onClick={()=>setUpdateData(null)}
-            type="button"
-            class="btn btn-danger waves-effect waves-light w-15"
-          >
-            cancel
-          </button>  
-          </div>:null}
+          
           
         </div>
       </form>
+      <div 
+      aria-live="polite"
+      aria-atomic="true"
+      className="d-flex justify-content-end">
+          <ToastContainer containerPosition="bottom-end" position="bottom-end" style={{zIndex:1}}>
+              <Toast style={{width:"auto"}} className="p-1" onClose={()=>setShow(false)} show={show} delay={3000} bg={toast.bg} autohide>
+                <Toast.Body className="text-white">
+                  {toast.message}
+                </Toast.Body>
+              </Toast>
+            </ToastContainer>
+      </div>
+	  
     </div>
   );
 }

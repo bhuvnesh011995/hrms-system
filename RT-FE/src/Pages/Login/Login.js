@@ -20,6 +20,7 @@ const {setUser} = useContext(authContext)
     e.preventDefault()
 try {
   let response = await login(data)
+  if(!response) return setError("network error")
   if(response.status === 200){
     setUser({
       username:response.data.username,

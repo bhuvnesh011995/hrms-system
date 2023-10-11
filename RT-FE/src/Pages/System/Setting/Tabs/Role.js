@@ -169,22 +169,15 @@ const [isLoading,setIsLoading] = useState(false)
               ></label>
             </div>
           </div>
-          {updateData?<div>
+         
           <button
           onClick={()=>handleSubmit()}
             type="button"
-            class="btn btn-primary waves-effect waves-light w-15 me-2"
+            class="btn btn-primary waves-effect waves-light w-25"
           >
             SAVE
           </button>
-          <button
-          onClick={()=>setUpdateData(null)}
-            type="button"
-            class="btn btn-danger waves-effect waves-light w-15 me-2"
-          >
-            cancel
-          </button>
-          </div>:null}
+          
 
           
         </div>

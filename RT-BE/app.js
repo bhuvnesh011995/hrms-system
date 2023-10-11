@@ -102,6 +102,18 @@ mongoose.connect(dbConfig.URI, {
       await dbs.system.create({})
 
       console.log("empty system created")
+
+    }else console.log("system already exist")
+
+
+    // checking seup modules of system in database
+    let modules = await dbs.modules.findOne({})
+  
+    if(!modules){
+      await dbs.modules.create({})
+      console.log("modules setting created")
+    }else console.log("setup modules already present in database")
+
     }else console.log("themes is already present")
         let themeExist=await dbs.themes.exists({})
          console.log(themeExist)
@@ -109,6 +121,7 @@ mongoose.connect(dbConfig.URI, {
            await dbs.themes.create({}) 
            console.log("empty theme is created");
       }
+
     return
   } catch (error) {
       console.log(error)
@@ -150,5 +163,9 @@ mongoose.connect(dbConfig.URI, {
   require("./route/coreHR/transfer.route")(app)
   require("./route/system/paymentGateway.route")(app)
   require("./route/system/setting/system.route")(app)
+
+  require("./route/system/modules.route")(app)
+
   require("./route/system/themeSetting.route")(app)
+
 exports.app = app
