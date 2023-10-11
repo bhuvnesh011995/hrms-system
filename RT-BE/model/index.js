@@ -18,5 +18,4 @@ module.exports = {
     constants:require("./system/constatntModels"),
     modules:require("./system/modules/modules.model"),
     themes:require('./system/themeSetting.model')
-
 }
