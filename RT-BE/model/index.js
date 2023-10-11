@@ -16,9 +16,7 @@ module.exports = {
     paymentGateway:require("./system/paymentGateway.model"),
     system:require("./system/setting/system.model"),
     constants:require("./system/constatntModels"),
-
-    modules:require("./system/modules/modules.model")
-
+    modules:require("./system/modules/modules.model"),
     themes:require('./system/themeSetting.model')
 
 }
