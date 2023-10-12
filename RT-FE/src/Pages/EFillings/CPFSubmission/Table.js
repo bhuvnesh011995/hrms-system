@@ -1,4 +1,40 @@
+import { useMemo, useState } from "react"
+					  
+import MaterialReactTable from "material-react-table";
+import { Box, IconButton } from "@mui/material";
+import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
+import AddNew from "./AddNew";
+
+
 export default function Table() {
+    const [isOpen,setIsOpen] = useState(false)
+    const columns = useMemo(() => [
+             {
+                 accessorKey: 'MonthYear',
+                 header: 'Month Year',
+               },
+               {
+                   accessorKey: 'CSN',
+                   header: 'CSN',
+                 },
+                 {
+                     accessorKey: 'NoOfEmployees',
+                     header: 'NoOfEmployees',
+                   },
+         {
+                 accessorKey: 'NoOfRecords',
+                 header: 'No Of Records',
+               },
+               {
+                   accessorKey: 'TotalAmount',
+                   header: 'Total Amount',
+                 },
+               {
+                   accessorKey: 'DateCreated',
+                   header: 'Date Created',
+                 },
+        
+             ],[])
     return(
         <div className="row">
                         <div className="col-12">
@@ -9,7 +45,7 @@ export default function Table() {
                                             <h4>List All CPF Submissions</h4>
                                         </div>
                                         <div className="col-md-6 mb-3" style={{textAlign: "right"}}>
-                                            <button className="btn btn-primary text-right" data-bs-toggle="modal" data-bs-target="#myModal">Add New</button>
+                                            <button className="btn btn-primary text-right" onClick={()=>setIsOpen(true)}>Add New</button>
                                         </div>
                                     </div>
 
@@ -28,7 +64,7 @@ export default function Table() {
                                             Print
                                         </button>
                                     </p>
-                                    <table id="datatable" className="table table-bordered dt-responsive nowrap w-100">
+                                    {/* <table id="datatable" className="table table-bordered dt-responsive nowrap w-100">
                                         <thead>
                                             <tr>
                                                 <th>Month Year </th>
@@ -61,7 +97,56 @@ export default function Table() {
 
 
                                         </tbody>
-                                    </table>
+                                    </table> */}
+                                    <MaterialReactTable
+ columns={columns}
+ data={[]}
+ enableColumnActions={false}
+ enableColumnFilters={false}
+ enableSorting={false}
+ enableTopToolbar={false}
+ enableRowActions
+             positionActionsColumn="last"
+             enableRowNumbers
+             rowNumberMode="static"
+             renderRowActions={({ row, table }) => (
+               <Box
+                 sx={{ display: "flex", flexWrap: "nowrap", gap: "8px" }}
+               >
+                   <IconButton
+                   color="secondary"
+                   onClick={() => {
+                     table.setEditingRow(row);
+                   }}
+                 >
+                   <EditIcon />
+                 </IconButton>
+                   <IconButton
+                   color="error"
+                   onClick={() => {}}
+                 >
+                   <DeleteIcon />
+                 </IconButton>
+               </Box>
+             )}
+ muiTableProps={{
+   sx: {
+     border: '1px solid rgba(81, 81, 81, 1)',
+   },
+ }}
+ muiTableHeadCellProps={{
+   sx: {
+     border: '1px solid rgba(81, 81, 81, 1)',
+   },
+ }}
+ muiTableBodyCellProps={{
+   sx: {
+     border: '1px solid rgba(81, 81, 81, 1)',
+   },
+ }}
+ />
+
+{isOpen && <AddNew show={isOpen} setShow={setIsOpen}/>}
                                     {/* <!-- The Modal --> */}
                                     <div className="modal fade" id="myModal">
                                         <div className="modal-dialog modal-lg">
@@ -70,7 +155,7 @@ export default function Table() {
                                                 {/* <!-- Modal Header --> */}
                                                 <div className="modal-header">
                                                     <h4 className="modal-title">Add New</h4>
-                                                    <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
+                                                    <button type="button"  className="btn-close"></button>
                                                 </div>
 
                                                 {/* <!-- Modal body --> */}

@@ -1,5 +1,9 @@
-export default function PageLayout({data,getThemeSettingData}) {
+import { useState } from "react";
+import { Toast, ToastContainer } from "react-bootstrap";
 
+export default function PageLayout({data,getThemeSettingData}) {
+const [show,setShow] = useState(false)
+const [toast,setToast] = useState({})
   return (
     <div class="tab-pane">
       <ToastContainer containerPosition="bottom-end" position="top-right" style={{zIndex:1,position:"fixed",top:"100px", right:"5px"}}>
