@@ -59,6 +59,7 @@ exports.updateThemeSetting = async function (req, res, next) {
             if (req.body.exportChart !== undefined) obj = { ...obj, "organizationChart.exportChart": req.body.exportChart }
             if (req.body.chartLayout !== undefined) obj = { ...obj, "organizationChart.chartLayout": req.body.chartLayout }
         }
+
         let res = await db.themes.findOneAndUpdate({}, {
             $set: obj
         })

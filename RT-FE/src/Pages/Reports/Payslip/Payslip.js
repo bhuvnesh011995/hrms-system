@@ -1,6 +1,54 @@
 import MainPage from "../../../Components/Common/MainPage";
-
+  import MaterialReactTable from "material-react-table";
+ import { Box, IconButton } from "@mui/material";
+ import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
+import { useMemo, useState } from "react";
+import ReportFilter from "./ReportFilter";
 export default function Payslip() {
+    const [isOpen,setIsOpen] = useState(false)
+
+ const columns = useMemo(() => [
+     {
+        
+        
+        
+        
+        
+         accessorKey: 'EmployeeID',
+         header: 'Employee ID',                                      
+                                              
+       },
+
+         {                                                   
+
+             accessorKey: 'EmployeeName',
+             header: 'Employee Name',
+           },
+         {                                                   
+
+             accessorKey: 'PaidAmount',
+             header: 'Paid Amount',
+           },
+     {
+         accessorKey: 'PaymentMonth',
+         header: 'Payment Month',                                      
+                                              
+       },
+
+         {                                                   
+
+             accessorKey: 'PaymentDate',
+             header: 'Payment Date',
+           },
+         {                                                   
+
+             accessorKey: 'PayslipType',
+             header: 'Payslip Type',
+           },
+     ],[])
+
+
+
     return(
         <MainPage title={"Payslip Report"}>
             <div class="row">
@@ -12,7 +60,7 @@ export default function Payslip() {
                                             <h4>View Payslip Report</h4>
                                         </div>
                                         <div class="col-md-6 mb-3" style={{textAlign: "right"}}>
-                                            <button class="btn btn-primary text-right" data-bs-toggle="modal" data-bs-target="#myModal">Report Filters</button>
+                                            <button class="btn btn-primary text-right" onClick={()=>setIsOpen(true)}>Report Filters</button>
                                         </div>
                                     </div>
 
@@ -31,7 +79,59 @@ export default function Payslip() {
                                             Print
                                         </button>
                                     </p>
-                                    <table id="datatable" class="table display table-bordered dt-responsive nowrap w-100">
+
+                                    
+
+  <MaterialReactTable
+ columns={columns}
+ data={[]}
+ enableColumnActions={false}
+ enableColumnFilters={false}
+ enableSorting={false}
+ enableTopToolbar={false}
+ enableRowActions
+             positionActionsColumn="last"
+             enableRowNumbers
+             rowNumberMode="static"
+             renderRowActions={({ row, table }) => (
+               <Box
+                 sx={{ display: "flex", flexWrap: "nowrap", gap: "8px" }}
+               >
+                   <IconButton
+                   color="secondary"
+                   onClick={() => {
+                     table.setEditingRow(row);
+                   }}
+                 >
+                   <EditIcon />
+                 </IconButton>
+                   <IconButton
+                   color="error"
+                   onClick={() => {}}
+                 >
+                   <DeleteIcon />
+                 </IconButton>
+               </Box>
+             )}
+ muiTableProps={{
+   sx: {
+     border: '1px solid rgba(81, 81, 81, 1)',
+   },
+ }}
+ muiTableHeadCellProps={{
+   sx: {
+     border: '1px solid rgba(81, 81, 81, 1)',
+   },
+ }}
+ muiTableBodyCellProps={{
+   sx: {
+     border: '1px solid rgba(81, 81, 81, 1)',
+   },
+ }}
+ /> 
+
+{isOpen && <ReportFilter show={isOpen} setShow={setIsOpen}/>}
+                                    {/* <table id="datatable" class="table display table-bordered dt-responsive nowrap w-100">
                                         <thead>
                                             <tr>
                                                 <th>Employee ID </th>
@@ -60,7 +160,7 @@ export default function Payslip() {
                                                 </td>
                                             </tr>
                                         </tbody>
-                                    </table>
+                                    </table> */}
                                   {/* <!-- The Modal --> */}
                                   <div class="modal fade" id="myModal">
                                     <div class="modal-dialog modal-lg">
