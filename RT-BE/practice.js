@@ -1,5 +1,5 @@
 const app = require("express")();
-
+const {Schema,model} =require("mongoose")
 const mongoose = require("mongoose")
 const path = require("path")
 const multer = require('multer');
@@ -142,7 +142,26 @@ app.post('/example-route', validateField('username'), (req, res) => {
 });
 
 
+let langSch = new Schema({
+  field1:{
+    type:String,default:null
+  },
+  field2:{
+    type:String,default:null
+  },
+  field3:{
+    type:String,default:null
+  },
+  field4:{
+    type:String,default:null
+  },
+})
+
+let lanSchema = new Schema({
+  name:String,
+  lang:langSch
+},{collection:"lang"})
 
 
-
+let langModel = model("lang",lanSchema)
 
