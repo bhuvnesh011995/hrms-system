@@ -23,40 +23,43 @@ exports.getThemeSetting = async function (req, res, next) {
 }
 exports.updateThemeSetting = async function (req, res, next) {
     try {
-        const { PageLayouts, NotificationPosition, SystemLogo, SignInPageLogo, RecruitmentPageLogo, PayrollLogo, OrganizationChart } = req.body
         let obj = {};
-        if (PageLayouts) {
-            if (PageLayouts.footerLayout != undefined) obj = { ...obj, "PageLayouts.footerLayout": PageLayouts.footerLayout }
-            if (PageLayouts.staticCards != undefined) obj = { ...obj, "PageLayouts.staticCards": PageLayouts.staticCards }
-            if (PageLayouts.adminDasboard != undefined) obj = { ...obj, "PageLayouts.adminDasboard": PageLayouts.adminDasboard }
-            if (PageLayouts.LoginPageOption != undefined) obj = { ...obj, "PageLayouts.LoginPageOption": PageLayouts.LoginPageOption }
-            if (PageLayouts.showCalender != undefined) obj = { ...obj, "PageLayouts.showCalender": PageLayouts.showCalender }
+        if (req.params.type === 'pageLayouts') {
+            if (req.body.footerLayout !== undefined) obj = { ...obj, "pageLayouts.footerLayout": req.body.footerLayout }
+
+            if (req.body.staticCards != undefined) obj = { ...obj, "pageLayouts.staticCards": req.body.staticCards }
+            if (req.body.adminDasboard != undefined) obj = { ...obj, "pageLayouts.adminDasboard": req.body.adminDasboard }
+            if (req.body.loginPageOption != undefined) obj = { ...obj, "pageLayouts.loginPageOption": req.body.loginPageOption }
+            if (req.body.showCalender != undefined) obj = { ...obj, "pageLayouts.showCalender": req.body.showCalender }
         }
-        if (NotificationPosition) {
-            if (NotificationPosition.Position != undefined) obj = { ...obj, "NotificationPosition.Position": NotificationPosition.Position }
-            if (NotificationPosition.EnableCloseButton != undefined) obj = { ...obj, "NotificationPosition.EnableCloseButton": NotificationPosition.EnableCloseButton }
-            if (NotificationPosition.ProgressBar != undefined) obj = { ...obj, "NotificationPosition.ProgressBar": NotificationPosition.ProgressBar }
+
+        if (req.params.type === 'notificationPosition') {
+            if (req.body.position != undefined) obj = { ...obj, "notificationPosition.position": req.body.position }
+            if (req.body.enableCloseButton != undefined) obj = { ...obj, "notificationPosition.EnableCloseButton": req.body.enableCloseButton }
+            if (req.body.progressBar != undefined) obj = { ...obj, "notificationPosition.progressBar": req.body.progressBar }
         }
-        if (SystemLogo) {
-            if (SystemLogo.Position != undefined) obj = { ...obj, "SystemLogo.Position": SystemLogo.Position }
-            if (SystemLogo.favicon != undefined) obj = { ...obj, "SystemLogo.favicon": SystemLogo.favicon }
+        if (req.params.type === 'systemLogo') {
+            if (req.files.favicon[0].filename != undefined) obj = { ...obj, "systemLogo.favicon": req.files.favicon[0].filename }
+            if (req.files.logo[0].filename !== undefined) obj = { ...obj, "systemLogo.systemLogo": req.files.logo[0].filename }
         }
-        if (SignInPageLogo) {
-            if (SignInPageLogo.Logo != undefined) obj = { ...obj, "SignInPageLogo.Logo": SignInPageLogo.Logo }
+
+        if (req.params.type === "signInPageLogo") {
+            if (req.files.logo[0].filename != undefined) obj = { ...obj, "signInPageLogo.logo": req.files.logo[0].filename }
         }
-        if (RecruitmentPageLogo) {
-            if (RecruitmentPageLogo.Logo != undefined) obj = { ...obj, "RecruitmentPageLogo.Logo": RecruitmentPageLogo.Logo }
+        if (req.params.type === "recruitmentPageLogo") {
+            if (req.files.logo[0].filename != undefined) obj = { ...obj, "recruitmentPageLogo.logo": req.files.logo[0].filename }
         }
-        if (PayrollLogo) {
-            if (PayrollLogo.payRollLogo != undefined) obj = { ...obj, "PayrollLogo.payRollLogo": PayrollLogo.payRollLogo }
+        if (req.params.type === "payRollLogo") {
+            if (req.files.payRollLogo[0].filename != undefined) obj = { ...obj, "payRollLogo.payRollLogo": req.files.payRollLogo[0].filename }
         }
-        if (OrganizationChart) {
-            if (OrganizationChart.zoomChart != undefined) obj = { ...obj, "OrganizationChart.zoomChart": OrganizationChart.zoomChart }
-            if (OrganizationChart.panChart != undefined) obj = { ...obj, "OrganizationChart.panChart": OrganizationChart.panChart }
-            if (OrganizationChart.exportChart != undefined) obj = { ...obj, "OrganizationChart.exportChart": OrganizationChart.exportChart }
-            if (OrganizationChart.chartLayout != undefined) obj = { ...obj, "OrganizationChart.chartLayout": OrganizationChart.chartLayout }
+        if (req.params.type === 'organizationChart') {
+            console.log(req.body, "valuesss here")
+            if (req.body.zoomChart !== undefined) obj = { ...obj, "organizationChart.zoomChart": req.body.zoomChart }
+            if (req.body.panchart !== undefined) obj = { ...obj, "organizationChart.panChart": req.body.panChart }
+            if (req.body.exportChart !== undefined) obj = { ...obj, "organizationChart.exportChart": req.body.exportChart }
+            if (req.body.chartLayout !== undefined) obj = { ...obj, "organizationChart.chartLayout": req.body.chartLayout }
         }
-        
+
         let res = await db.themes.findOneAndUpdate({}, {
             $set: obj
         })
@@ -68,6 +71,7 @@ exports.updateThemeSetting = async function (req, res, next) {
         })
     }
 }
+
 
 
 
