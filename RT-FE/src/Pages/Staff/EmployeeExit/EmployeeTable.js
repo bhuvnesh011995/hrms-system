@@ -1,4 +1,10 @@
+import { useState } from "react";
+import AddNew from "./AddNew";
+import Table from "./Table";
+
 export default function EmployeeTable() {
+    const [isOpen,setIsOpen] = useState(false)
+
     return(
         <div className="row">
                         <div className="col-12">
@@ -6,12 +12,14 @@ export default function EmployeeTable() {
                                 <div className="card-body">
                                     <h4>List All Employee Exit</h4>
                                     <p className="card-title-desc" style={{textAlign: "right"}}>
-                                        <button className="btn btn-primary text-right" data-bs-toggle="modal" data-bs-target="#myModal">
+                                        <button className="btn btn-primary text-right" onClick={()=>setIsOpen(true)}>
                                             Add New
                                         </button>
                                     </p>
-
-                                    <table id="datatable" className="table table-bordered dt-responsive nowrap w-100">
+                                    {isOpen && <AddNew show={isOpen} setShow={setIsOpen}/>}
+                                    
+<Table/>
+                                    {/* <table id="datatable" className="table table-bordered dt-responsive nowrap w-100">
                                         <thead>
                                             <tr>
                                                 <th>Employee</th>
@@ -36,7 +44,7 @@ export default function EmployeeTable() {
                                                 </td>
                                             </tr>
                                         </tbody>
-                                    </table>
+                                    </table> */}
                                 </div>
                             </div>
                         </div>
