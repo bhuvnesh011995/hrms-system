@@ -1,18 +1,15 @@
 const { Schema, model } = require('mongoose')
-
-
 const schema = new Schema({
-    PageLayouts: {
+    pageLayouts: {
         footerLayout: {
             type: String,
         },
         staticCards: {
-            type: String,
         },
         adminDasboard: {
             type: String,
         },
-        LoginPageOption: {
+        loginPageOption: {
             type: String,
         },
         showCalender: {
@@ -20,43 +17,43 @@ const schema = new Schema({
             default: false
         },
     },
-    NotificationPosition: {
-        Position: {
+    notificationPosition: {
+        position: {
             type: String,
         },
-        EnableCloseButton: {
+        enableCloseButton: {
             type: Boolean,
             default: false
         },
-        ProgressBar: {
+        progressBar: {
             type: Boolean,
             default: false
         },
     },
-    SystemLogo: {
-        SystemLogo: {
+    systemLogo: {
+        systemLogo: {
             type:String
         },
         favicon: {
             type:String
         }
     },
-    SignInPageLogo: {
-        Logo: {
+    signInPageLogo: {
+        logo: {
             type:String
         }
     },
-    RecruitmentPageLogo: {
-        Logo: {
+    recruitmentPageLogo: {
+        logo: {
             type:String
         },
     },
-    PayrollLogo: {
+    payRollLogo: {
         payRollLogo: {
             type:String
         },
     },
-    OrganizationChart: {
+    organizationChart: {
         zoomChart: {
             type: Boolean,
             default: false
