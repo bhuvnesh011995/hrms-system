@@ -58,6 +58,9 @@ const schema = new Schema({
             type: Boolean,
             default: false
         },
+        title:{
+            type:String
+        },
         panChart: {
             type: Boolean,
             default: false

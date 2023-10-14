@@ -1,3 +1,4 @@
+const { upload } = require('../../app')
 const themeController=require('../../controller/theme.controller')
 
 module.exports = function(app){

@@ -85,9 +85,10 @@ export const getThemeSetting = async ()=>{
 }
 
 
-export const updateThemeSetting = async (data)=>{
+export const updateThemeSetting = async (type,data)=>{
     try {
-        let response = await formApi.put("/themeSettings",data)
+        console.log(data)
+        let response = await formApi.put("/themeSettings/"+type,data)
         return response
 
     } catch (error) {
@@ -95,5 +96,30 @@ export const updateThemeSetting = async (data)=>{
         console.log(error)
         return error.response
         
+    }
+}
+
+
+
+export const getAllLanguage = async function(){
+    try {
+        let response = await api.get("/language")
+        return response
+    } catch (error) {
+        console.log(error)
+        return error.response
+    }
+}
+
+
+export const updateLanguage = async (id,data)=>{
+    try {
+        let response = await api.put("/language/"+id,data)
+        return response
+
+    } catch (error) {
+        console.log(error)
+        return error.response
+
     }
 }

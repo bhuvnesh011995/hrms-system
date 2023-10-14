@@ -20,7 +20,7 @@ export default function ThemeSetting() {
             setIsLoading(true)
             let res = await getThemeSetting();
             if(res.status===200){
-                setData(res.data.theme)
+                setData(res.data.themeSetting)
                 setIsLoading(false)
             }else{
                 setIsLoading(false)
@@ -30,6 +30,8 @@ export default function ThemeSetting() {
             console.log(error)
         }
     },[])
+
+
     useEffect(()=>{
       getThemeSettingData()
     },[])
@@ -74,13 +76,13 @@ export default function ThemeSetting() {
               <Row>
                 <Col md={12}>
                   <Tab.Content>
-                  <Tab.Pane eventKey={"pageLayout"}><PageLayout getThemeSettingData={getThemeSettingData} data={data}/></Tab.Pane>
-                  <Tab.Pane eventKey={"notiPo"}><NotificationPosition getThemeSettingData={getThemeSettingData} data={data}/></Tab.Pane>
-                  <Tab.Pane eventKey={"sysLogo"}><SystemLogo getThemeSettingData={getThemeSettingData} data={data}/></Tab.Pane>
-                  <Tab.Pane eventKey={"signl"}><SignInLogo getThemeSettingData={getThemeSettingData} data={data}/></Tab.Pane>
-                  <Tab.Pane eventKey={"recLogo"}><RecruitmetLogo getThemeSettingData={getThemeSettingData} data={data}/></Tab.Pane>
-                  <Tab.Pane eventKey={"payroLogo"}><PayrollLogo getThemeSettingData={getThemeSettingData} data={data}/></Tab.Pane>
-                  <Tab.Pane eventKey={"orgcha"}><OrganizationChart getThemeSettingData={getThemeSettingData} data={data}/></Tab.Pane>
+                  <Tab.Pane eventKey={"pageLayout"}><PageLayout getThemeSettingData={getThemeSettingData} data={data?.pageLayouts}/></Tab.Pane>
+                  <Tab.Pane eventKey={"notiPo"}><NotificationPosition getThemeSettingData={getThemeSettingData} data={data.notificationPosition}/></Tab.Pane>
+                  <Tab.Pane eventKey={"sysLogo"}><SystemLogo getThemeSettingData={getThemeSettingData} data={data.systemLogo}/></Tab.Pane>
+                  <Tab.Pane eventKey={"signl"}><SignInLogo getThemeSettingData={getThemeSettingData} data={data.signInPageLogo}/></Tab.Pane>
+                  <Tab.Pane eventKey={"recLogo"}><RecruitmetLogo getThemeSettingData={getThemeSettingData} data={data.recruitmentPageLogo}/></Tab.Pane>
+                  <Tab.Pane eventKey={"payroLogo"}><PayrollLogo getThemeSettingData={getThemeSettingData} data={data.payRollLogo}/></Tab.Pane>
+                  <Tab.Pane eventKey={"orgcha"}><OrganizationChart getThemeSettingData={getThemeSettingData} data={data.organizationChart}/></Tab.Pane>
                   </Tab.Content>
                   </Col>
               </Row>

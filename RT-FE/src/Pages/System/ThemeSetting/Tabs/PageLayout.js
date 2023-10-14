@@ -1,9 +1,41 @@
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import { Toast, ToastContainer } from "react-bootstrap";
+import { updateThemeSetting } from "../../../../Utility/API/system";
 
 export default function PageLayout({data,getThemeSettingData}) {
 const [show,setShow] = useState(false)
 const [toast,setToast] = useState({})
+const [updateData,setUpdateData] = useState(null)
+const getValue = useCallback((field,check=false)=>{
+  if(check){
+    if(updateData && updateData[field]!=undefined) return updateData[field]
+    else if(data && data[field]!=undefined) return data[field]
+    else return false
+  }
+    if(updateData&&updateData[field] !=undefined) return updateData[field]
+    else if(data&&data[field]) return data[field]
+    else return ""
+},[updateData,data])
+
+const handleSubmit = useCallback(async (dataToUpdate)=>{
+  if(!dataToUpdate) return
+let formData = new FormData()
+
+for( let key in dataToUpdate){
+  formData.append(key,dataToUpdate[key])
+}
+  let res = await updateThemeSetting("pageLayouts",formData)
+
+  if(res.status ===204){
+    setToast({message:"update Successfull",bg:"success"})
+    setShow(true)
+    getThemeSettingData()
+    setUpdateData(null)
+  }
+},[])
+
+
+
   return (
     <div class="tab-pane">
       <ToastContainer containerPosition="bottom-end" position="top-right" style={{zIndex:1,position:"fixed",top:"100px", right:"5px"}}>
@@ -21,7 +53,10 @@ const [toast,setToast] = useState({})
               <label for="formrow-firstname-input" class="form-label">
                 Footer Layout
               </label>
-              <select class="form-control select2-templating ">
+              <select
+              value={getValue("footerLayout")}
+              onChange={e=>setUpdateData(preVal=>({...preVal,footerLayout:e.target.value}))}
+              class="form-control select2-templating ">
                 <option value="Dfooter">Dark Footer</option>
                 <option value="lfooter">Light Footer</option>
                 <option value="Tfooter">Transparent Footer</option>
@@ -33,7 +68,10 @@ const [toast,setToast] = useState({})
               <label for="formrow-firstname-input" class="form-label">
                 Statistics cards on dashboard
               </label>
-              <select class="form-control select2-templating ">
+              <select
+              value={getValue("staticCards")}
+              onChange={e=>setUpdateData(preVal=>({...preVal,staticCards:e.target.value}))}
+              class="form-control select2-templating ">
                 <option value="0">0</option>
                 <option value="4">4</option>
                 <option value="8">8</option>
@@ -46,11 +84,14 @@ const [toast,setToast] = useState({})
               <label for="formrow-firstname-input" class="form-label">
                 Admin Dashboard
               </label>
-              <select class="form-control select2-templating ">
-                <option value="dash1">Dashboard 1</option>
-                <option value="dash2">Dashboard 2</option>
-                <option value="dash3">Dashboard 3</option>
-                <option value="dash4">Dashboard 4</option>
+              <select
+              value={getValue("adminDasboard")}
+              onChange={e=>setUpdateData(preVal=>({...preVal,adminDasboard:e.target.value}))}
+              class="form-control select2-templating ">
+                <option value="v1">Dashboard 1</option>
+                <option value="v2">Dashboard 2</option>
+                <option value="v3">Dashboard 3</option>
+                <option value="v4">Dashboard 4</option>
               </select>
             </div>
           </div>
@@ -59,11 +100,14 @@ const [toast,setToast] = useState({})
               <label for="formrow-firstname-input" class="form-label">
                 Login Page Options
               </label>
-              <select class="form-control select2-templating ">
-                <option value="log1">Login Page Version 1</option>
-                <option value="log2">Login Page Version 2</option>
-                <option value="log3">Login Page Version 3</option>
-                <option value="log4">Login Page Version 4</option>
+              <select
+              value={getValue("loginPageOption")}
+              onChange={e=>setUpdateData(preVal=>({...preVal,loginPageOption:e.target.value}))}
+              class="form-control select2-templating ">
+                <option value="v1">Login Page Version 1</option>
+                <option value="v2">Login Page Version 2</option>
+                <option value="v3">Login Page Version 3</option>
+                <option value="v4">Login Page Version 4</option>
               </select>
             </div>
           </div>
@@ -73,7 +117,10 @@ const [toast,setToast] = useState({})
                 Show calendar on dashboard?{" "}
               </label>{" "}
               <br />
-              <input type="checkbox" id="switch11" switch="bool" checked />
+              <input
+              checked={getValue("showCalender",true)}
+              onChange={e=>setUpdateData(preVal=>({...preVal,showCalender:e.target.checked}))}
+              type="checkbox" id="switch11" switch="bool" />
               <label
                 for="switch11"
                 data-on-label="Yes"
@@ -106,6 +153,7 @@ const [toast,setToast] = useState({})
             </div> */}
         </div>
         <button
+        onClick={()=>handleSubmit(updateData)}
           type="button"
           class="btn btn-primary waves-effect waves-light w-25"
         >

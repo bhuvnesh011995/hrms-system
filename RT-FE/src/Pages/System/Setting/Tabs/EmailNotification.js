@@ -22,19 +22,16 @@ const [isLoading,setIsLoading] = useState(false)
         else return false
       }
         if(updateData&&updateData[field] !=undefined) return updateData[field]
-        else if(data&&data[field]){
-            if(field==="defaultCurrency") return data[field]?._id
-            else return data[field]
-        }
+        else if(data&&data[field]) return data[field]
         else return ""
     },[updateData,data])
     
             const handleSubmit = useCallback(async ()=>{
                 try {
-                    console.log(updateData)
+                    
                     if(!updateData) return
                     let res = await updateSetting({emailNotification:updateData})
-                    console.log(res)
+              
                     if(res.status===204){
                       setToast({message:"system updated successfully",bg:"success"})
                       setShow(true)
