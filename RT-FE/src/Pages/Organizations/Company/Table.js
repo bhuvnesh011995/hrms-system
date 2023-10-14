@@ -1,4 +1,38 @@
+import { useMemo, useState } from "react";
+import AddNew from "./AddNew";					  
+import MaterialReactTable from "material-react-table";
+import { Box, IconButton } from "@mui/material";
+import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
+
 export default function Table() {
+    const [isOpen,setIsOpen] = useState(false)
+
+     const columns = useMemo(() => [
+     {
+         accessorKey: 'Company',
+         header: 'Company',
+       },
+       {
+           accessorKey: 'Email',
+           header: 'Email',
+         },
+         {                                                   
+
+             accessorKey: 'Country',
+             header: 'Country',
+           },
+ {
+             accessorKey: 'Currency',
+             header: 'Currency',
+           },
+   {
+             accessorKey: 'Timezone',
+             header: 'Timezone',
+           },
+                       
+     ],[])
+
+
     return(
         <div className="row">
                         <div className="col-12">
@@ -9,7 +43,7 @@ export default function Table() {
                                             <h4>List All Companies</h4>
                                         </div>
                                         <div className="col-md-6 mb-3" style={{textAlign: "right"}}>
-                                            <button className="btn btn-primary text-right" data-bs-toggle="modal" data-bs-target="#myModal">Add New</button>
+                                            <button className="btn btn-primary text-right" onClick={()=>setIsOpen(true)}>Add New</button>
                                         </div>
                                     </div>
 
@@ -28,7 +62,7 @@ export default function Table() {
                                             Print
                                         </button>
                                     </p>
-                                    <table id="datatable" className="table table-bordered dt-responsive nowrap w-100">
+                                    {/* <table id="datatable" className="table table-bordered dt-responsive nowrap w-100">
                                         <thead>
                                             <tr>
                                                 <th>Company</th>
@@ -64,9 +98,58 @@ export default function Table() {
 
 
                                         </tbody>
-                                    </table>
+                                    </table> */}
                                     
-                                    <div className="modal fade" id="myModal">
+
+  <MaterialReactTable
+ columns={columns}
+ data={[]}
+ enableColumnActions={false}
+ enableColumnFilters={false}
+ enableSorting={false}
+ enableTopToolbar={false}
+ enableRowActions
+             positionActionsColumn="last"
+             enableRowNumbers
+             rowNumberMode="static"
+             renderRowActions={({ row, table }) => (
+               <Box
+                 sx={{ display: "flex", flexWrap: "nowrap", gap: "8px" }}
+               >
+                   <IconButton
+                   color="secondary"
+                   onClick={() => {
+                     table.setEditingRow(row);
+                   }}
+                 >
+                   <EditIcon />
+                 </IconButton>
+                   <IconButton
+                   color="error"
+                   onClick={() => {}}
+                 >
+                   <DeleteIcon />
+                 </IconButton>
+               </Box>
+             )}
+ muiTableProps={{
+   sx: {
+     border: '1px solid rgba(81, 81, 81, 1)',
+   },
+ }}
+ muiTableHeadCellProps={{
+   sx: {
+     border: '1px solid rgba(81, 81, 81, 1)',
+   },
+ }}
+ muiTableBodyCellProps={{
+   sx: {
+     border: '1px solid rgba(81, 81, 81, 1)',
+   },
+ }}
+ /> 
+{isOpen && <AddNew show={isOpen} setShow={setIsOpen}/>}
+                                    {/* <div className="modal fade" id="myModal">
                                         <div className="modal-dialog modal-lg">
                                             <div className="modal-content">
 
@@ -226,9 +309,9 @@ export default function Table() {
 
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> */}
 
-                                    <div className="modal fade" id="myModal2">
+                                    {/* <div className="modal fade" id="myModal2">
                                         <div className="modal-dialog">
                                             <div className="modal-content">
 
@@ -387,7 +470,7 @@ export default function Table() {
 
                                             </div>
                                         </div>
-                                    </div>
+                                    </div> */}
                                 </div>
                             </div>
                         </div>

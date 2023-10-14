@@ -13,7 +13,7 @@ const initialUser ={
     token:null
 }
 
-let api;
+let api,formApi;
 
 export default function AuthProvider({children}){
    
@@ -51,6 +51,16 @@ useEffect(()=>{
     api = axios.create({
         baseURL,headers
     })
+    const fromHeaders = {
+        'x-access-token':user.token,
+        "Content-Type": "multipart/form-data",
+        }
+
+        formApi = axios.create({
+            baseURL,headers:fromHeaders
+        })
+
+
 
 
     return(
@@ -60,4 +70,4 @@ useEffect(()=>{
     )
 }
 
-export {authContext,api}
+export {authContext,api,formApi}

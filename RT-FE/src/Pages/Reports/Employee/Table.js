@@ -1,4 +1,52 @@
+     import MaterialReactTable from "material-react-table";
+ import { Box, IconButton } from "@mui/material";
+ import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
+import { useMemo, useState } from "react";
+import ReportFilter from "./ReportFilter";
+
 export default function Table() {
+    const [isOpen,setIsOpen] = useState(false)
+
+ const columns = useMemo(() => [
+     {
+      
+         accessorKey: 'ID',
+         header: 'ID',                                      
+                                              
+       },
+
+         {                                                   
+
+             accessorKey: 'Name',
+             header: 'Name',
+           },
+         {                                                   
+
+             accessorKey: 'Company',
+             header: 'Company',
+           },
+     {
+         accessorKey: 'Email',
+         header: 'Email',                                      
+                                              
+       },
+
+         {                                                   
+
+             accessorKey: 'Department',
+             header: 'Department',
+           },
+         {                                                   
+
+             accessorKey: 'Designation',
+             header: 'Designation',
+           },
+           {                                                   
+  
+               accessorKey: 'Status',
+               header: 'Status',
+             },
+     ],[])
     return(
         <div class="row">
             <div class="col-12">
@@ -9,7 +57,7 @@ export default function Table() {
                                 <h4>View Employees Report</h4>
                             </div>
                             <div class="col-md-6 mb-3" style={{textAlign: "right"}}>
-                                <button class="btn btn-primary text-right" data-bs-toggle="modal" data-bs-target="#myModal">Filter</button>
+                                <button class="btn btn-primary text-right" onClick={()=>setIsOpen(true)}>Filter</button>
                             </div>
                         </div>
 
@@ -28,7 +76,59 @@ export default function Table() {
                                 Print
                             </button>
                         </p>
-                        <table id="datatable" class="table display table-bordered dt-responsive nowrap w-100">
+                        
+
+
+  <MaterialReactTable
+ columns={columns}
+ data={[]}
+ enableColumnActions={false}
+ enableColumnFilters={false}
+ enableSorting={false}
+ enableTopToolbar={false}
+ enableRowActions
+             positionActionsColumn="last"
+             enableRowNumbers
+             rowNumberMode="static"
+             renderRowActions={({ row, table }) => (
+               <Box
+                 sx={{ display: "flex", flexWrap: "nowrap", gap: "8px" }}
+               >
+                   <IconButton
+                   color="secondary"
+                   onClick={() => {
+                     table.setEditingRow(row);
+                   }}
+                 >
+                   <EditIcon />
+                 </IconButton>
+                   <IconButton
+                   color="error"
+                   onClick={() => {}}
+                 >
+                   <DeleteIcon />
+                 </IconButton>
+               </Box>
+             )}
+ muiTableProps={{
+   sx: {
+     border: '1px solid rgba(81, 81, 81, 1)',
+   },
+ }}
+ muiTableHeadCellProps={{
+   sx: {
+     border: '1px solid rgba(81, 81, 81, 1)',
+   },
+ }}
+ muiTableBodyCellProps={{
+   sx: {
+     border: '1px solid rgba(81, 81, 81, 1)',
+   },
+ }}
+ /> 
+
+{isOpen && <ReportFilter show={isOpen} setShow={setIsOpen}/>}
+                        {/* <table id="datatable" class="table display table-bordered dt-responsive nowrap w-100">
                             <thead>
                                 <tr>
                                     <th>ID  </th>
@@ -59,7 +159,7 @@ export default function Table() {
                                     </td>
                                 </tr>
                             </tbody>
-                        </table>
+                        </table> */}
                         {/* <!-- The Modal --> */}
                         <div class="modal fade" id="myModal">
                         <div class="modal-dialog modal-lg">

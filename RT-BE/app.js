@@ -116,7 +116,7 @@ mongoose.connect(dbConfig.URI, {
 
     
         let themeExist=await dbs.themes.exists({})
-         console.log(themeExist)
+        
       if(!themeExist){
            await dbs.themes.create({}) 
            console.log("empty theme is created");

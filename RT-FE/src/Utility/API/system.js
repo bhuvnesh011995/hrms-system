@@ -1,4 +1,4 @@
-import { api } from "../../Context/AuthContext"
+import { api, formApi } from "../../Context/AuthContext"
 
 export const getPaymentGateway = async function(){
     
@@ -76,7 +76,7 @@ export const updateModulesSetting = async (data)=>{
 
 export const getThemeSetting = async ()=>{
     try {
-        let response = await api.get("/system/theme")
+        let response = await api.get("/themeSettings")
         return response
     } catch (error) {
         console.log(error)
@@ -87,9 +87,13 @@ export const getThemeSetting = async ()=>{
 
 export const updateThemeSetting = async (data)=>{
     try {
-        let response = await api.put("/system/theme",data)
+        let response = await formApi.put("/themeSettings",data)
+        return response
 
     } catch (error) {
+        
+        console.log(error)
+        return error.response
         
     }
 }
