@@ -121,7 +121,12 @@ mongoose.connect(dbConfig.URI, {
            await dbs.themes.create({}) 
            console.log("empty theme is created");
       }else console.log("themes is already present")
-
+      let languageExist = await dbs.language.exists({})
+      if (!languageExist) {
+        await dbs.language.create({})
+        console.log("empty language is created")
+      }
+      else console.log("language is already present")
     return
   } catch (error) {
       console.log(error)
@@ -167,5 +172,6 @@ mongoose.connect(dbConfig.URI, {
   require("./route/system/modules.route")(app)
 
   require("./route/system/themeSetting.route")(app)
+  require("./route/system/languageSetting.route")(app)
 
 exports.app = app
