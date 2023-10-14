@@ -1,5 +1,7 @@
 // import { Card } from "react-bootstrap";
 
+import { FormattedMessage } from "react-intl";
+
 // export default function CardsWithData({cards}) {
 
 // let cardList = cards.map((ele,i)=>{
@@ -99,7 +101,8 @@ export default function CardsWithData() {
                                             </div>
                                             <div className="text-muted mt-4">
                                                 <h4>
-                                                    Set Roles
+                                                    <FormattedMessage id="Set_Roles" defaultMessage={"Set Roles"} />
+                                                    
                                                     <i className="mdi mdi-chevron-up ms-1 text-success"></i>
                                                 </h4>
                                             </div>

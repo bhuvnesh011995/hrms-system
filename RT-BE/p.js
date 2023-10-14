@@ -1,0 +1,12 @@
+company.
+department.
+subdepartment.
+location.
+announcement.
+designation.
+documents.
+policy.
+timesheetofficeShift.
+coreHRaward.
+staffemployee.
+coreHRtransfer.

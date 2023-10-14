@@ -103,7 +103,7 @@ export const updateThemeSetting = async (type,data)=>{
 
 export const getAllLanguage = async function(){
     try {
-        let response = await api.get("/language")
+        let response = await api.get("/languages")
         return response
     } catch (error) {
         console.log(error)
@@ -121,5 +121,28 @@ export const updateLanguage = async (id,data)=>{
         console.log(error)
         return error.response
 
+    }
+}
+
+
+export const addLanguage = async (data)=>{
+    try {
+        let response = await api.post("/language",data)
+        return response
+    } catch (error) {
+        console.log(error)
+        return error.response
+    }
+}
+
+
+export const deleteLanguage = async (id)=>{
+    try {
+       
+        let response = await api.delete("/language/"+id)
+        return response
+    } catch (error) {
+        console.log(error)
+        return error.response
     }
 }

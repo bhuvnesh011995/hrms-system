@@ -28,7 +28,7 @@ const schema = new Schema({
             type:Boolean
         },
         defaultLanguage:{
-            type:String
+            type:Schema.Types.ObjectId,ref:"languages"
         },
         googleMapApiKey:{
             type:String

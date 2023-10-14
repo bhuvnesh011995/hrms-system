@@ -1,14 +1,17 @@
+let languageField = require("../../utility/language.constant")
 const { Schema, model } = require("mongoose")
+
+let lanFieldObj = languageField.reduce((acc,curr)=>{
+acc[curr] = {type:Schema.Types.String,default:null}
+return acc
+},{})
+
+
+
 const schema = new Schema({
   name: { type: String },
   code: { type: String },
-  language:
-  {
-    Set__Roles: { type: String, default: null },
-    View__Application: { type: String, default: null },
-    Configurations: { type: String, default: null },
-    Earning: { type: String, default: null }
-  },
+  language:lanFieldObj,
   status: {
     type: String,
     enum: ['active', 'inactive'],

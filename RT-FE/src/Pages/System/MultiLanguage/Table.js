@@ -3,38 +3,38 @@ import MaterialReactTable from "material-react-table";
 import { Box, IconButton } from "@mui/material";
 import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import { useMemo, useState } from "react";
+import LanguageModal from "./LanguageModal";
+import { deleteLanguage } from "../../../Utility/API/system";
 
 
-export default function Table() {
+export default function Table({setShow ,isLoading,isError,data,setToast,getLanguages}) {
+  const [showLagModal,setShowLngModal] = useState(false)
+  const [language,setLanguage] = useState({})
 
      const columns = useMemo(() => [
      {
          accessorKey: 'name',
-         header: 'Name',                                      
-                                              
+         header: 'Name',
        },
        {
            accessorKey: 'code',
-           header: 'Code',                                      
-                                                
+           header: 'Code',
          },
          {
              accessorKey: 'status',
-             header: 'Status',                                      
-                                                  
+             header: 'Status',   
            },
-
-
      ],[])
 
 
   return (
     <>
       
-
+{showLagModal && <LanguageModal setToastShow={setShow} getLanguages={getLanguages} setToast={setToast} show={showLagModal} setShow={setShowLngModal} language={language} />}
   <MaterialReactTable
  columns={columns}
- data={[]}
+ data={data}
+ state={{isLoading:isLoading}}
  enableColumnActions={false}
  enableColumnFilters={false}
  enableSorting={false}
@@ -55,9 +55,29 @@ export default function Table() {
                  >
                    <EditIcon />
                  </IconButton>
+                 <IconButton
+                   color="secondary"
+                   onClick={() => {
+                    setShowLngModal(true);
+                    setLanguage(row.original)
+                   }}
+                 >
+                   <i className="dripicons-document-edit"></i>
+                 </IconButton>
                    <IconButton
                    color="error"
-                   onClick={() => {}}
+                   onClick={async () => {
+                    let res = await deleteLanguage(row.original._id);
+                    if(res.status===204){
+                      setToast({message:"delete successfull",bg:"success"})
+                      setShow(true)
+                      getLanguages()
+                    }else{
+                      setToast({message:"error occured",bg:"danger"})
+                      setShow(true)
+                    }
+                    
+                  }}
                  >
                    <DeleteIcon />
                  </IconButton>

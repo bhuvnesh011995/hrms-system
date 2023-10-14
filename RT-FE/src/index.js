@@ -68,11 +68,13 @@ import DatabseBackup from './Pages/System/DatabaseBackup/DatabseBackup';
 import StaffDashboard from './Pages/Staff/StaffDashboard/StaffDashboard';
 import Practice from './practice';
 import AuthProvider from './Context/AuthContext';
+import SettingProvider from './Context/settingContext';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
+  <SettingProvider>
   <AuthProvider>
-
+    
   <BrowserRouter>
 
     <Routes>      <Route path='login' element={<Login />} />
@@ -150,7 +152,7 @@ root.render(
   </BrowserRouter>
   
   </AuthProvider>
-  
+  </SettingProvider>
 );
 
 // If you want to start measuring performance in your app, pass a function

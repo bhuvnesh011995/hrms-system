@@ -1,9 +1,10 @@
 import { useCallback, useEffect, useState } from "react";
 import { getAConstant, getConstant } from "../../../../Utility/API/constant";
-import { updateSetting } from "../../../../Utility/API/system";
+import { getAllLanguage, updateSetting } from "../../../../Utility/API/system";
 import { Toast, ToastContainer } from "react-bootstrap";
 
 export default function System({getSettingData,data}) {
+  const [language,setLanguage] = useState([])
     const [currData,setCurrData] = useState(null)
     const [show,setShow] = useState(false)
     const [toast,setToast] = useState({})
@@ -23,27 +24,32 @@ export default function System({getSettingData,data}) {
         }
         else return ""
     },[updateData,data])
-    const getCurrencyConstant =  useCallback(async ()=>{
+    const getData =  useCallback(async ()=>{
                 try {
                     setIsLoading(true)
-                    let res = await getAConstant("currency")
-                    if(res.status===200){
-                        setCurrData(res.data.constant)
-                        setIsLoading(false)
+                    let [currRes,langRes] = await Promise.all([getAConstant("currency"),getAllLanguage()]) 
+                    if(currRes.status===200){
+                        setCurrData(currRes.data.constant)
                         setIsError(false)
                     }else{
                       setToast({message:"erorr occured",bg:"danger"})
                       setShow(true)
-                        setIsLoading(false)
                         setIsError(true)
                     }
+
+                    if(langRes.status===200){
+                      setLanguage(langRes.data.languages)
+                    }
+                    setIsLoading(false)
                 } catch (error) {
                     setIsError(true)
+                    setIsLoading(false)
                     console.log(error)
                 }
-                
-
             },[])
+
+
+
             const handleSubmit = useCallback(async ()=>{
                 try {
                     console.log(updateData)
@@ -60,11 +66,10 @@ export default function System({getSettingData,data}) {
                       setShow(true)
                     }
                 } catch (error) {
-                    
                 }
             },[updateData])
     useEffect(()=>{
-        getCurrencyConstant()
+        getData()
     },[])
   return (
     <div
@@ -202,9 +207,7 @@ export default function System({getSettingData,data}) {
               </label>
               <select value={getValue("defaultLanguage")}
               onChange={e=>setUpdateData(preVal=>({...preVal,defaultLanguage:e.target.value}))} class="form-select" id="">
-                <option selected="">Choose...</option>
-                <option value="eng">English </option>
-                <option value="SG">Singaporian</option>
+                {language?.map((ele,i)=>(<option key={i} value={ele._id}>{ele.name+"("+ele.code+")"}</option>))}
               </select>
             </div>
           </div>

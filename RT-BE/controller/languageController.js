@@ -1,35 +1,73 @@
 const db = require("../model")
 
-exports.getByTheId= async function (req, res, next) {
-    let Id=req.params.id
+
+
+exports.addLanguage = async function (req,res,next){
+    const {name,code} = req.body
+
     try {
-        let languageDetails = await db.language.findOne({ _id: Id}).select({ name: 1,language:1, code: 1, status: 1 })
+        await db.language.create({name,code})
+
+        res.status(201).end()
+    } catch (error) {
+        console.log(error)
+        
+        res.status(500).json({
+            success:false,
+            message:"error occured"
+        })
+    }
+}
+
+
+
+
+
+
+exports.getById= async function (req, res, next) {
+    let {id}=req.query
+    console.log(id)
+    try {
+        if(!id){
+            let language = await db.system.findOne({}).select({"system.defaultLanguage":1}).populate({path:"system.defaultLanguage",model:"languages"})
+            if(!language) return res.status(500).json({
+                success: false,
+                message: "error occured"
+            })
+
+            return res.status(200).json({
+                success:true,
+                language:language?.system?.defaultLanguage
+            })
+        }else{
+            let language = await db.language.findOne({ _id: id}).select({ name: 1,language:1, code: 1, status: 1 })
         res.status(200).json({
             success: true,
-            languageDetails
+            language
         })
+        }
+        
     } catch (error) {
         console.log(error)
         res.status(500).json({
             success: false,
-            message: "error occured",
-            error: error
+            message: "error occured"
         })
     }
 }
 exports.getAllTheLanguage=async function(req,res,next){
 
     try {
-        let system = await db.language.find({}).select({name:1,code:1,status:1})
+        let languages = await db.language.find({})
 
-        if(!system) return res.status(500).json({
+        if(!languages) return res.status(500).json({
             success:true,
             message:"error occured"
         })
 
         res.status(200).json({
             success:true,
-            system
+            languages
         })
     } catch (error) {
         console.log(error)
@@ -40,29 +78,55 @@ exports.getAllTheLanguage=async function(req,res,next){
     }
 
 }
-exports.updateTheDetails = async function (req, res, next) {
+exports.updateLanguageKey = async function (req, res, next) {
     try {
-        let obj = {};
-        let { language,status } = req.body;
-        // if (name) {
-        //     obj.name = name;
-        // }
-        // if (code) {
-        //     obj.code = code
-        // }
-        // if (status) {
-        //     obj.status = status
-        // }
-        console.log(obj)
-        await db.language.findOneAndUpdate({}, {
+        let updateData = req.body
+        let {id} = req.params
+
+        let keys = Object.keys(updateData)
+
+        let obj = keys.reduce((acc,curr)=>{
+            acc[`language.${curr}`] = updateData[curr]
+            return acc
+        },{})
+
+        
+        await db.language.findOneAndUpdate({_id:id}, {
             $set: obj
         })
+
+        res.status(204).end()
+
+
     } catch (error) {
         console.log(error)
         res.status(500).json({
             success: false,
             message: "error occured",
             error: error
+        })
+    }
+}
+
+
+
+
+exports.deleteLanguage = async (req,res,next)=>{
+
+    const {id} = req.params
+
+    try {
+        let languageExist = await db.language.exists({_id:id})
+        if(!languageExist) return res.status(401).end()
+
+        await db.language.deleteOne({_id:id})
+
+        res.status(204).end()
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            success:false,
+            message:"error occured"
         })
     }
 }

@@ -17,10 +17,8 @@ module.exports = {
     system:require("./system/setting/system.model"),
     constants:require("./system/constatntModels"),
     modules:require("./system/modules/modules.model"),
-
     themes:require('./system/themeSetting.model'),
-    language:require('./system/language.model')
+    language:require('./system/language.model'),
 
-    themes:require('./system/themeSetting.model')
 
 }
