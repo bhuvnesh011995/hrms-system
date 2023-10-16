@@ -26,7 +26,7 @@ exports.addLanguage = async function (req,res,next){
 
 exports.getById= async function (req, res, next) {
     let {id}=req.query
-    console.log(id)
+    
     try {
         if(!id){
             let language = await db.system.findOne({}).select({"system.defaultLanguage":1}).populate({path:"system.defaultLanguage",model:"languages"})
@@ -55,6 +55,7 @@ exports.getById= async function (req, res, next) {
         })
     }
 }
+
 exports.getAllTheLanguage=async function(req,res,next){
 
     try {
@@ -78,6 +79,8 @@ exports.getAllTheLanguage=async function(req,res,next){
     }
 
 }
+
+
 exports.updateLanguageKey = async function (req, res, next) {
     try {
         let updateData = req.body

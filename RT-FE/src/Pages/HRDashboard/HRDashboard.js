@@ -1,9 +1,12 @@
 
 // import CardsWithData from "../../Components/CardsWithData/CardsWithData";
+import { useContext } from "react";
 import CardsWithData from "../../Components/CardsWithData/CardsWithData";
 import MainPage from "../../Components/Common/MainPage";
 import Calender from "./SubComponent/Calender";
 import EmployerrSummery from "./SubComponent/EmployerrSummery";
+import { authContext } from "../../Context/AuthContext";
+import { FormattedMessage } from "react-intl";
 // import EmployeeStatics from "./SubComponent/EmployeeStatics";
 // import Expenses from "./SubComponent/Expenses";
 // let cardData = [
@@ -83,12 +86,45 @@ import EmployerrSummery from "./SubComponent/EmployerrSummery";
 // }
 
 export default function HRDashboard() {
+  const {name} = useContext(authContext)
+  let year = new Date().getFullYear();
   return(
-    <MainPage title={"Welcome back HR Souvik"}>
+    <div className="main-content">
+      <div className="page-content">
+        <div className="container-fluid">
+        
+
+        
+          <div className="row">
+            <div className="col-12">
+              <div className="page-title-box d-sm-flex align-items-center justify-content-between">
+                <h4 className="mb-sm-0 font-size-18"><FormattedMessage id="welcome" defaultMessage={"Welcome"}/> back {name || "Souvik"}</h4>
+              </div>
+            </div>
+          </div>
       <CardsWithData />
       <EmployerrSummery />
       <Calender />
-    </MainPage>
+    <footer className="footer">
+                <div className="container-fluid">
+                    <div className="row">
+                        <div className="col-sm-6">
+                                
+                           {year} © Braincave HRMS.
+                        </div>
+                        <div className="col-sm-6">
+                            <div className="text-sm-end d-none d-sm-block">
+                                Design & Develop by
+                                <a href="https://braincavesoft.com/" target="_blank">Braincave Software Private
+                                    Limited</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </footer>
+            </div>
+        </div>
+      </div>
   )
 };
 

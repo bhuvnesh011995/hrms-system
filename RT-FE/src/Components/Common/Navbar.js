@@ -1,9 +1,15 @@
-import { useContext, useEffect } from "react"
+import { useContext, useEffect, useRef, useState } from "react"
 import { useNavigate } from "react-router-dom"
 import RT_logo from "../../assets/Images/RT-logo.png"
-import { authContext } from "../../Context/AuthContext"
+import { authContext } from "../../Context/AuthContext";
+import { useSettingContext } from "../../Context/settingContext";
+import { getAllLanguage } from "../../Utility/API/system";
 
 export default function Navbar({inactive,setInactive}){
+    const Ref = useRef(null)
+    const [show,setShow] = useState(false)
+    const {lanCode,getLanguage} = useSettingContext()
+    const [languages,setLanguages] = useState()
 
     useEffect(()=>{
         if(inactive){ 
@@ -13,6 +19,20 @@ export default function Navbar({inactive,setInactive}){
         }
         
     },[inactive])
+    useEffect(()=>{
+        getAllLanguages()
+        document.addEventListener('click', closeProfileDropdown);
+
+        return ()=>{
+            document.removeEventListener("click",closeProfileDropdown)
+        }
+    },[])
+
+    function closeProfileDropdown(event){
+        if (Ref.current && !Ref.current.contains(event.target)) {
+            setShow(false);
+          }
+    }
 
     const navigate = useNavigate()
 
@@ -21,7 +41,21 @@ export default function Navbar({inactive,setInactive}){
     useEffect(()=>{
         if(!user.token) navigate("/login")
     },[user])
+async function getAllLanguages(){
+    let res = await getAllLanguage()
+    if(res.status ===200){
+        setLanguages(res.data.languages)
+    }
+}
 
+function getValue(code){
+    if(languages){
+        for(let ele of languages){
+        if(ele.code===code) return ele._id
+    }
+    }
+    
+}
     return(
         <header id="page-topbar">
                 <div className="navbar-header">
@@ -44,16 +78,27 @@ export default function Navbar({inactive,setInactive}){
 
                     </div>
 
-                    <div className="d-flex">
+                    <div className="d-flex me-3">
                         <div className="dropdown d-inline-block">
-                            <button type="button" className="btn header-item waves-effect" id="page-header-user-dropdown"
-                            data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <button className="btn header-item waves-effect">
+                            <label>Language</label>
+                            <select onChange={e=>getLanguage(e.target.value)} value={getValue(lanCode)}>
+                                {languages?.map((ele,i)=>(
+                                    <option value={ele._id} key={i}>{ele.code}</option>
+                                ))}
+                            </select>
+                        </button>
+                        </div>
+                        
+                        
+                        <div className="dropdown d-inline-block" ref={Ref}>
+                            <button onClick={()=>setShow(!show)} type="button" className="btn header-item waves-effect">
                                 <img className="rounded-circle header-profile-user" src="assets/images/users/avatar-1.jpg"
                                     alt="Header Avatar"/>
                                 <span className="d-none d-xl-inline-block ms-1" key="t-henry">{"Henry"}</span>
                                 <i className="mdi mdi-chevron-down d-none d-xl-inline-block"></i>
                             </button>
-                            <div className="dropdown-menu dropdown-menu-end">
+                            <div className={show?"dropdown-menu dropdown-menu-end show" : "dropdown-menu dropdown-menu-end"}>
                                 {/* <!-- item--> */}
                                 <a className="dropdown-item" href="#"><i className="bx bx-user font-size-16 align-middle me-1"></i> <span key="t-profile">Profile</span></a>
                                 <a className="dropdown-item" href="#"><i className="bx bx-wallet font-size-16 align-middle me-1"></i> <span key="t-my-wallet">My Wallet</span></a>

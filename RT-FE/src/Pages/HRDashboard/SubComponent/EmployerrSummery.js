@@ -74,7 +74,6 @@ export default function EmployerrSummery() {
                                         </div>
                                         <h4 className="card-title mb-4">Earning</h4>
                                     </div>
-
                                     <div className="row">
                                         <div className="col-lg-4">
                                             <div className="text-muted">
@@ -88,13 +87,11 @@ export default function EmployerrSummery() {
                                                         From previous period
                                                     </div>
                                                 </div>
-
                                                 <div>
                                                     <a href="javascript: void(0);" className="btn btn-primary waves-effect waves-light btn-sm">View
                                                         Details
                                                         <i className="mdi mdi-chevron-right ms-1"></i></a>
                                                 </div>
-
                                                 <div className="mt-4">
                                                     <p className="mb-2">Last month</p>
                                                     <h5>$2281.04</h5>
@@ -102,19 +99,16 @@ export default function EmployerrSummery() {
                                             </div>
                                         </div>
                                         <div className="col-lg-8">
-
                                         <EmployeeStatics />
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
-
                         <div className="col-xl-4">
                             <div className="card">
                                 <div className="card-body">
                                     <h4 className="card-title mb-4">Sales Analytics</h4>
-
                                     <div>
                                        <SalesChart />
                                     </div>

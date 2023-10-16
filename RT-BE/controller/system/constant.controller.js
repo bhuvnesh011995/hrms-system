@@ -137,7 +137,7 @@ const db = require("../../model")
 exports.getAllConstant = async (req,res,next)=>{
     try {
         // console.log(await Promise.all([db.constants.contract.find(),db.constants.eduction.find(),]))
-        let [contract,education,language,skill,document,award,religion,leave,warning,termination,expense,income,employeeExit,travelArrangement,currency,security,claim,company] = await Promise.all([
+        let [contract,education,language,skill,document,award,religion,leave,warning,termination,expense,income,employeeExit,travelArrangement,currency,security,claim,company,country] = await Promise.all([
             db.constants.contract.find(),
             db.constants.education.find(),
             db.constants.language.find(),
@@ -156,13 +156,14 @@ exports.getAllConstant = async (req,res,next)=>{
             db.constants.security.find(),
             db.constants.claim.find(),
             db.constants.company.find(),
+            db.constants.country.find()
         ])
 
 
         res.status(200).json({
             success:true,
             constants:{
-                contract,education,language,skill,document,award,religion,leave,warning,termination,expense,income,employeeExit,travelArrangement,currency,security,claim,company
+                contract,education,language,skill,document,award,religion,leave,warning,termination,expense,income,employeeExit,travelArrangement,currency,security,claim,company,country
             }
         })
     } catch (error) {

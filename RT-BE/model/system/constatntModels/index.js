@@ -16,5 +16,6 @@ module.exports = {
     claim:require("./claim.model"),
     company:require("./company.model"),
     travelArrangement:require("./travelArrangement.model"),
-    currency:require("./currency.model")
+    currency:require("./currency.model"),
+    country:require("./country.model")
 }

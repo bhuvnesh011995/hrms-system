@@ -1,7 +1,7 @@
 const {Schema,model, trusted} = require("mongoose")
 
 
-schema = new Schema({
+const schema = new Schema({
     name:{
         type:String,
         
@@ -11,13 +11,30 @@ schema = new Schema({
         
     },
     companyType:{
-        type:String
+        type:Schema.Types.ObjectId,ref:"companyConstant"
     },
     tradingName:{
         type:String
     },
     address:{
-        type:String
+        line1:{
+            type:String
+        },
+        line2:{
+            type:String
+        },
+        country:{
+            type:Schema.Types.ObjectId,ref:"countryConstant"
+        },
+        city:{
+            type:String
+        },
+        state:{
+            type:String
+        },
+        zipCode:{
+            type:String
+        },
     },
     registrationNumber:{
         type:String
@@ -29,18 +46,6 @@ schema = new Schema({
         type:String
     },
     website:{
-        type:String
-    },
-    country:{
-        type:String
-    },
-    city:{
-        type:String
-    },
-    state:{
-        type:String
-    },
-    zipCode:{
         type:String
     },
     username:{
@@ -56,15 +61,14 @@ schema = new Schema({
         type:String
     },
     currency:{
-        type:String
+        type:Schema.Types.ObjectId,ref:"currencyConstant"
     },
     department:[{type:Schema.Types.ObjectId,ref:"department"}],
 
     location:[{type:Schema.Types.ObjectId,ref:"location"}]
 },{
     collection:"company",
-    timestamps:true,
-    
+    timestamps:true
 })
 
 
