@@ -1,32 +1,61 @@
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import AddNew from "./AddNew";					  
 import MaterialReactTable from "material-react-table";
 import { Box, IconButton } from "@mui/material";
 import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
+import { deleteCompany, getAllcompany } from "../../../Utility/API/company";
 
 export default function Table() {
     const [isOpen,setIsOpen] = useState(false)
+    const [data,setData] = useState(false)
+    const [updateData,setUpdate] = useState(null)
+    const [isLoading,setIsLoading] = useState(false)
+
+    const getCompanies = useCallback(async ()=>{
+        setIsLoading(true)
+        let res = await getAllcompany()
+
+        if(res.status ===200){
+            
+            let companies = res.data?.companies.map(ele=>{
+                console.log(ele)
+                const {address,...newObj} = ele
+                let obj = {...address,...newObj}
+                console.log(address,"address")
+                
+                console.log(newObj,"new obj")
+                console.log(obj," obj")
+                return obj
+            })
+            setData(companies)
+            setIsLoading(false)
+        }else{
+            console.log(res)
+        }
+    },[])
+
+    useEffect(()=>{getCompanies()},[])
 
      const columns = useMemo(() => [
      {
-         accessorKey: 'Company',
-         header: 'Company',
+         accessorKey: 'name',
+         header: 'Company Name',
        },
        {
-           accessorKey: 'Email',
+           accessorKey: 'email',
            header: 'Email',
          },
          {                                                   
 
-             accessorKey: 'Country',
+             accessorKey: 'country',
              header: 'Country',
            },
  {
-             accessorKey: 'Currency',
+             accessorFn: (row)=>`${row?.currency.name}`,
              header: 'Currency',
            },
    {
-             accessorKey: 'Timezone',
+             accessorKey: 'timeZone',
              header: 'Timezone',
            },
                        
@@ -103,7 +132,7 @@ export default function Table() {
 
   <MaterialReactTable
  columns={columns}
- data={[]}
+ data={data || []}
  enableColumnActions={false}
  enableColumnFilters={false}
  enableSorting={false}
@@ -119,14 +148,16 @@ export default function Table() {
                    <IconButton
                    color="secondary"
                    onClick={() => {
-                     table.setEditingRow(row);
+                    let obj = {...row.original,currency:row.original.currency._id,companyType:row.original.companyType._id}
+                     setUpdate(obj)
+                     setIsOpen(true)
                    }}
                  >
                    <EditIcon />
                  </IconButton>
                    <IconButton
                    color="error"
-                   onClick={() => {}}
+                   onClick={async () => {await deleteCompany(row.original.id);getCompanies()}}
                  >
                    <DeleteIcon />
                  </IconButton>
@@ -148,7 +179,7 @@ export default function Table() {
    },
  }}
  /> 
-{isOpen && <AddNew show={isOpen} setShow={setIsOpen}/>}
+{isOpen && <AddNew getCompanies={getCompanies} updateData={updateData} setUpdate={setUpdate}  show={isOpen} setShow={setIsOpen}/>}
                                     {/* <div className="modal fade" id="myModal">
                                         <div className="modal-dialog modal-lg">
                                             <div className="modal-content">

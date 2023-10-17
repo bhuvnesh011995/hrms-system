@@ -6,25 +6,27 @@ const {Schema,model} = require("mongoose")
 
 const schema = new Schema({
     company:{type:Schema.Types.ObjectId,ref:"company"},
-    head:String,
+    head:{type:Schema.Types.ObjectId,ref:"employee"},
     name:{
         type:String
     },
     address:{
-        type:String,
+        line1:String,
+        line2:String,
+        city:{
+            type:String
+        },
+        state:{
+            type:String
+        },
+        country:{
+            type:String
+        },
+        zipCode:{
+            type:String
+        },
     },
-    city:{
-        type:String
-    },
-    state:{
-        type:String
-    },
-    country:{
-        type:String
-    },
-    zipCode:{
-        type:String
-    },
+    
     email:{
         type:String
     },

@@ -24,7 +24,7 @@ const schema = new Schema({
             type:String
         },
         country:{
-            type:Schema.Types.ObjectId,ref:"countryConstant"
+            type:String
         },
         city:{
             type:String

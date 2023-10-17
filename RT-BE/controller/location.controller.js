@@ -3,9 +3,24 @@ const db = require("../model")
 
 exports.addLocation = async function(req,res,next){
     const {
-        company,head,name,address1,address2,city,state,country,zipCode,email,phone,faxNumber
+        company,head,name,line1,line2,city,state,country,zipCode,email,phone,faxNumber
     } = req.body;
 
+    let obj = {}
+
+    if(company) obj = {...obj,company}
+    if(head) obj = {...obj,head}
+    if(name) obj = {...obj,name}
+    if(line1) obj = {...obj,"address.line1":line1}
+    if(line2) obj = {...obj,"address.line2":line2}
+    if(city) obj = {...obj,"address.city":city}
+    if(state) obj = {...obj,"address.state":state}
+    if(country) obj = {...obj,"address.country":country}
+    if(zipCode) obj = {...obj,"address.zipCode":zipCode}
+    if(email) obj = {...obj,email}
+    if(phone) obj = {...obj,phone}
+    if(faxNumber) obj = {...obj,faxNumber}
+    if(company) obj = {...obj,company}
     try {
         // company is mandatory checking presence
         let companyDoc = await db.company.findOne({_id:company})
@@ -14,12 +29,9 @@ exports.addLocation = async function(req,res,next){
         message:"no compnay found"
     })
 
-    let address = address1 +" "+address2
-
+  
 // creating location and linking with company
-    const location = await db.location.create({
-        name,head,address,city,state,country,zipCode,email,phone,faxNumber,company:companyDoc._id
-    }) 
+    const location = await db.location.create(obj)
 
     // linking company with location
     await db.company.updateOne({
@@ -57,10 +69,10 @@ exports.addLocation = async function(req,res,next){
 
 
 exports.getAllLocation = async function(req,res,next){
-    const {id} = req.params
+    
 
     try {
-        let locations = await db.location.find({company:id}).populate({path:"company",select:"name"})
+        let locations = await db.location.find().populate([{path:"company",select:"name"},{path:"employee",}])
 
         if(!locations || !locations.length) return res.status(400).json({
             success:false,

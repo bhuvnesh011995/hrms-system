@@ -1,157 +1,480 @@
+import { useCallback, useEffect, useState } from "react";
 import { Modal } from "react-bootstrap";
+import { Controller, useForm } from "react-hook-form";
+import { useSettingContext } from "../../../Context/settingContext";
+import { addCompany, updateCompany } from "../../../Utility/API/company";
+import ReactSelect from "react-select";
 
-export default function AddNew({show,setShow}) {
-    return(
-        <Modal size="xl" show={show} onHide={() => setShow(false)}>
-          <Modal.Header closeButton>
-            <Modal.Title>Add New Empolyee</Modal.Title>
-          </Modal.Header>
+export default function AddNew({getCompanies, show, setShow,updateData=null,
+  setUpdate }) {
+  const { constants } = useSettingContext();
+  
+  const {
+    register,
+    reset,
+    control,
+    watch,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
+  const onSubmit = useCallback(async (data) => {
+    if(!updateData){
+      data.logo = data?.logo[0]
+      data.country = data?.country.value
+    let res = await addCompany(data)
+    if(res.status===201){
+        getCompanies()
+        setShow(false)
+    }else{
+        
+    }}else{
+      if(data.logo){
+        data.logo = data.logo[0]
+      }
+      data.country = data.country.value
+      let res = await updateCompany(updateData._id,data)
+      if(res.status===204){
+        getCompanies()
+        setShow(false)
+      }else{
+        console.log(res,"failed")
+      }
+    }
     
-          <Modal.Body>
-            <div className="row">
-                                                        <div className="col-md-6">
-                                                            <div className="mb-3">
-                                                                <label for="">Company Name</label>
-                                                                <input type="text" className="form-control" placeholder="Enter Company Name"/>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-6">
-                                                            <div className="mb-3">
-                                                                <label for="">Tax Number / EIN</label>
-                                                                <input type="text" className="form-control" placeholder="Enter Tax Number"/>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-3">
-                                                            <div className="mb-3">
-                                                                <label for="formrow-firstname-input" className="form-label">Company Type</label> <br/>
-                                                                <select className="form-control select2-templating " style={{width: "100%"}}>
-                                                                    <option value="CR">Corporation</option>
-                                                                    <option value="PR">Partnership</option>
-                                                                    <option value="LLC">Limited Liability Company</option>
-                                                                    <option value="SLP">Sole Proprietor</option>
-                                                                    <option value="PLC">Private Limited Company</option>
+  },[]);
 
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-3">
-                                                            <div className="mb-3">
-                                                                <label for="">Legal / Trading Name</label>
-                                                                <input type="text" className="form-control" placeholder="Enter Legal"/>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-6">
-                                                            <div className="mb-3">
-                                                                <label for="">Address Line 1</label>
-                                                                <input type="text" className="form-control" placeholder="Enter Address Line"/>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-3">
-                                                            <div className="mb-3">
-                                                                <label for="">Resignation Number</label>
-                                                                <input type="text" className="form-control" placeholder="Enter Resignation"/>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-3">
-                                                            <div className="mb-3">
-                                                                <label for="">Contact Number</label>
-                                                                <input type="text" className="form-control" placeholder="Enter Number"/>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-6">
-                                                            <div className="mb-3">
-                                                                <label for="">Address Line 2</label>
-                                                                <input type="text" className="form-control" placeholder="Enter Addres Line2"/>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-4">
-                                                            <div className="mb-3">
-                                                                <label for="">Email</label>
-                                                                <input type="email" className="form-control" placeholder="Enter Email Address"/>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-4">
-                                                            <div className="mb-3">
-                                                                <label for="">Website</label>
-                                                                <input type="text" className="form-control" placeholder="Enter Website Here"/>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-4">
-                                                            <div className="mb-3">
-                                                                <label for="formrow-firstname-input" className="form-label">Country</label> <br/>
-                                                                <select className="form-control select2-templating " style={{width: "100%"}}>
-                                                                    <option value="WB">West Bengal</option>
-                                                                    <option value="UK">Uttarakhand</option>
-                                                                    <option value="Bihar">Bihar</option>
-                                                                    <option value="MH">Maharastra</option>
-                                                                    <option value="DH">Delhi</option>
-
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-4">
-                                                            <div className="mb-3">
-                                                                <label for="">City</label>
-                                                                <input type="text" className="form-control" placeholder="Enter City"/>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-4">
-                                                            <div className="mb-3">
-                                                                <label for="">State / Province</label>
-                                                                <input type="text" className="form-control" placeholder="Enter State"/>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-4">
-                                                            <div className="mb-3">
-                                                                <label for="">Zip Code</label>
-                                                                <input type="text" className="form-control" placeholder="Enter Zipcode"/>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-4">
-                                                            <div className="mb-3">
-                                                                <label for="">Username</label>
-                                                                <input type="text" className="form-control" placeholder="Enter username"/>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-4">
-                                                            <div className="mb-3">
-                                                                <label for="">Password</label>
-                                                                <input type="password" className="form-control" placeholder="Enter password"/>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-4">
-                                                            <div className="mb-3">
-                                                                <label for="">Company Logo</label>
-                                                                <input type="file" className="form-control" placeholder=""/>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-6">
-                                                            <div className="mb-3">
-                                                                <label for="formrow-firstname-input" className="form-label">Currency</label> <br/>
-                                                                <select className="form-control select2-templating " style={{width: "100%"}}>
-                                                                    <option value="WB">S$SGD</option>
+  useEffect(()=>{
+    if(updateData){
+      for(let ele of [{value:"in",label:"India"},{value:"pak",label:"Pakistan"},{value:"ch",label:"China"},{value:"ru",label:"Russia"}]){
+        
+        if(updateData.country===ele.value){
+          updateData.country = ele;
+          break
+        }
+      }
+      reset(updateData)
+    }
+    return()=>{
+      setUpdate(null)
+    }
+  },[])
 
 
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-6">
-                                                            <div className="mb-3">
-                                                                <label for="formrow-firstname-input" className="form-label">Country</label> <br/>
-                                                                <select className="form-control select2-templating " style={{width: "100%"}}>
-                                                                    <option value="WB">(GMT + 8:00) Singapore</option>
-                                                                    <option value=""></option>
+  return (
+    <Modal size="xl" show={show} onHide={() => setShow(false)}>
+      <Modal.Header closeButton>
+        <Modal.Title>Add New Company</Modal.Title>
+      </Modal.Header>
 
-
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-          </Modal.Body>
-          <Modal.Footer>
-            <button type="button" className="btn btn-success">SAVE</button>
-
-          </Modal.Footer>
-        </Modal>
-    )
-};
+      <Modal.Body>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <div className="row">
+            <div className="col-md-6">
+              <div className="mb-3">
+                <label for="">Company Name</label>
+                <input
+                  type="text"
+                  className={
+                    errors.name ? "form-control is-invalid" : "form-control"
+                  }
+                  placeholder="Enter Company Name"
+                  {...register("name", {
+                    required: "this is required field",
+                    pattern: {
+                      value: /^[A-Za-z0-9&.,()'"/\-\s]{3,100}$/,
+                      message: "invalid name pattern",
+                    },
+                  })}
+                />
+                {errors?.name && (
+                  <span style={{ color: "red" }}>{errors.name.message}</span>
+                )}
+              </div>
+            </div>
+            <div className="col-md-6">
+              <div className="mb-3">
+                <label for="">Tax Number / EIN</label>
+                <input
+                  type="text"
+                  className={
+                    errors.taxNumber
+                      ? "form-control is-invalid"
+                      : "form-control"
+                  }
+                  placeholder="Enter Tax Number"
+                  {...register("taxNumber", {
+                    required: "this is required field",
+                  })}
+                />
+                {errors?.taxNumber && (
+                  <span style={{ color: "red" }}>
+                    {errors.taxNumber.message}
+                  </span>
+                )}
+              </div>
+            </div>
+            <div className="col-md-3">
+              <div className="mb-3">
+                <label for="formrow-firstname-input" className="form-label">
+                  Company Type
+                </label>{" "}
+                <br />
+                <select
+                  {...register("companyType", {
+                    required: "this is required field",
+                  })}
+                  className={
+                    errors.companyType
+                      ? "form-control select2-templating "
+                      : "form-control select2-templating"
+                  }
+                  style={{ width: "100%" }}
+                >
+                  <option value={""}>choose...</option>
+                  {constants?.company?.map((ele, i) => (
+                    <option key={i} value={ele._id}>
+                      {ele.name}
+                    </option>
+                  ))}
+                </select>
+                {errors?.companyType && (
+                  <span style={{ color: "red" }}>
+                    {errors.companyType.message}
+                  </span>
+                )}
+              </div>
+            </div>
+            <div className="col-md-3">
+              <div className="mb-3">
+                <label for="">Legal / Trading Name</label>
+                <input
+                  {...register("tradingName", {
+                    required: "this is required field",
+                  })}
+                  type="text"
+                  className="form-control"
+                  placeholder="Enter Legal"
+                />
+                {errors?.tradingName && (
+                  <span style={{ color: "red" }}>
+                    {errors.tradingName.message}
+                  </span>
+                )}
+              </div>
+            </div>
+            <div className="col-md-6">
+              <div className="mb-3">
+                <label for="">Address Line 1</label>
+                <input
+                  {...register("line1", {
+                    required: "this is required field",
+                  })}
+                  type="text"
+                  className="form-control"
+                  placeholder="Enter Address Line"
+                />
+                {errors?.line1 && (
+                  <span style={{ color: "red" }}>
+                    {errors.line1.message}
+                  </span>
+                )}
+              </div>
+            </div>
+            <div className="col-md-3">
+              <div className="mb-3">
+                <label for="">Resignation Number</label>
+                <input
+                  {...register("registrationNumber", {
+                    required: "this is required field",
+                  })}
+                  type="text"
+                  className="form-control"
+                  placeholder="Enter Resignation"
+                />
+                {errors?.registrationNumber && (
+                  <span style={{ color: "red" }}>
+                    {errors.registrationNumber.message}
+                  </span>
+                )}
+              </div>
+            </div>
+            <div className="col-md-3">
+              <div className="mb-3">
+                <label for="">Contact Number</label>
+                <input
+                  {...register("phone", {
+                    required: "this is required field",
+                    pattern:{value:/^[0-9]{10,15}$/,message:"wrong mobile format"}
+                  })}
+                  type="text"
+                  className="form-control"
+                  placeholder="Enter Number"
+                />
+                {errors?.phone && (
+                  <span style={{ color: "red" }}>
+                    {errors.phone.message}
+                  </span>
+                )}
+              </div>
+            </div>
+            <div className="col-md-6">
+              <div className="mb-3">
+                <label for="">Address Line 2</label>
+                <input
+                  {...register("line2", {
+                    required: "this is required field",
+                  })}
+                  type="text"
+                  className="form-control"
+                  placeholder="Enter Addres Line2"
+                />
+                {errors?.line2 && (
+                  <span style={{ color: "red" }}>
+                    {errors.line2.message}
+                  </span>
+                )}
+              </div>
+            </div>
+            <div className="col-md-4">
+              <div className="mb-3">
+                <label for="">Email</label>
+                <input
+                  {...register("email", {
+                    required: "this is required field",
+                    pattern:{value:/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,message:"wrong email format"}
+                  })}
+                  type="text"
+                  className="form-control"
+                  placeholder="Enter Email Address"
+                />
+                {errors?.email && (
+                  <span style={{ color: "red" }}>
+                    {errors.email.message}
+                  </span>
+                )}
+              </div>
+            </div>
+            <div className="col-md-4">
+              <div className="mb-3">
+                <label for="">Website</label>
+                <input
+                  {...register("website", {
+                    required: "this is required field",
+                    pattern:{value:/^(https?|ftp):\/\/[A-Za-z0-9.-]+(\/\S*)?$/,message:"wrong website format"}
+                  })}
+                  type="text"
+                  className="form-control"
+                  placeholder="Enter Website Here"
+                />
+                {errors?.website && (
+                  <span style={{ color: "red" }}>
+                    {errors.website.message}
+                  </span>
+                )}
+              </div>
+            </div>
+            <div className="col-md-4">
+              <div className="mb-3">
+                <label for="formrow-firstname-input" className="form-label">
+                  Country
+                </label>
+                <br />
+                <Controller
+                name="country"
+                control={control}
+                
+                rules={{required:"countruy is required"}}
+                render={({field})=>(
+                <ReactSelect  {...field} options={[{value:"in",label:"India"},{value:"pak",label:"Pakistan"},{value:"ch",label:"China"},{value:"ru",label:"Russia"}]} />
+                )}
+                />
+                {errors.country && <spans style={{color:"red"}}>{errors.country.message}</spans>}
+              </div>
+            </div>
+            <div className="col-md-4">
+              <div className="mb-3">
+                <label for="">City</label>
+                <input
+                  {...register("city", {
+                    required: "this is required field",
+                  })}
+                  type="text"
+                  className="form-control"
+                  placeholder="Enter City"
+                />
+                {errors?.city && (
+                  <span style={{ color: "red" }}>
+                    {errors.city.message}
+                  </span>
+                )}
+              </div>
+            </div>
+            <div className="col-md-4">
+              <div className="mb-3">
+                <label for="">State / Province</label>
+                <input
+                  {...register("state", {
+                    required: "this is required field",
+                  })}
+                  type="text"
+                  className="form-control"
+                  placeholder="Enter State"
+                />
+                {errors?.state && (
+                  <span style={{ color: "red" }}>
+                    {errors.state.message}
+                  </span>
+                )}
+              </div>
+            </div>
+            <div className="col-md-4">
+              <div className="mb-3">
+                <label for="">Zip Code</label>
+                <input
+                  {...register("zipCode", {
+                    required: "this is required field",
+                  })}
+                  type="text"
+                  className="form-control"
+                  placeholder="Enter Zipcode"
+                />
+                {errors?.zipCode && (
+                  <span style={{ color: "red" }}>
+                    {errors.zipCode.message}
+                  </span>
+                )}
+              </div>
+            </div>
+            <div className="col-md-4">
+              <div className="mb-3">
+                <label for="">Username</label>
+                <input
+                  {...register("username", {
+                    required: "this is required field",
+                  })}
+                  type="text"
+                  className="form-control"
+                  placeholder="Enter username"
+                />
+                {errors?.username && (
+                  <span style={{ color: "red" }}>
+                    {errors.username.message}
+                  </span>
+                )}
+              </div>
+            </div>
+            <div className="col-md-4">
+              {!updateData?<div className="mb-3">
+                <label for="">Password</label>
+                <input
+                  {...register("password", {
+                    required: "this is required field",
+                  })}
+                  type="password"
+                  className="form-control"
+                  placeholder="Enter password"
+                />
+                {errors?.password && (
+                  <span style={{ color: "red" }}>
+                    {errors.password.message}
+                  </span>
+                )}
+              </div>:<div className="mb-3">
+                <label for="">Password</label>
+                <input
+                  {...register("password")}
+                  type="password"
+                  className="form-control"
+                  placeholder="Enter password"
+                />
+              </div>}
+            </div>
+            <div className="col-md-4">
+              {!updateData?<div className="mb-3">
+                <label for="">Company Logo</label>
+                <input
+                  {...register("logo", {
+                    required: "this is required field",
+                  })}
+                  type="file"
+                  className="form-control"
+                  placeholder=""
+                />
+                {errors?.logo && (
+                  <span style={{ color: "red" }}>
+                    {errors.logo.message}
+                  </span>
+                )}
+              </div>:(
+                <div className="mb-3">
+                <label for="">Company Logo</label>
+                <input
+                  {...register("logo")}
+                  type="file"
+                  className="form-control"
+                  placeholder=""
+                />
+              </div>
+              )}
+            </div>
+            <div className="col-md-6">
+              <div className="mb-3">
+                <label for="formrow-firstname-input" className="form-label">
+                  Currency
+                </label>{" "}
+                <br />
+                <select
+                  {...register("currency", {
+                    required: "this is required field",
+                  })}
+                  className="form-control select2-templating "
+                  style={{ width: "100%" }}
+                  
+                >
+                  <option value="">choose...</option>
+                  {constants?.currency?.map((ele,i)=>{
+                    
+                    return <option  key={i} value={ele._id}>{ele.name+"("+ele.symbol+")"}</option>
+                  })}
+                </select>
+                {errors?.currency && (
+                  <span style={{ color: "red" }}>
+                    {errors.currency.message}
+                  </span>
+                )}
+              </div>
+            </div>
+            <div className="col-md-6">
+              <div className="mb-3">
+                <label for="formrow-firstname-input" className="form-label">
+                  Timezone
+                </label>{" "}
+                <br />
+                <select
+                  {...register("timeZone", {
+                    required: "this is required field",
+                  })}
+                  className="form-control select2-templating "
+                  style={{ width: "100%" }}
+                >
+                    <option value="">choose...</option>
+                  <option value="WB">(GMT + 8:00) Singapore</option>
+                  
+                </select>
+                {errors?.timeZone && (
+                  <span style={{ color: "red" }}>
+                    {errors.timeZone.message}
+                  </span>
+                )}
+              </div>
+            </div>
+          </div>
+          <button onMouseEnter={()=>{console.log(watch("country"))}} type="submit" className="btn btn-success">
+            SAVE
+          </button>
+        </form>
+      </Modal.Body>
+      <Modal.Footer></Modal.Footer>
+    </Modal>
+  );
+}

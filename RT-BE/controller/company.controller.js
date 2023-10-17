@@ -3,27 +3,7 @@ const bcrypt = require("bcrypt")
 const mongoose = require("mongoose")
 
 exports.addCompany = async function(req,res,next){
-    let companyObj = {
-        name:req.body.name,
-        taxNumber:req.body.taxNumber,
-        companyType:req.body.companyType,
-        tradingName:req.body.tradingName,
-        address:`${req.body.address1} ${req.body.address2}`,
-        registrationNumber:req.body.registrationNumber,
-        phone:req.body.phone,
-        email:req.body.email,
-        website:req.body.website,
-        country:req.body.country,
-        state:req.body.state,
-        city:req.body.city,
-        zipCode:req.body.zipCode,
-        username:req.body.username,
-        password:bcrypt.hashSync(req.body.password,8),
-        timeZone:req.body.timeZone,
-        currency:req.body.currency,
-        logo:req.file?.filename || null
-    };
-
+    
     let obj = {}
 
     if(req.body.name) obj = {...obj,name:req.body.name}
@@ -56,10 +36,7 @@ exports.addCompany = async function(req,res,next){
     try {
         await db.company.create(obj)
 
-        res.status(200).json({
-            success:true,
-            message:"company created successfully"
-        })
+        res.status(201).end()
     } catch (error) {
         console.log(error)
         res.status(500).json({
@@ -74,7 +51,7 @@ exports.addCompany = async function(req,res,next){
 
 exports.getAllCompany = async function(req,res,next){
     try {
-        let companies = await db.company.find({})
+        let companies = await db.company.find({}).select("-password").populate([{path:"currency"},{path:"companyType"}])
 
         res.status(200).json({
             success:true,
@@ -93,35 +70,41 @@ exports.getAllCompany = async function(req,res,next){
 
 
 exports.updateCompany = async function(req,res,next){
-    let companyObj = {};
+    
     try {
-        if(req.body.name) companyObj.name = req.body.name
-    if(req.body.taxNumber) companyObj.taxNumber = req.body.taxNumber
-    if(req.body.companyType) companyObj.companyType = req.body.companyType
-    if(req.body.tradingName) companyObj.tradingName = req.body.tradingName
-    if(req.body.address1 || req.body.address2) companyObj.address = `${req.body.address1} ${req.body.address2}`
-    if(req.body.registrationNumber) companyObj.registrationNumber = req.body.registrationNumber
-    if(req.body.phone) companyObj.phone = req.body.phone
-    if(req.body.email) companyObj.email = req.body.email
-    if(req.body.website) companyObj.website = req.body.website
-    if(req.body.country) companyObj.country = req.body.country
-    if(req.body.state) companyObj.state = req.body.state
-    if(req.body.city) companyObj.city = req.body.city
-    if(req.body.zipCode) companyObj.zipCode = req.body.zipCode
-    if(req.body.timeZone) companyObj.timeZone = req.body.timeZone
-    if(req.body.username) companyObj.username = req.body.username
-    if(req.body.currency) companyObj.currency = req.body.currency
-    if(req.file) companyObj.logo = req.file.filename
+        let obj = {}
 
+    if(req.body.name) obj = {...obj,name:req.body.name}
+    if(req.body.taxNumber) obj = {...obj,taxNumber:req.body.taxNumber}
+    if(req.body.companyType) obj = {...obj,companyType:req.body.companyType}
+    if(req.body.tradingName) obj = {...obj,tradingName:req.body.tradingName}
+    if(req.body.line1) obj = {...obj,address :{...obj.address,line1:req.body.line1} }
+    if(req.body.line2) obj = {...obj,address :{...obj.address,line2:req.body.line2} }
+
+    if(req.body.country) obj = {...obj,address :{...obj.address,country:req.body.country} }
+
+    if(req.body.state) obj = {...obj,address :{...obj.address,state:req.body.state} }
+
+    if(req.body.city) obj = {...obj,address :{...obj.address,city:req.body.city} }
+
+    if(req.body.zipCode) obj = {...obj,address :{...obj.address,zipCode:req.body.zipCode} }
+
+    if(req.body.registrationNumber) obj = {...obj,registrationNumber:req.body.registrationNumber}
+    if(req.body.phone) obj = {...obj,phone:req.body.phone}
+    if(req.body.email) obj = {...obj,email:req.body.email}
+    if(req.body.website) obj = {...obj,website:req.body.website}
+    if(req.body.username) obj = {...obj,username:req.body.username}
+    if(req.body.password) obj = {...obj,password:bcrypt.hashSync(req.body.password,8),}
+    if(req.body.timeZone) obj = {...obj,timeZone:req.body.timeZone}
+    if(req.body.currency) obj = {...obj,currency:req.body.currency}
+    if(req.file) obj = {...obj,logo:req.file.filename}
+    
 
     await db.company.findOneAndUpdate({_id:req.params.id},{
-        $set : companyObj
+        $set : obj
     })
 
-    res.status(200).json({
-        success:true,
-        message:"company details updated successfully"
-    })
+    res.status(204).end()
 
     } catch (error) {
         console.log(error)
@@ -131,7 +114,6 @@ exports.updateCompany = async function(req,res,next){
             error
         })
     }
-
 }
 
 
@@ -139,40 +121,27 @@ exports.deleteCompany = async function(req,res,next){
     let {id} = req.params
     try {
 
-        let company = await db.company.findOne({_id:id}).select("logo")
-        if(!company) return res.status(400).json({
+        let isExist = await db.company.exists({_id:id})
+        if(!isExist) return res.status(400).json({
             success:false,
             message:"no company found"
         })
-        let dbs = mongoose.connection.db
-        let gridfsBucket = new mongoose.mongo.GridFSBucket(dbs,{
-            bucketName: 'uploads'
-          })
         
 
-        let file = await gridfsBucket.find({filename:company.logo}).toArray()
-        if(file || flie.length){
-            //deleting company logo
-            gridfsBucket.delete(file[0]._id,(err,gridStore)=>{
-                if(err) console.log(err)
-            })
-        }
+        
 
         // deleting company
         await db.company.findOneAndDelete({_id:id})
         // deleting departments
-        await db.department.deleteMany({company:id})
+        // await db.department.deleteMany({company:id})
 
         // deleting subdepartment 
-        await db.subdepartment.deleteMany({company:id})
+        // await db.subdepartment.deleteMany({company:id})
 
         // deleting locations
-        await db.location.deleteMany({company:id})
+        // await db.location.deleteMany({company:id})
 
-        res.status(200).json({
-            success:true,
-            message : "company deleted successfully and its respected things"
-        })
+        res.status(204).end()
         
     } catch (error) {
         console.log(error)
