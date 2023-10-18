@@ -4,10 +4,12 @@ import { Controller, useForm } from "react-hook-form";
 import { useSettingContext } from "../../../Context/settingContext";
 import { addCompany, updateCompany } from "../../../Utility/API/company";
 import ReactSelect from "react-select";
+import axios from "axios";
 
 export default function AddNew({getCompanies, show, setShow,updateData=null,
   setUpdate }) {
   const { constants } = useSettingContext();
+  const [countries,setCountries] = useState([])
   
   const {
     register,
@@ -43,17 +45,31 @@ export default function AddNew({getCompanies, show, setShow,updateData=null,
     
   },[]);
 
+  const getAllCountries = useCallback(async(url)=>{
+    try {
+      let response = await axios.get(url)
+      if(response.status===200){
+        let arr = response.data?.map(ele=>({value:ele.name.common,label:ele.name.common})).sort((a,b)=>{
+          let A = a.label.toUpperCase()
+          let B = b.label.toUpperCase()
+          if(A<B) return -1
+          else return 1
+        })
+
+        setCountries(arr)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  })
+
   useEffect(()=>{
     if(updateData){
-      for(let ele of [{value:"in",label:"India"},{value:"pak",label:"Pakistan"},{value:"ch",label:"China"},{value:"ru",label:"Russia"}]){
-        
-        if(updateData.country===ele.value){
-          updateData.country = ele;
-          break
-        }
-      }
+      updateData.country = {value:updateData.country,label:updateData.country}
       reset(updateData)
     }
+
+    getAllCountries("https://restcountries.com/v3.1/all")
     return()=>{
       setUpdate(null)
     }
@@ -72,20 +88,19 @@ export default function AddNew({getCompanies, show, setShow,updateData=null,
             <div className="col-md-6">
               <div className="mb-3">
                 <label for="">Company Name</label>
-                <input
-                  type="text"
-                  className={
-                    errors.name ? "form-control is-invalid" : "form-control"
-                  }
-                  placeholder="Enter Company Name"
-                  {...register("name", {
-                    required: "this is required field",
-                    pattern: {
+                <Controller control={control} name="name" rules={{required:"this is required field",pattern:{
                       value: /^[A-Za-z0-9&.,()'"/\-\s]{3,100}$/,
                       message: "invalid name pattern",
-                    },
-                  })}
-                />
+                    },}} render={({field})=>(
+                    <input
+                    {...field}
+                    type="text"
+                    className={
+                      errors.name ? "form-control is-invalid" : "form-control"
+                    }
+                    placeholder="Enter Company Name"
+                  />)}/>
+                
                 {errors?.name && (
                   <span style={{ color: "red" }}>{errors.name.message}</span>
                 )}
@@ -285,7 +300,7 @@ export default function AddNew({getCompanies, show, setShow,updateData=null,
                 
                 rules={{required:"countruy is required"}}
                 render={({field})=>(
-                <ReactSelect  {...field} options={[{value:"in",label:"India"},{value:"pak",label:"Pakistan"},{value:"ch",label:"China"},{value:"ru",label:"Russia"}]} />
+                <ReactSelect  {...field} options={countries} />
                 )}
                 />
                 {errors.country && <spans style={{color:"red"}}>{errors.country.message}</spans>}

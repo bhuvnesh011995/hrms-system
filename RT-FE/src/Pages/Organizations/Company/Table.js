@@ -18,13 +18,9 @@ export default function Table() {
         if(res.status ===200){
             
             let companies = res.data?.companies.map(ele=>{
-                console.log(ele)
+                
                 const {address,...newObj} = ele
                 let obj = {...address,...newObj}
-                console.log(address,"address")
-                
-                console.log(newObj,"new obj")
-                console.log(obj," obj")
                 return obj
             })
             setData(companies)
@@ -51,7 +47,7 @@ export default function Table() {
              header: 'Country',
            },
  {
-             accessorFn: (row)=>`${row?.currency.name}`,
+             accessorFn: (row)=>`${row?.currency.code} (${row?.currency.symbol})`,
              header: 'Currency',
            },
    {
@@ -157,7 +153,7 @@ export default function Table() {
                  </IconButton>
                    <IconButton
                    color="error"
-                   onClick={async () => {await deleteCompany(row.original.id);getCompanies()}}
+                   onClick={async () => {await deleteCompany(row.original._id);getCompanies()}}
                  >
                    <DeleteIcon />
                  </IconButton>

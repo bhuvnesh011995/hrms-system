@@ -63,9 +63,9 @@ const schema = new Schema({
     currency:{
         type:Schema.Types.ObjectId,ref:"currencyConstant"
     },
-    department:[{type:Schema.Types.ObjectId,ref:"department"}],
+    // department:[{type:Schema.Types.ObjectId,ref:"department"}],
 
-    location:[{type:Schema.Types.ObjectId,ref:"location"}]
+    // location:[{type:Schema.Types.ObjectId,ref:"location"}]
 },{
     collection:"company",
     timestamps:true

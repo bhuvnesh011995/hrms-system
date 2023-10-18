@@ -4,68 +4,68 @@ const bcrypt = require("bcrypt")
 
 exports.addEmployee = async function(req,res,next){
     try {
-        const {company,location,department,subdepartment,designation,shift} = req.body
+        // const {company,location,department,subdepartment,designation,shift} = req.body
 
-        if(! await utility.companyExist(company)) return res.status(400).json({
-            success:false,
-            message:"company does not exist"
-        })
+        // if(! await utility.companyExist(company)) return res.status(400).json({
+        //     success:false,
+        //     message:"company does not exist"
+        // })
 
-        let companyDoc = await db.company.findOne({_id:company})
+        // let companyDoc = await db.company.findOne({_id:company})
 
-        if(!companyDoc.department.includes(department)) return res.status(400).json({
-            success:false,
-            message:"department not available in company"
-        })
-
-
-        if(! await utility.departmentExist(department)) return res.status(400).json({
-            success:false,
-            message:"department does not exist"
-        })
+        // if(!companyDoc.department.includes(department)) return res.status(400).json({
+        //     success:false,
+        //     message:"department not available in company"
+        // })
 
 
-        let departmentDoc = await db.department.findOne({_id:department})
+        // if(! await utility.departmentExist(department)) return res.status(400).json({
+        //     success:false,
+        //     message:"department does not exist"
+        // })
 
 
-
-        if(!departmentDoc.subdepartment.includes(subdepartment)) return res.status(400).json({
-            success:false,
-            message:"subdepartment not available in department"
-        })
+        // let departmentDoc = await db.department.findOne({_id:department})
 
 
 
-        if(! await utility.subdepartmetnExist(subdepartment)) return res.status(400).json({
-            success:false,
-            message:"subdepartment does not exist"
-        })
+        // if(!departmentDoc.subdepartment.includes(subdepartment)) return res.status(400).json({
+        //     success:false,
+        //     message:"subdepartment not available in department"
+        // })
 
-        if(!companyDoc.location.includes(location)) return res.status(400).json({
-            success:false,
-            message:"location not available in company"
-        })
 
-        if(! await utility.locationExist(location)) return res.status(400).json({
-            success:false,
-            message:"location does not exist"
-        })
 
-        let designationDoc = await db.designation.findOne({_id:designation,company})
+        // if(! await utility.subdepartmetnExist(subdepartment)) return res.status(400).json({
+        //     success:false,
+        //     message:"subdepartment does not exist"
+        // })
 
-        if(!designationDoc) return res.status(400).json({
-            success:false,
-            message:"designation does not exist"
-        })
+        // if(!companyDoc.location.includes(location)) return res.status(400).json({
+        //     success:false,
+        //     message:"location not available in company"
+        // })
 
-        let shiftDoc = await db.officeShift.findOne({_id:shift,company})
+        // if(! await utility.locationExist(location)) return res.status(400).json({
+        //     success:false,
+        //     message:"location does not exist"
+        // })
 
-        if(!shiftDoc) return res.status(400).json({
-            success:false,
-            message:"shift does not exist"
-        })
+        // let designationDoc = await db.designation.findOne({_id:designation,company})
 
-        let obj = {company,location,department,subdepartment,designation,shift}
+        // if(!designationDoc) return res.status(400).json({
+        //     success:false,
+        //     message:"designation does not exist"
+        // })
+
+        // let shiftDoc = await db.officeShift.findOne({_id:shift,company})
+
+        // if(!shiftDoc) return res.status(400).json({
+        //     success:false,
+        //     message:"shift does not exist"
+        // })
+
+        let obj = {company:req.body.company}
 
         if(req.body.fName ) obj.fName = req.body.fName 
 
@@ -109,18 +109,14 @@ exports.addEmployee = async function(req,res,next){
         await db.employee.create(obj)
 
 
-        res.status(200).json({
-            success:true,
-            message:"employee added"
-        })
+        res.status(201).end()
 
     } catch (error) {
         console.log(error)
 
         res.status(500).json({
             success:false,
-            message:"error occoured",
-            error:error
+            message:"internal error occoured",
         })
     }
 }
@@ -129,15 +125,9 @@ exports.addEmployee = async function(req,res,next){
 
 exports.getAllEmployee = async function(req,res,next){
     try {
-        const {id} = req.params
-        if(! await utility.companyExist(id)) return res.status(400).json({
-            success:false,
-            message:"company does not exist"
-        })
+       
 
-        let employees = await db.employee.find({company:id}).select("-password")
-
-        if(!employees || !employees.length) return res.status(204).end()
+        let employees = await db.employee.find({}).select("-password").populate("company")
 
         res.status(200).json({
             success:true,
@@ -208,7 +198,7 @@ exports.updateEmployee = async function(req,res,next){
         if(req.body.vaccination) obj.vaccination = req.body.vaccination
 
         if(req.body.status) obj.status = req.body.status
-        
+        if(req.body.company) obj.company = req.body.company
         await db.employee.updateOne({_id:id},{
             $set:obj
         })
@@ -260,5 +250,21 @@ exports.deleteEmployee = async function(req,res,next){
             message:"error occoured",
             error:error
         })
+    }
+}
+
+
+exports.getEmployeeByCompany = async (req,res,next)=>{
+    try {
+        const {id} = req.params
+
+        let employees = await db.employee.find({company:id})
+
+        res.status(200).json(employees)
+
+    } catch (error) {
+        console.log(error)
+        
+        res.status(500).json({success:false,message:"internal error occured"})
     }
 }

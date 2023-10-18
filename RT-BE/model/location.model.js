@@ -7,6 +7,7 @@ const {Schema,model} = require("mongoose")
 const schema = new Schema({
     company:{type:Schema.Types.ObjectId,ref:"company"},
     head:{type:Schema.Types.ObjectId,ref:"employee"},
+    addedBy:{type:Schema.Types.ObjectId,ref:"employee"},
     name:{
         type:String
     },

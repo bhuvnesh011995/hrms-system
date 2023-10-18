@@ -1,37 +1,70 @@
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 
 
 import MaterialReactTable from "material-react-table";
 import { Box, IconButton } from "@mui/material";
 import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import AddNew from "./AddNew";
+import { deleteLocation, getAllLocation } from "../../../Utility/API/location";
+import View from "./View";
 
 
 export default function Table() {
     const [isOpen,setIsOpen] = useState(false)
+    const [data,setData] = useState([])
+    const [isLoading,setIsLoading] = useState(false)
+    const [isViewOpen,setIsView] = useState(false)
+    const [viewData,setViewData] = useState(null)
+    const [updateData,setUpdateData] = useState(null)
+
+
+    const getLocations = useCallback(async ()=>{
+      
+        setIsLoading(true)
+        let res = await getAllLocation()
+
+        if(res.status===200){
+           
+            let arr = res.data.locations.map(ele=>{
+                let {address,...restData} = ele
+                let obj = {...address,...restData}
+                return obj
+            })
+            
+
+            setData(arr)
+        }else{
+            console.log(res)
+        }
+    },[])
      const columns = useMemo(() => [
      {
-         accessorKey: 'LocationName',
-         header: 'Location Name',                                      
-                                              
+         accessorKey: 'name',
+         header: 'Location Name',                        
        },
-
-         {                                                   
-
-             accessorKey: 'LocationHead',
+         {
+             accessorFn: (row)=>`${row.head.fName} ${row.head.lName}`,
+             id:"head",
              header: 'Location Head',
            },
-         {                                                   
-
-             accessorKey: 'City',
+         {
+             accessorKey: 'city',
              header: 'City',
            },
-         {                                                   
-
-             accessorKey: 'Country',
+         {
+             accessorKey: 'country',
              header: 'Country',
-           },    
+           },
+           {
+            accessorFn: (row)=>`${row.addedBy.fName} ${row.addedBy.lName}`,
+            id:"addedBy",
+               header: 'Added By',
+             },  
      ],[])
+
+     useEffect(()=>{
+        getLocations()
+     },[])
 
     return(
         <div className="row">
@@ -97,7 +130,7 @@ export default function Table() {
 
   <MaterialReactTable
  columns={columns}
- data={[]}
+ data={data || []}
  enableColumnActions={false}
  enableColumnFilters={false}
  enableSorting={false}
@@ -110,17 +143,33 @@ export default function Table() {
                <Box
                  sx={{ display: "flex", flexWrap: "nowrap", gap: "8px" }}
                >
+                <IconButton
+                   color="info"
+                   onClick={() => {
+                    setViewData(row.original)
+                    setIsView(true)
+
+                }}
+                 >
+                   <i className="fas fa-eye"></i>
+                 </IconButton>
                    <IconButton
                    color="secondary"
                    onClick={() => {
-                     table.setEditingRow(row);
+                     setUpdateData(row.original)
+                     setIsOpen(true)
                    }}
                  >
                    <EditIcon />
                  </IconButton>
                    <IconButton
                    color="error"
-                   onClick={() => {}}
+                   onClick={async () => {
+                    let response = await deleteLocation(row.original._id)
+                    if(response.status===204){
+                        getLocations()
+                    }
+                   }}
                  >
                    <DeleteIcon />
                  </IconButton>
@@ -143,241 +192,12 @@ export default function Table() {
  }}
  /> 
  
-{isOpen && <AddNew show={isOpen} setShow={setIsOpen}/>}
-					  
-
-                    {/* <!-- The Modal --> */}
-                    <div className="modal fade" id="myModal">
-                        <div className="modal-dialog modal-lg">
-                            <div className="modal-content">
-
-                                {/* <!-- Modal Header --> */}
-                                <div className="modal-header">
-                                    <h4 className="modal-title">Add New Location</h4>
-                                    <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
-
-                                {/* <!-- Modal body --> */}
-                                <div className="modal-body">
-                                    <div className="row">
-                                        <div className="col-md-4">
-                                            <div className="mb-3">
-                                                <label for="formrow-firstname-input" className="form-label">Company</label> <br/>
-                                                <select className="form-control select2-templating " style={{width: "100%"}}>
-                                                    <option value="KMAC">KMAC International Pte Ltd</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div className="col-md-4">
-                                            <div className="mb-3">
-                                                <label for="formrow-firstname-input" className="form-label">Location Head</label> <br/>
-                                                <select className="form-control select2-templating " style={{width: "100%"}}>
-                                                    <option value="null">No Result Found</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div className="col-md-4">
-                                            <div className="mb-3">
-                                                <label>Location Name</label>
-                                                <input type="text" className="form-control" placeholder="Enter Location Name"/>
-                                            </div>
-                                        </div>
-                                        <div className="col-md-6">
-                                            <div className="mb-3">
-                                                <label for="">Address Line 1</label>
-                                                <input type="text" className="form-control" placeholder="Address Line 1"/>
-                                            </div>
-                                        </div>
-                                        <div className="col-md-6">
-                                            <div className="mb-3">
-                                                <label for="">Address Line 2</label>
-                                                <input type="text" className="form-control" placeholder="Address Line 2"/>
-                                            </div>
-                                        </div>
-                                        <div className="col-md-3">
-                                            <div className="mb-3">
-                                                <label for="">City</label>
-                                                <input type="text" className="form-control" placeholder="Enter City Name"/>
-                                            </div>
-                                        </div>
-                                        <div className="col-md-3">
-                                            <div className="mb-3">
-                                                <label for="">State / Province</label>
-                                                <input type="text" className="form-control" placeholder="Enter Your State"/>
-
-                                            </div>
-                                        </div>
-                                        <div className="col-md-3">
-                                            <div className="mb-3">
-                                                <label for="">Zip</label>
-                                                <input type="text" className="form-control" placeholder="Enter zip code"/>
-                                            </div>
-                                        </div>
-                                        <div className="col-md-3">
-                                            <div className="mb-3">
-                                                <label for="formrow-firstname-input" className="form-label">Country</label> <br/>
-                                                <select className="form-control select2-templating " style={{width: "100%"}}>
-                                                    <option value="IN">India</option>
-                                                    <option value="CN">China</option>
-                                                    <option value="BG">Bangladesh</option>
-                                                    <option value="MY">Malaysia</option>
-                                                    <option value="AUS">Australia</option>
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div className="col-md-4">
-                                            <div className="mb-3">
-                                                <label for="">Email</label>
-                                                <input type="email" className="form-control" placeholder="Enter Your Email"/>
-                                            </div>
-                                        </div>
-                                        <div className="col-md-4">
-                                            <div className="mb-3">
-                                                <label for="">Phone Number</label>
-                                                <input type="text" className="form-control" placeholder="Enter your phone"/>
-                                            </div>
-                                        </div>
-                                        <div className="col-md-4">
-                                            <div className="mb-3">
-                                                <label for="">Fax Number</label>
-                                                <input type="text" className="form-control" placeholder="Enter Fax Number"/>
-                                            </div>
-                                        </div>
-
-
-
-                                    </div>
-                                </div>
-
-                                {/* <!-- Modal footer --> */}
-                                <div className="modal-footer">
-                                    <button type="button" className="btn btn-success">SAVE</button>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* <!-- this is modal view--> */}
-
-                    {/* <!-- The Modal --> */}
-                    <div className="modal fade" id="myModal2">
-                        <div className="modal-dialog">
-                            <div className="modal-content">
-
-                                {/* <!-- Modal Header --> */}
-                                <div className="modal-header">
-                                    <h4 className="modal-title">View Company</h4>
-                                    <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
-
-                                {/* <!-- Modal body --> */}
-                                <div className="modal-body">
-                                    <div className="row mb-2">
-                                        <div className="col-md-4">
-                                            <p><strong>Company</strong></p>
-                                        </div>
-                                        <div className="col-md-8">
-                                            <p>KMAC International Pte Ltd</p>
-                                        </div>
-                                    </div>
-                                    <div className="row mb-2">
-                                        <div className="col-md-4">
-                                            <p><strong>Location Name</strong></p>
-                                        </div>
-                                        <div className="col-md-8">
-                                            <p>HQ</p>
-                                        </div>
-                                    </div>
-                                    <div className="row mb-2">
-                                        <div className="col-md-4">
-                                            <p><strong>Location Head</strong></p>
-                                        </div>
-                                        <div className="col-md-8">
-                                            <p></p>
-                                        </div>
-                                    </div>
-                                    <div className="row mb-2">
-                                        <div className="col-md-4">
-                                            <p><strong>Email</strong></p>
-                                        </div>
-                                        <div className="col-md-8">
-                                            <p>humanresource@kmac.com.sg</p>
-                                        </div>
-                                    </div>
-                                    <div className="row mb-2">
-                                        <div className="col-md-4">
-                                            <p><strong>Phone</strong></p>
-                                        </div>
-                                        <div className="col-md-8">
-                                            <p>69093822</p>
-                                        </div>
-                                    </div>
-                                    <div className="row mb-2">
-                                        <div className="col-md-4">
-                                            <p><strong>Fax Number</strong></p>
-                                        </div>
-                                        <div className="col-md-8">
-                                            <p></p>
-                                        </div>
-                                    </div>
-                                    <div className="row mb-2">
-                                        <div className="col-md-4">
-                                            <p><strong> Address</strong></p>
-                                        </div>
-                                        <div className="col-md-8">
-                                            <p> 8 Boon Lay Way #05-10 8@Tradehub 21</p>
-                                        </div>
-                                    </div>
-                                    <div className="row mb-2">
-                                        <div className="col-md-4">
-                                            <p><strong>City</strong></p>
-                                        </div>
-                                        <div className="col-md-8">
-                                            <p>Singapore</p>
-                                        </div>
-                                    </div>
-                                    <div className="row mb-2">
-                                        <div className="col-md-4">
-                                            <p><strong>State / Province</strong></p>
-                                        </div>
-                                        <div className="col-md-8">
-                                            <p></p>
-                                        </div>
-                                    </div>
-                                    <div className="row mb-2">
-                                        <div className="col-md-4">
-                                            <p><strong>Zip Code</strong></p>
-                                        </div>
-                                        <div className="col-md-8">
-                                            <p>609964</p>
-                                        </div>
-                                    </div>
-                                    <div className="row mb-2">
-                                        <div className="col-md-4">
-                                            <p><strong>Country</strong></p>
-                                        </div>
-                                        <div className="col-md-8">
-                                            <p>Singapore</p>
-                                        </div>
-                                    </div>
-
-
-
-                                </div>
-
-                                {/* <!-- Modal footer --> */}
-                                <div className="modal-footer">
-                                    <button type="button" className="btn btn-danger" data-bs-dismiss="modal">Close</button>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
+{isOpen && <AddNew updateData={updateData} setUpdateData={setUpdateData} getLocations={getLocations} show={isOpen} setShow={setIsOpen}/>}
+			{isViewOpen && <View viewData={viewData} setViewData={setViewData} show={isViewOpen} setShow={setIsView} />}
                 </div>
             </div>
         </div>
-        {/* <!-- end col --> */}
+     
     </div>
     )
 };
