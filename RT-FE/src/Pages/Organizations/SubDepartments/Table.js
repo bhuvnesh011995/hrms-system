@@ -1,193 +1,156 @@
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import AddNew from "./AddNew";
 import MaterialReactTable from "material-react-table";
 import { Box, IconButton } from "@mui/material";
 import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
+import { deleteSubdepartment, getAllSubdepartments } from "../../../Utility/API/subdepartment";
+import View from "./View";
 
 export default function Table() {
-    const [isOpen,setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
+  const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [viewData, setViewData] = useState(null);
+  const [isViewOpen, setIsViewOpen] = useState(false);
 
-     const columns = useMemo(() => [
-     {
-         accessorKey: 'Name',
-         header: 'Name',                                      
-                                              
-       },
+  const getSubdepartments = useCallback(async () => {
+    setIsLoading(true);
+    let res = await getAllSubdepartments();
+    if (res.status === 200) {
+      setData(res.data);
+      setIsLoading(false);
+    } else {
+      console.log(res);
+      setIsLoading(false);
+      setIsError(true);
+    }
+  }, []);
 
-         {                                                   
+  useEffect(() => {
+    getSubdepartments();
+  }, []);
 
-             accessorKey: 'MainDepartment',
-             header: 'Main Department',
-           },
-         {                                                   
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: "name",
+        header: "Name",
+      },
 
-             accessorKey: 'Created At',
-             header: 'Created At',
-           },
-     ],[])
-    return(
-        <div className="row">
-                        <div className="col-12">
-                            <div className="card">
-                                <div className="card-body">
-                                    <div className="row">
-                                        <div className="col-md-6 mb-3">
-                                            <h4>List All Sub Departments</h4>
-                                        </div>
-                                        <div className="col-md-6 mb-3" style={{textAlign: "right"}}>
-                                            <button className="btn btn-primary text-right" onClick={()=>setIsOpen(true)} >Add New</button>
-                                        </div>
-                                    </div>
+      {
+        accessorFn: (row) => `${row?.department.name}`,
+        id: "department",
+        header: "Main Department",
+      },
+      {
+        accessorFn: (row) => `${row?.company.name}`,
+        id: "company",
+        header: "Company",
+      },
+    ],
+    []
+  );
 
+  return (
+    <div className="row">
+      <div className="col-12">
+        <div className="card">
+          <div className="card-body">
+            <div className="row">
+              <div className="col-md-6 mb-3">
+                <h4>List All Sub Departments</h4>
+              </div>
+              <div className="col-md-6 mb-3" style={{ textAlign: "right" }}>
+                <button
+                  className="btn btn-primary text-right"
+                  onClick={() => setIsOpen(true)}
+                >
+                  Add New
+                </button>
+              </div>
+            </div>
 
-                                    <p className="card-title-desc" style={{textAlign: "right"}}>
-                                        <button className="btn btn-info text-right">
-                                            CSV
-                                        </button>
-                                        <button className="btn btn-info text-right">
-                                            Excel
-                                        </button>
-                                        <button className="btn btn-info text-right">
-                                            PDF
-                                        </button>
-                                        <button className="btn btn-info text-right">
-                                            Print
-                                        </button>
-                                    </p>
-                                    {/* <table id="datatable" className="table table-bordered dt-responsive nowrap w-100">
-                                        <thead>
-                                            <tr>
-                                                <th> Name</th>
-                                                <th>Main Department</th>
-                                                <th>Created At</th>
-                                                <th>Action</th>
+            <p className="card-title-desc" style={{ textAlign: "right" }}>
+              <button className="btn btn-info text-right">CSV</button>
+              <button className="btn btn-info text-right">Excel</button>
+              <button className="btn btn-info text-right">PDF</button>
+              <button className="btn btn-info text-right">Print</button>
+            </p>
 
-
-                                            </tr>
-                                        </thead>
-
-                                        <tbody>
-                                            <tr>
-                                                <td>Residential Cleaner</td>
-                                                <td>Operation (site)</td>
-                                                <td></td>
-                                                <td>
-                                                    <button className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal"><i className="fas fa-edit" style={{fontSize:"10px"}}></i></button>
-                                                    <button className="btn btn-danger"><i className="fas fa-trash-alt" style={{fontSize:"10px"}}></i></button>
-                                                </td>
-
-                                            </tr>
-
-
-                                        </tbody>
-                                    </table> */}
-
-
-
-  <MaterialReactTable
- columns={columns}
- data={[]}
- enableColumnActions={false}
- enableColumnFilters={false}
- enableSorting={false}
- enableTopToolbar={false}
- enableRowActions
-             positionActionsColumn="last"
-             enableRowNumbers
-             rowNumberMode="static"
-             renderRowActions={({ row, table }) => (
-               <Box
-                 sx={{ display: "flex", flexWrap: "nowrap", gap: "8px" }}
-               >
-                   <IconButton
-                   color="secondary"
+            <MaterialReactTable
+              columns={columns}
+              data={data}
+              enableColumnActions={false}
+              enableColumnFilters={false}
+              enableSorting={false}
+              enableTopToolbar={false}
+              enableRowActions
+              positionActionsColumn="last"
+              enableRowNumbers
+              rowNumberMode="static"
+              renderRowActions={({ row, table }) => (
+                <Box sx={{ display: "flex", flexWrap: "nowrap", gap: "8px" }}>
+                  <IconButton
+                   color="info"
                    onClick={() => {
-                     table.setEditingRow(row);
-                   }}
+                    setViewData(row.original)
+                    setIsViewOpen(true)
+
+                }}
                  >
-                   <EditIcon />
+                   <i className="fas fa-eye"></i>
                  </IconButton>
-                   <IconButton
-                   color="error"
-                   onClick={() => {}}
-                 >
-                   <DeleteIcon />
-                 </IconButton>
-               </Box>
-             )}
- muiTableProps={{
-   sx: {
-     border: '1px solid rgba(81, 81, 81, 1)',
-   },
- }}
- muiTableHeadCellProps={{
-   sx: {
-     border: '1px solid rgba(81, 81, 81, 1)',
-   },
- }}
- muiTableBodyCellProps={{
-   sx: {
-     border: '1px solid rgba(81, 81, 81, 1)',
-   },
- }}
- /> 
+                  <IconButton
+                    color="secondary"
+                    onClick={() => {
+                      setViewData({id:row.original._id,name:row.original.name,company:row.original?.company?._id,department:row.original?.department?._id})
+                      setIsOpen(true)
+                    }}
+                  >
+                    <EditIcon />
+                  </IconButton>
+                  <IconButton color="error" onClick={async () => {
+                    let res = await deleteSubdepartment(row.original._id)
+                    if(res.status===204){
+                      getSubdepartments()
+                    }
+                  }}>
+                    <DeleteIcon />
+                  </IconButton>
+                </Box>
+              )}
+              muiTableProps={{
+                sx: {
+                  border: "1px solid rgba(81, 81, 81, 1)",
+                },
+              }}
+              muiTableHeadCellProps={{
+                sx: {
+                  border: "1px solid rgba(81, 81, 81, 1)",
+                },
+              }}
+              muiTableBodyCellProps={{
+                sx: {
+                  border: "1px solid rgba(81, 81, 81, 1)",
+                },
+              }}
+            />
 
- 
-{isOpen && <AddNew show={isOpen} setShow={setIsOpen}/>}
-                                    {/* <!-- The Modal --> */}
-                                    <div className="modal fade" id="myModal">
-                                        <div className="modal-dialog modal-lg">
-                                            <div className="modal-content">
+            {isOpen && (
+              <AddNew
+                viewData={viewData}
+                setViewData={setViewData}
+                getSubdepartments={getSubdepartments}
+                show={isOpen}
+                setShow={setIsOpen}
+              />
+            )}
+            {isViewOpen && <View viewData={viewData} setViewData={setViewData} show={isViewOpen} setShow={setIsViewOpen} />}
 
-                                                {/* <!-- Modal Header --> */}
-                                                <div className="modal-header">
-                                                    <h4 className="modal-title">Add New Sub Department</h4>
-                                                    <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
-                                                </div>
-
-                                                {/* <!-- Modal body --> */}
-                                                <div className="modal-body">
-                                                    <div className="row">
-                                                        <div className="col-md-12">
-                                                            <div className="mb-3">
-                                                                <label for="">Name</label>
-                                                                <input type="text" className="form-control" placeholder="Enter Your Name"/>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-12">
-                                                            <div className="mb-3">
-                                                                <label for="formrow-firstname-input" className="form-label">Main Department</label> <br/>
-                                                                <select className="form-control select2-templating " style={{width: "100%"}}>
-                                                                    <option value="HR">HR</option>
-                                                                    <option value="Operation">Operation</option>
-                                                                    <option value="Account">Account</option>
-                                                                    <option value="Sales">Sales</option>
-                                                                    <option value="Diretor">Director</option>
-                                                                    <option value="Operation (site)">Operation (site)</option>
-
-
-
-                                                                </select>
-                                                            </div>
-                                                        </div>
-
-                                                    </div>
-                                                </div>
-
-                                                {/* <!-- Modal footer --> */}
-                                                <div className="modal-footer">
-                                                    <button type="button" className="btn btn-success">SAVE</button>
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                    </div>
-
-
-                                </div>
-                            </div>
-                        </div>
-                        {/* <!-- end col --> */}
-                    </div>
-    )
-};
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

@@ -5,12 +5,13 @@ import { Controller, useForm } from "react-hook-form";
 import ReactSelect from "react-select";
 import { getAllcompany } from "../../../Utility/API/company";
 import { getEmployeeByCompany } from "../../../Utility/API/employee";
-import { addLocation } from "../../../Utility/API/location";
+import { addLocation, updateLocation } from "../../../Utility/API/location";
 
 export default function AddNew({updateData, setUpdateData, getLocations,show, setShow }) {
   const [countries, setCountries] = useState([]);
   const [companies, setCompanies] = useState();
   const [employees, setEmployees] = useState([]);
+  const [dataToUpdate,setDataToUpdate] = useState(null)
 
   const {
     register,
@@ -21,14 +22,22 @@ export default function AddNew({updateData, setUpdateData, getLocations,show, se
     formState: { errors },
   } = useForm();
 
-  const onSubmit = useCallback(async (data) => {
-    data.country = data.country.value
-    let res = await addLocation(data)
-    if(res.status===201){
-      setShow(false)
-      getLocations()
+  const onSubmit = useCallback(async (data,dataToUpdate) => {
+    if(!updateData){
+      data.country = data.country.value
+      let res = await addLocation(data)
+      if(res.status===201){
+        setShow(false)
+        getLocations()
+      }else console.log(res)
+    }else{
+      let res = await updateLocation(updateData._id,dataToUpdate)
+      if(res.status===204){
+        setShow(false)
+        getLocations()
+      }else console.log(res)
     }
-    console.log(data);
+    
   });
 
   const getCompanies = useCallback(async () => {
@@ -90,11 +99,13 @@ export default function AddNew({updateData, setUpdateData, getLocations,show, se
   return (
     <Modal size="lg" show={show} onHide={() => setShow(false)}>
       <Modal.Header closeButton>
-        <Modal.Title>Add New Location</Modal.Title>
+        <Modal.Title>{updateData ? "Update Location":"Add New Location"}</Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
-        <form onSubmit={handleSubmit(onSubmit)}>
+        <form onSubmit={handleSubmit(data=>{
+          onSubmit(data,dataToUpdate)
+        })}>
           <div className="row">
             <div className="col-md-4">
               <div className="mb-3">
@@ -109,6 +120,10 @@ export default function AddNew({updateData, setUpdateData, getLocations,show, se
                   render={({ field }) => (
                     <select
                       {...field}
+                      onChange={e=>{
+                        setDataToUpdate(preVal=>({...preVal,company:e.target.value}))
+                        field.onChange(e)
+                      }}
                       className="form-control select2-templating "
                       style={{ width: "100%" }}
                     >
@@ -140,6 +155,10 @@ export default function AddNew({updateData, setUpdateData, getLocations,show, se
                     <select
                       key={watch("company") + "1"}
                       {...field}
+                      onChange={e=>{
+                        setDataToUpdate(preVal=>({...preVal,head:e.target.value}))
+                        field.onChange(e)
+                      }}
                       className="form-control select2-templating "
                       style={{ width: "100%" }}
                     >
@@ -160,20 +179,29 @@ export default function AddNew({updateData, setUpdateData, getLocations,show, se
             <div className="col-md-4">
               <div className="mb-3">
                 <label>Location Name</label>
-                <input
-                  type="text"
-                  className={
-                    errors.name ? "form-control is-invalid" : "form-control"
-                  }
-                  {...register("name", {
+                <Controller name="name" rules={{
                     required: "this is required field",
                     pattern: {
                       value: /^[A-Za-z0-9&.,()'"/\-\s]{3,100}$/,
                       message: "invalid name pattern",
                     },
-                  })}
+                  }}
+                  control={control}
+                  render={({field})=>(
+                    <input
+                  type="text"
+                  {...field}
+                  onChange={e=>{
+                    setDataToUpdate(preVal=>({...preVal,name:e.target.value}))
+                    field.onChange(e)
+                  }}
+                  className={
+                    errors.name ? "form-control is-invalid" : "form-control"
+                  }
                   placeholder="Enter Location Name"
                 />
+                  )}
+                  />
                 {errors?.name && (
                   <span style={{ color: "red" }}>{errors.name.message}</span>
                 )}
@@ -182,14 +210,22 @@ export default function AddNew({updateData, setUpdateData, getLocations,show, se
             <div className="col-md-6">
               <div className="mb-3">
                 <label for="">Address Line 1</label>
-                <input
-                  {...register("line1", {
+                <Controller name="line1" control={control} rules={{
                     required: "this is required field",
-                  })}
+                  }}
+                  render={({field})=>(
+                    <input
+                  {...field}
+                  onChange={e=>{
+                    setDataToUpdate(preVal=>({...preVal,line1:e.target.value}))
+                    field.onChange(e)
+                  }}
                   type="text"
                   className="form-control"
                   placeholder="Enter Address Line"
                 />
+                  )}
+                  />
                 {errors?.line1 && (
                   <span style={{ color: "red" }}>{errors.line1.message}</span>
                 )}
@@ -198,14 +234,21 @@ export default function AddNew({updateData, setUpdateData, getLocations,show, se
             <div className="col-md-6">
               <div className="mb-3">
                 <label for="">Address Line 2</label>
-                <input
-                  {...register("line2", {
+                <Controller name="line2" rules={{
                     required: "this is required field",
-                  })}
+                  }} control={control} render={({field})=>(
+                    <input
+                  {...field}
+                  onChange={e=>{
+                    setDataToUpdate(preVal=>({...preVal,line2:e.target.value}))
+                    field.onChange(e)
+                  }}
                   type="text"
                   className="form-control"
                   placeholder="Enter Addres Line2"
                 />
+                  )}/>
+                
                 {errors?.line2 && (
                   <span style={{ color: "red" }}>{errors.line2.message}</span>
                 )}
@@ -214,14 +257,21 @@ export default function AddNew({updateData, setUpdateData, getLocations,show, se
             <div className="col-md-3">
               <div className="mb-3">
                 <label for="">City</label>
-                <input
-                  {...register("city", {
+                <Controller name="city" control={control} rules={{
                     required: "this is required field",
-                  })}
+                  }} render={({field})=>(
+                    <input
+                  {...field}
+                  onChange={e=>{
+                        setDataToUpdate(preVal=>({...preVal,city:e.target.value}))
+                        field.onChange(e)
+                      }}
                   type="text"
                   className="form-control"
                   placeholder="Enter City"
                 />
+                  )}/>
+                
                 {errors?.city && (
                   <span style={{ color: "red" }}>{errors.city.message}</span>
                 )}
@@ -230,14 +280,21 @@ export default function AddNew({updateData, setUpdateData, getLocations,show, se
             <div className="col-md-3">
               <div className="mb-3">
                 <label for="">State / Province</label>
-                <input
-                  {...register("state", {
+                <Controller name="state" control={control} rules={{
                     required: "this is required field",
-                  })}
+                  }} render={({field})=>(
+                    <input
+                  {...field}
+                  onChange={e=>{
+                        setDataToUpdate(preVal=>({...preVal,state:e.target.value}))
+                        field.onChange(e)
+                      }}
                   type="text"
                   className="form-control"
                   placeholder="Enter State"
                 />
+                  )}/>
+                
                 {errors?.state && (
                   <span style={{ color: "red" }}>{errors.state.message}</span>
                 )}
@@ -246,14 +303,21 @@ export default function AddNew({updateData, setUpdateData, getLocations,show, se
             <div className="col-md-3">
               <div className="mb-3">
                 <label for="">Zip</label>
-                <input
-                  {...register("zipCode", {
+                <Controller name="zipCode" rules={{
                     required: "this is required field",
-                  })}
+                  }} control={control} render={({field})=>(
+                    <input
+                  {...field}
+                  onChange={e=>{
+                        setDataToUpdate(preVal=>({...preVal,zipCode:e.target.value}))
+                        field.onChange(e)
+                      }}
                   type="text"
                   className="form-control"
                   placeholder="Enter Zipcode"
                 />
+                  )} />
+                
                 {errors?.zipCode && (
                   <span style={{ color: "red" }}>{errors.zipCode.message}</span>
                 )}
@@ -270,7 +334,11 @@ export default function AddNew({updateData, setUpdateData, getLocations,show, se
                   control={control}
                   rules={{ required: "countruy is required" }}
                   render={({ field }) => (
-                    <ReactSelect {...field} options={countries} />
+                    <ReactSelect {...field}
+                    onChange={e=>{
+                        setDataToUpdate(preVal=>({...preVal,country:e.value}))
+                        field.onChange(e)
+                      }} options={countries} />
                   )}
                 />
                 {errors.country && (
@@ -283,18 +351,27 @@ export default function AddNew({updateData, setUpdateData, getLocations,show, se
             <div className="col-md-4">
               <div className="mb-3">
                 <label for="">Email</label>
-                <input
-                  {...register("email", {
+                <Controller name="email" control={control} rules={{
                     required: "this is required field",
                     pattern: {
                       value: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
                       message: "wrong email format",
                     },
-                  })}
+                  }}
+                  render={({field})=>(
+                    <input
+                  {...field}
+                  onChange={e=>{
+                        setDataToUpdate(preVal=>({...preVal,email:e.target.value}))
+                        field.onChange(e)
+                      }}
                   type="text"
                   className="form-control"
                   placeholder="Enter Email Address"
                 />
+                  )}
+                   />
+                
                 {errors?.email && (
                   <span style={{ color: "red" }}>{errors.email.message}</span>
                 )}
@@ -303,18 +380,25 @@ export default function AddNew({updateData, setUpdateData, getLocations,show, se
             <div className="col-md-4">
               <div className="mb-3">
                 <label for="">Phone Number</label>
-                <input
-                  {...register("phone", {
+                <Controller name="phone" control={control} rules={{
                     required: "this is required field",
                     pattern: {
                       value: /^[0-9]{10,15}$/,
                       message: "wrong mobile format",
                     },
-                  })}
+                  }} render={({field})=>(
+                    <input
+                  {...field}
+                  onChange={e=>{
+                        setDataToUpdate(preVal=>({...preVal,phone:e.target.value}))
+                        field.onChange(e)
+                      }}
                   type="text"
                   className="form-control"
                   placeholder="Enter Number"
                 />
+                  )} />
+                
                 {errors?.phone && (
                   <span style={{ color: "red" }}>{errors.phone.message}</span>
                 )}
@@ -323,14 +407,22 @@ export default function AddNew({updateData, setUpdateData, getLocations,show, se
             <div className="col-md-4">
               <div className="mb-3">
                 <label for="">Fax Number</label>
-                <input
-                  {...register("faxNumber", {
+                <Controller name="faxNumber" control={control} rules={{
                     required: "this is required field",
-                  })}
+                  }} 
+                  render={({field})=>(
+                    <input
+                  {...field}
+                  onChange={e=>{
+                        setDataToUpdate(preVal=>({...preVal,faxNumber:e.target.value}))
+                        field.onChange(e)
+                      }}
                   type="text"
                   className="form-control"
                   placeholder="Enter Number"
                 />
+                  )}/>
+                
                 {errors?.faxNumber && (
                   <span style={{ color: "red" }}>
                     {errors.faxNumber.message}
@@ -339,7 +431,6 @@ export default function AddNew({updateData, setUpdateData, getLocations,show, se
               </div>
             </div>
             <button
-              onMouseEnter={() => console.log(watch("company"))}
               type="submit"
               className="btn btn-success w-25"
             >

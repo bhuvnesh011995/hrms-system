@@ -258,7 +258,7 @@ exports.getEmployeeByCompany = async (req,res,next)=>{
     try {
         const {id} = req.params
 
-        let employees = await db.employee.find({company:id})
+        let employees = await db.employee.find({company:id}).select("fName lName")
 
         res.status(200).json(employees)
 

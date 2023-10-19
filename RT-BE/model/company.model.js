@@ -63,6 +63,7 @@ const schema = new Schema({
     currency:{
         type:Schema.Types.ObjectId,ref:"currencyConstant"
     },
+    addedBy:{type:Schema.Types.ObjectId,ref:"employee"}
     // department:[{type:Schema.Types.ObjectId,ref:"department"}],
 
     // location:[{type:Schema.Types.ObjectId,ref:"location"}]

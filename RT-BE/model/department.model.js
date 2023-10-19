@@ -14,9 +14,9 @@ const schema = new Schema({
         ref:"location"
     },
     head:{
-        type:String
+        type:Schema.Types.ObjectId,ref:"employee"
     },
-    subdepartment:[{type:Schema.Types.ObjectId,ref:"subdepartment"}]
+    addedBy:{type:Schema.Types.ObjectId,ref:"employee"}
 },{
     collection:"department",
     timestamps:true,

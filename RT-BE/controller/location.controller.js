@@ -111,14 +111,19 @@ exports.updateLocation = async function(req,res,next){
     if(email) obj = {...obj,email}
     if(phone) obj = {...obj,phone}
     if(faxNumber) obj = {...obj,faxNumber}
-    if(company) obj = {...obj,company}
+    
     try {
-        // company is mandatory checking presence
-        let companyDoc = await db.company.findOne({_id:company})
-        if(!companyDoc) return res.status(400).json({
-        success:false,
-        message:"no compnay found"
+        if(company){
+             obj = {...obj,company}
+             
+             let companyExist = await db.company.exists({_id:company})
+                if(!companyExist) return res.status(400).json({
+                success:false,
+                message:"no compnay found"
     })
+            }
+        // company is mandatory checking presence
+        
 
         let location = await db.location.findOne({_id:id})
 
@@ -193,6 +198,21 @@ exports.deleteLocation = async function(req,res,next){
         
 
         res.status(204).end()
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            success:false,
+            message:"internal error occured"
+        })
+    }
+}
+
+
+exports.getLocationsByCompanyId = async (req,res,next)=>{
+    try {
+        let locations = await db.location.find({company:req.params.id}).select("name")
+
+        res.status(200).json(locations)
     } catch (error) {
         console.log(error)
         res.status(500).json({

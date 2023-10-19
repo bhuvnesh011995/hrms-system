@@ -1,23 +1,9 @@
+import { dblClick } from "@testing-library/user-event/dist/click"
 import { api } from "../../Context/AuthContext"
 
-export const getAllLocation = async ()=>{
+export const getAllDepartments = async ()=>{
     try {
-        
-        let response = await api.get("/location")
-        return response
-    } catch (error) {
-        console.log(error)
-        return error.response
-    }
-    
-
-}
-
-
-export const addLocation = async (data)=>{
-    try {
-        let response = await api.post("/location",data)
-
+        let response = await api.get("/department")
         return response
     } catch (error) {
         console.log(error)
@@ -25,10 +11,9 @@ export const addLocation = async (data)=>{
     }
 }
 
-
-export const deleteLocation = async (id)=>{
+export const addDepartment = async (data)=>{
     try {
-        let response = await api.delete("/location/"+id)
+        let response = await api.post("/department",data)
         return response
     } catch (error) {
         console.log(error)
@@ -37,9 +22,9 @@ export const deleteLocation = async (id)=>{
 }
 
 
-export const updateLocation = async (id,data)=>{
+export const updateDepartment = async (id,data)=>{
     try {
-        let response = await api.put("/location/"+id,data)
+        let response = await api.put("/department/"+id,data)
         return response
     } catch (error) {
         console.log(error)
@@ -49,9 +34,21 @@ export const updateLocation = async (id,data)=>{
 
 
 
-export const getLocationByCompanyId = async (id)=>{
+export const deleteDepartment = async (id)=>{
     try {
-        let response = await api.get("/location/"+id)
+        let response = await api.delete("/department/"+id)
+        return response
+    } catch (error) {
+        console.log(error)
+        return error.response
+    }
+}
+
+
+
+export const getDepartmentByCompanyId = async (id)=>{
+    try {
+        let response = await api.get("/department/"+id)
         return response
     } catch (error) {
         console.log(error)

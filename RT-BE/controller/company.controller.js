@@ -30,7 +30,7 @@ exports.addCompany = async function(req,res,next){
     if(req.body.timeZone) obj = {...obj,timeZone:req.body.timeZone}
     if(req.body.currency) obj = {...obj,currency:req.body.currency}
     if(req.file) obj = {...obj,logo:req.file.filename}
-
+    obj = {...obj,addedBy:req.id}
 
 
     try {
