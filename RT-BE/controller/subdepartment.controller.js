@@ -9,7 +9,7 @@ const {
 
         // creating subdepartment
         await db.subdepartment.create({
-            name,department,company
+            name,department,company,addedBy:req.id
         })
 
 
@@ -97,7 +97,7 @@ exports.deleteSubdepartment = async function(req,res,next){
 
 
 
-exports.getSubDepartmentByDepartmentId = async ()=>{
+exports.getSubDepartmentByDepartmentId = async (req,res,next)=>{
     try {
         let subdepartments = await db.subdepartment.find({department:req.params.id})
 

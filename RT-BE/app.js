@@ -170,5 +170,7 @@ mongoose.connect(dbConfig.URI, {
   require("./route/system/themeSetting.route")(app)
   require("./route/system/languageSetting.route")(app)
   require("./route/system/system.route")(app)
+  require("./route/grouping.route")(app)
+
   
 exports.app = app

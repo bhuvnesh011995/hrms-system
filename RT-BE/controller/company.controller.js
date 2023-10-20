@@ -155,6 +155,21 @@ exports.deleteCompany = async function(req,res,next){
 
 
 
+exports.getCompanies = async (req,res,next)=>{
+    try {
+        let companies  = await db.company.find().select("name")
+
+        res.status(200).json(companies)
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            success:false,
+            message:"internal error occured"
+        })
+    }
+}
+
+
 // exports.getImage = async function(req,res,next){
 //     try {
 //         let dbs = mongoose.connection.db

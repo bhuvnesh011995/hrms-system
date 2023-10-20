@@ -4,12 +4,16 @@ import RT_logo from "../../assets/Images/RT-logo.png"
 import { authContext } from "../../Context/AuthContext";
 import { useSettingContext } from "../../Context/settingContext";
 import { getAllLanguage } from "../../Utility/API/system";
+import { imgUrl } from "../../Config/Config";
+
 
 export default function Navbar({inactive,setInactive}){
     const Ref = useRef(null)
     const [show,setShow] = useState(false)
     const {lanCode,getLanguage} = useSettingContext()
     const [languages,setLanguages] = useState()
+
+    const {systemLogo,theme} = useSettingContext()
 
     useEffect(()=>{
         if(inactive){ 
@@ -27,6 +31,7 @@ export default function Navbar({inactive,setInactive}){
             document.removeEventListener("click",closeProfileDropdown)
         }
     },[])
+
 
     function closeProfileDropdown(event){
         if (Ref.current && !Ref.current.contains(event.target)) {
@@ -64,10 +69,10 @@ function getValue(code){
                         <div className="navbar-brand-box">
                             <a href="index.html" className="logo logo-light">
                                { inactive ? <span className="logo-sm">
-                                    <img src={RT_logo} alt="" height="40"/>
+                                    <img src={systemLogo? imgUrl+"/"+systemLogo :RT_logo} alt="" height="40"/>
                                 </span> :
                                 <span className="logo-lg">
-                                    <img src={RT_logo} alt="" height="70"/>
+                                    <img src={systemLogo? imgUrl+"/"+systemLogo :RT_logo} alt="" height="70"/>
                                 </span>}
                             </a>
                         </div>

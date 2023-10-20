@@ -1,6 +1,7 @@
 import { useCallback, useState } from "react";
 import { Toast, ToastContainer } from "react-bootstrap";
 import { updateThemeSetting } from "../../../../Utility/API/system";
+import { useSettingContext } from "../../../../Context/settingContext";
 
 export default function SystemLogo({getThemeSettingData,data}) {
 let [key1,setKey1] = useState(0)
@@ -8,7 +9,7 @@ let [key2,setKey2] = useState(10)
 const [show,setShow] = useState(false)
 const [toast,setToast] = useState({})
 const [updateData,setUpdateData] = useState(null)
-
+const {getAllSetting} = useSettingContext()
 
 const handleSubmit = useCallback(async (dataToUpdate)=>{
   if(!dataToUpdate) return
@@ -21,6 +22,7 @@ for( let key in dataToUpdate){
 
   if(res.status ===204){
     setToast({message:"update Successfull",bg:"success"})
+    getAllSetting()
     setShow(true)
     setKey1(++key1)
     setKey2(++key2)

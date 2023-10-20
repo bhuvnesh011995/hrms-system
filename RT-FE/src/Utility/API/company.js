@@ -43,3 +43,15 @@ export const updateCompany = async (id,data)=>{
         return error.response
     }
 }
+
+
+
+export const  getAllCompanies = async ()=>{
+    try {
+        let response = await api.get("/companies")
+        return response
+    } catch (error) {
+        console.log(error)
+        return error.response
+    }
+}

@@ -73,7 +73,7 @@ export default function AddNew({viewData,
   return (
     <Modal size="xl" show={show} onHide={() => setShow(false)}>
       <Modal.Header closeButton>
-        <Modal.Title>Add New Empolyee</Modal.Title>
+        <Modal.Title>{viewData ? "Update Subdepartment":"Add New Subdepartment"}</Modal.Title>
       </Modal.Header>
 
       <Modal.Body>
@@ -111,8 +111,8 @@ export default function AddNew({viewData,
               
                 )}
               />
-              {errors.company && (
-                <span style={{ color: "red" }}>{errors.company.message}</span>
+              {errors.name && (
+                <span style={{ color: "red" }}>{errors.name.message}</span>
               )}
             </div>
           </div>

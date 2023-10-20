@@ -6,52 +6,19 @@ exports.addDesignation = async function(req,res,next){
     const {name,company,department,subdepartment} = req.body
 
     try {
-        // check for department and subdepartment to be of same company
-    if(!await utility.companyExist(company)) return res.status(400).json({
-        success:false,
-        message:"no company found"
-    })
-    let companyDoc = await db.company.findOne({_id:company})
     
-    if(!companyDoc.department.includes(department)) return res.status(400).json({
-        success:false,
-        message:"departmetn not found in company"
-    })
-    if(!await utility.departmentExist(department)) return res.status(400).json({
-            success:false,
-            message:"no department found"
-        })
-    let departmentDoc = await db.department.findOne({_id:department})
-
-    
-
-    if(!departmentDoc.subdepartment.includes(subdepartment)) return res.status(400).json({
-        success:false,
-        message:"no subdepartment found in department"
-    })
-
-    
-
-    if(!await utility.subdepartmetnExist(subdepartment)) return res.status(400).json({
-        success:false,
-        message:"no subdepartment found"
-    })
 
     await db.designation.create({
-        name,company,department,subdepartment
+        name,company,department,subdepartment,addedBy:req.id
     })
 
-    res.status(200).json({
-        success:true,
-        message:"designation created"
-    })
+    res.status(201).end()
     } catch (error) {
         console.log(error)
 
         res.status(500).json({
             success:false,
-            message:"error occured",
-            error : error
+            message:"internal error occured",
         })
     }
 
@@ -63,32 +30,26 @@ exports.addDesignation = async function(req,res,next){
 
 
 exports.getAllDesignation = async function(req,res,next){
-    const {id} = req.params  // company id
+    
+try{
 
-    try {
-        if(!await utility.companyExist(id)) return res.status(400).json({
-            success:false,
-            message:"no company found"
-        })
+        let designations = await db.designation.find({}).populate(
+            [
+                {path:"company",select:"name"},
 
-        let designations = await db.designation.find({company:id})
+                {path:"department",select:"name"},
+                {path:"subdepartment",select:"name"}
+            ]
+        )
 
-        if(!designations || !designations.length) return res.status(204).json({
-            success:false,
-            message:"no designation found of company"
-        })
-
-        res.status(200).json({
-            success:true,
-            designations
-        })
+        
+        res.status(200).json(designations)
     } catch (error) {
         console.log(error)
 
         res.status(500).json({
             success:false,
-            message:"error occured",
-            error:error
+            message:"internal error occured",
         })
     }
 }
@@ -102,29 +63,23 @@ exports.updateDesignation = async function(req,res,next){
 
     try {
 
-        if(!await utility.designationExitst(id)) return res.status(400).json({
-            success:false,
-            message:"no designation found"
-        })
-
         let obj = {}
 
         if(req.body.name) obj.name = req.body.name
+        if(req.body.company) obj.company = req.body.company
+        if(req.body.department) obj.department = req.body.department
+        if(req.body.subdepartment) obj.subdepartment = req.body.subdepartment
 
         await db.designation.updateOne({_id:id},{
             $set:obj
         })
-        res.status(200).json({
-            success:true,
-            message:"designation updated successfully"
-        })
+        res.status(204).end()
     } catch (error) {
         console.log(error)
 
         res.status(500).json({
             success:false,
-            message:"error occured",
-            error:error
+            message:"internal error occured",
         })
     }
 }
@@ -137,26 +92,15 @@ exports.deleteDesignation = async function(req,res,next){
     const {id} = req.params
 
     try {
-        
-
-        if(!await utility.designationExitst(id)) return res.status(400).json({
-            success:false,
-            message:"no designation found"
-        })
-
         await db.designation.deleteOne({_id:id})
 
-        res.status(200).json({
-            success:true,
-            message:"designation deleted successfully"
-        })
+        res.status(204).end()
     } catch (error) {
         console.log(error)
 
         res.stauts(500).json({
             success:false,
-            message:"error occured",
-            error:error
+            message:"internal error occured",
         })
     }
 }

@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
-import AddNew from "../Locations/AddNew";
 import MaterialReactTable from "material-react-table";
 import { Box, IconButton } from "@mui/material";
 import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
+import AddNew from "./AddNew";
 
 export default function Table() {
     const [isOpen,setIsOpen] = useState(false)

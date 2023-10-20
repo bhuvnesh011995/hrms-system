@@ -2,7 +2,7 @@ import { createContext, useCallback, useContext, useEffect, useState } from "rea
 import { IntlProvider } from 'react-intl';
 import { api } from "./AuthContext";
 import axios from "axios";
-import BASEURL from "../Config/Config";
+import BASEURL, { imgUrl } from "../Config/Config";
 import { getConstant } from "../Utility/API/constant";
 import { getAllLanguage } from "../Utility/API/system";
 let settingContext = createContext()
@@ -16,6 +16,7 @@ const [constants,setConstant] = useState({})
 const [paymentGateway,setPaymentGateway] = useState()
 const [setupModule,setSetupModule] = useState()
 const [lanCode,setLanCode] = useState("")
+const [systemLogo,setSystemLogo] = useState()
 
 getLanguage = async (id="")=>{
     let res = await api.get("/language/?id="+id)
@@ -53,8 +54,28 @@ useEffect(()=>{
     getLanguage()
 },[])
 
+useEffect(()=>{
+        if(theme?.systemLogo){
+            const link = document.querySelector("link[rel~='icon']");
+        if (link) {
+            link.href = imgUrl + "/"+theme?.systemLogo.favicon;
+        } else {
+            const newLink = document.createElement("link");
+            newLink.rel = "icon";
+            newLink.href = imgUrl + "/"+theme?.systemLogo.favicon;
+            document.head.appendChild(newLink);
+        }
+
+        
+        setSystemLogo(theme.systemLogo.systemLogo)
+        }
+
+
+
+},[theme])
+
     return (
-        <settingContext.Provider value={{lanCode,getLanguage,theme,setting,constants,paymentGateway,setupModule}}>
+        <settingContext.Provider value={{getAllSetting,systemLogo,lanCode,getLanguage,theme,setting,constants,paymentGateway,setupModule}}>
             <IntlProvider locale={lanCode} messages={language}>
                 {children}
             </IntlProvider>

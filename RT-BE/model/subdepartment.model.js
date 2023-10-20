@@ -7,7 +7,8 @@ const schema = new Schema({
     },
     department:{type:Schema.Types.ObjectId,ref:"department"},
 
-    company:{type:Schema.Types.ObjectId,ref:"company"}
+    company:{type:Schema.Types.ObjectId,ref:"company"},
+    addedBy:{type:Schema.Types.ObjectId,ref:"employee"}
 },{
     collection:"subdepartment",
     timestamps:true,

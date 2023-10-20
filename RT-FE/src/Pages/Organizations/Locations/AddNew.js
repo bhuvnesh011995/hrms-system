@@ -330,7 +330,7 @@ export default function AddNew({updateData, setUpdateData, getLocations,show, se
                 </label>{" "}
                 <br />
                 <Controller
-                  name="country"
+                  name="country.value"
                   control={control}
                   rules={{ required: "countruy is required" }}
                   render={({ field }) => (
@@ -431,6 +431,10 @@ export default function AddNew({updateData, setUpdateData, getLocations,show, se
               </div>
             </div>
             <button
+            onMouseEnter={()=>{
+              console.log(watch("country"))
+              console.log(watch("country.value"))
+            }}
               type="submit"
               className="btn btn-success w-25"
             >

@@ -1,27 +1,53 @@
-import { useMemo, useState } from "react";					  
+import { useCallback, useEffect, useMemo, useState } from "react";					  
 import MaterialReactTable from "material-react-table";
 import { Box, IconButton } from "@mui/material";
 import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import AddNew from "./AddNew";
+import { deleteAnnouncement, getAllAnnouncements } from "../../../Utility/API/announcement";
+import View from "./View";
 
 export default function Table() { 
     const [isOpen,setIsOpen] = useState(false)
+    const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+  const [viewData, setViewData] = useState(null);
+  const [isViewOpen, setIsViewOpen] = useState(false);
+
+  const getAnnouncements = useCallback(async () => {
+    setIsLoading(true);
+    let res = await getAllAnnouncements();
+    if (res.status === 200) {
+      setData(res.data);
+      setIsLoading(false);
+    } else {
+      console.log(res);
+      setIsLoading(false);
+      setIsError(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    getAnnouncements();
+  }, []);
 
      const columns = useMemo(() => [
      {
-         accessorKey: 'Title',
+         accessorKey: 'title',
          header: 'Title',
        },
        {
-           accessorKey: 'Company',
+           accessorFn: (row)=>row.company ? `${row.company.name}` :"not available" ,
            header: 'Company',
          },
          {
-             accessorKey: 'StartDate',
+             accessorFn:  (row)=>row.start ? row.start.slice(0,10).split("-").reverse().join("/"):"not available",
+             id:"start",
              header: 'Start Date',
            },
  {
-             accessorKey: 'EndDate',
+             accessorFn:  (row)=>row.end ? row.end.slice(0,10).split("-").reverse().join("/"):"not available",
+             id:"end",
              header: 'End Date',
            },
   
@@ -41,7 +67,6 @@ export default function Table() {
                                             <button className="btn btn-primary text-right" onClick={()=>setIsOpen(true)}>Add New</button>
                                         </div>
                                     </div>
-
 
                                     <p className="card-title-desc" style={{textAlign: "right"}}>
                                         <button className="btn btn-info text-right">
@@ -91,7 +116,7 @@ export default function Table() {
 
   <MaterialReactTable
  columns={columns}
- data={[]}
+ data={data||[]}
  enableColumnActions={false}
  enableColumnFilters={false}
  enableSorting={false}
@@ -104,17 +129,32 @@ export default function Table() {
                <Box
                  sx={{ display: "flex", flexWrap: "nowrap", gap: "8px" }}
                >
+                <IconButton
+                    color="info"
+                    onClick={() => {
+                      setViewData(row.original);
+                      setIsViewOpen(true);
+                    }}
+                  >
+                    <i className="fas fa-eye"></i>
+                  </IconButton>
+
                    <IconButton
                    color="secondary"
                    onClick={() => {
-                     table.setEditingRow(row);
+                     let obj = {...row.original,company:row.original.company._id,department:row.original.department._id,location:row.original.location._id,start:row.original.start.slice(0,10),end:row.original.end.slice(0,10)}
+                     setViewData(obj)
+                     setIsOpen(true)
                    }}
                  >
                    <EditIcon />
                  </IconButton>
                    <IconButton
                    color="error"
-                   onClick={() => {}}
+                   onClick={async () => {
+                    let res = await deleteAnnouncement(row.original._id)
+                    if(res.status===204) getAnnouncements()
+                   }}
                  >
                    <DeleteIcon />
                  </IconButton>
@@ -136,94 +176,18 @@ export default function Table() {
    },
  }}
  /> 
-{isOpen && <AddNew show={isOpen} setShow={setIsOpen}/>}
-                                    {/* <!-- The Modal --> */}
-                                    <div className="modal fade" id="myModal">
-                                        <div className="modal-dialog modal-lg">
-                                            <div className="modal-content">
-
-                                                {/* <!-- Modal Header --> */}
-                                                <div className="modal-header">
-                                                    <h4 className="modal-title">Add New Announcements</h4>
-                                                    <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
-                                                </div>
-
-                                                {/* <!-- Modal body --> */}
-                                                <div className="modal-body">
-                                                    <div className="row">
-                                                        <div className="col-md-12">
-                                                            <div className="mb-3">
-                                                                <label for="">Title</label>
-                                                                <input type="text" className="form-control" placeholder="Enter Title"/>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-6">
-                                                            <div className="mb-3">
-                                                                <label for="">Start Date</label>
-                                                                <input type="date" className="form-control" placeholder=""/>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-6">
-                                                            <div className="mb-3">
-                                                                <label for="">End Date</label>
-                                                                <input type="date" className="form-control" placeholder=""/>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-6">
-                                                            <div className="mb-3">
-                                                                <label for="formrow-firstname-input" className="form-label">Company</label> <br/>
-                                                                <select className="form-control select2-templating " style={{width: "100%"}}>
-                                                                    <option value="HR">KMAC International Pte Ltd</option>
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-6">
-                                                            <div className="mb-3">
-                                                                <label for="formrow-firstname-input" className="form-label">Location</label> <br/>
-                                                                <select className="form-control select2-templating " style={{width: "100%"}}>
-                                                                    <option value="HQ">HQ</option>
-                                                                    <option value="Customersite">Customer Site</option>
-
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-6">
-                                                            <div className="mb-3">
-                                                                <label for="formrow-firstname-input" className="form-label"> Department</label> <br/>
-                                                                <select className="form-control select2-templating " style={{width: "100%"}}>
-                                                                    <option value=""></option>
-                                                                    <option value=""></option>
-
-
-
-
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-6">
-                                                            <div className="mb-3">
-                                                                <label for="">Summary</label>
-                                                                <input type="text" className="form-control" placeholder="Summary "/>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-12">
-                                                            <div className="mb-3">
-                                                                <label for="">Description</label>
-                                                                <textarea name="" id="" cols="30" rows="10" className="form-control" style={{height: "70px"}}></textarea>
-                                                            </div>
-                                                        </div>
-
-                                                    </div>
-                                                </div>
-
-                                                {/* <!-- Modal footer --> */}
-                                                <div className="modal-footer">
-                                                    <button type="button" className="btn btn-success">SAVE</button>
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                    </div>
+{isOpen && <AddNew viewData={viewData}
+setViewData={setViewData}
+getAnnouncements = {getAnnouncements} show={isOpen} setShow={setIsOpen}/>}
+{isViewOpen && (
+              <View
+                viewData={viewData}
+                setViewData={setViewData}
+                show={isViewOpen}
+                setShow={setIsViewOpen}
+              />
+            )}
+                                    
 
 
                                 </div>

@@ -19,6 +19,6 @@ module.exports = {
     modules:require("./system/modules/modules.model"),
     themes:require('./system/themeSetting.model'),
     language:require('./system/language.model'),
-
+    grouping:require("./grouping.model"),
 
 }

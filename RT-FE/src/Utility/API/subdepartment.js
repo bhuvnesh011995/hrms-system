@@ -44,3 +44,12 @@ export const deleteSubdepartment = async (id)=>{
 }
 
 
+export const getSubdepartmentByDepartmentId = async (id)=>{
+    try {
+        let response = await api.get("/subdepartment/"+id)
+        return response
+    } catch (error) {
+        console.log(error)
+        return error.response
+    }
+}
