@@ -37,7 +37,6 @@ export default function Table() {
         accessorKey: "name",
         header: "Grouping Name",
       },
-
       {
         accessorFn: (row) => `${row.company.name}`,
         id: "company",

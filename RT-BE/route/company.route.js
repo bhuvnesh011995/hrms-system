@@ -9,5 +9,5 @@ module.exports = function(app){
     app.put("/rt/api/v1/company/:id",upload.single("logo"),companyController.updateCompany)
     app.delete("/rt/api/v1/company/:id",[],companyController.deleteCompany)
     app.get("/rt/api/v1/companies",[],companyController.getCompanies)
-    // app.get("/rt/api/v1/company/logo/:filename",companyController.getImage)
+
 }

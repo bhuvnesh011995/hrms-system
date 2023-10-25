@@ -1,28 +1,65 @@
-import { useMemo, useState } from "react";					  
+import { useCallback, useEffect, useMemo, useState } from "react";					  
 import MaterialReactTable from "material-react-table";
 import { Box, IconButton } from "@mui/material";
 import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import AddNew from "./AddNew";
+import { deletePolicy, getAllPolicies } from "../../../Utility/API/policy";
+import View from "./View";
 
 export default function Table() {
     const [isOpen,setIsOpen] = useState(false)
+    const [data, setData] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isError, setIsError] = useState(false);
+    const [viewData, setViewData] = useState(null);
+    const [isViewOpen, setIsViewOpen] = useState(false);
+  
+    const getPolicies = useCallback(async () => {
+      setIsLoading(true);
+      let res = await getAllPolicies();
+      if (res.status === 200) {
+        setData(res.data);
+        setIsLoading(false);
+      } else {
+        console.log(res);
+        setIsLoading(false);
+        setIsError(true);
+      }
+    }, []);
+  
+    useEffect(() => {
+      getPolicies();
+    }, []);
 
      const columns = useMemo(() => [
      {
-         accessorKey: 'Title',
+         accessorKey: 'title',
          header: 'Title',
        },
        {
-           accessorKey: 'CreatedAt',
+         accessorFn: (row) => row.company?`${row.company.name}`:"not available",
+         id: "company",
+         header: "Comapany",
+       },
+       {
+           accessorFn: (row)=>"",
+           id:"createdAt",
            header: 'Created At',
          },
-         {                                                   
-
-             accessorKey: 'AddedBy',
-             header: 'Added By',
-           },
+         {
+          accessorFn: (row)=>row.addedBy?row.addedBy.fName+" "+row.addedBy.lName: "not available",
+          id:"addedBy",
+          header: 'Added By',
+        },
+        {
+            accessorFn:  (row)=>row.createdAt ? row.createdAt.slice(0,10).split("-").reverse().join("/"):"not available",
+            id:"createdAt",
+            header: 'Created At',
+          },
                        
      ],[])
+
+
 
     return(
         <div className="row">
@@ -53,38 +90,12 @@ export default function Table() {
                                             Print
                                         </button>
                                     </p>
-                                    {/* <table id="datatable" className="table table-bordered dt-responsive nowrap w-100">
-                                        <thead>
-                                            <tr>
-                                                <th>Title</th>
-                                                <th>Created At</th>
-                                                <th>Added By</th>
-                                                <th>Action</th>
-
-
-                                            </tr>
-                                        </thead>
-
-                                        <tbody>
-                                            <tr>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td>
-                                                    <button className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal"><i className="fas fa-edit" style={{fontSize:"10px"}}></i></button>
-                                                    <button className="btn btn-danger"><i className="fas fa-trash-alt" style={{fontSize:"10px"}}></i></button>
-                                                </td>
-
-                                            </tr>
-
-
-                                        </tbody>
-                                    </table> */}
+                                   
                                     
 
   <MaterialReactTable
  columns={columns}
- data={[]}
+ data={data||[]}
  enableColumnActions={false}
  enableColumnFilters={false}
  enableSorting={false}
@@ -97,17 +108,37 @@ export default function Table() {
                <Box
                  sx={{ display: "flex", flexWrap: "nowrap", gap: "8px" }}
                >
+                <IconButton
+                    color="info"
+                    onClick={() => {
+                      setViewData(row.original);
+                      setIsViewOpen(true);
+                    }}
+                  >
+                    <i className="fas fa-eye"></i>
+                  </IconButton>
+
                    <IconButton
                    color="secondary"
                    onClick={() => {
-                     table.setEditingRow(row);
+                    let obj = {
+                        id: row.original._id,
+                        company: row.original.company._id,
+                        description: row.original.description,
+                        title: row.original.title,
+                      };
+                      setViewData(obj);
+                      setIsOpen(true);
                    }}
                  >
                    <EditIcon />
                  </IconButton>
                    <IconButton
                    color="error"
-                   onClick={() => {}}
+                   onClick={async () => {
+                    let res = await deletePolicy(row.original._id)
+                    if(res.status===204) getPolicies()
+                   }}
                  >
                    <DeleteIcon />
                  </IconButton>
@@ -129,60 +160,23 @@ export default function Table() {
    },
  }}
  /> 
-{isOpen && <AddNew show={isOpen} setShow={setIsOpen}/>}
-                                    {/* <!-- The Modal --> */}
-                                    <div className="modal fade" id="myModal">
-                                        <div className="modal-dialog modal-lg">
-                                            <div className="modal-content">
-
-                                                {/* <!-- Modal Header --> */}
-                                                <div className="modal-header">
-                                                    <h4 className="modal-title">Add New Policy</h4>
-                                                    <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
-                                                </div>
-
-                                                {/* <!-- Modal body --> */}
-                                                <div className="modal-body">
-                                                    <div className="row">
-                                                        <div className="col-md-12">
-                                                            <div className="mb-3">
-                                                                <label for="formrow-firstname-input" className="form-label">Company</label> <br/>
-                                                                <select className="form-control select2-templating " style={{width: "100%"}}>
-                                                                    <option value="KMAC">KMAC International Pte Ltd</option>
-
-
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-12">
-                                                            <label for="">Title</label>
-                                                            <input type="text" className="form-control" placeholder="Enter your name"/>
-                                                        </div>
-                                                        <div className="col-md-12">
-                                                            <label for="">Description</label>
-                                                            <textarea name="" id="" cols="30" rows="10" className="form-control" style={{height: "100px"}}></textarea>
-                                                        </div>
-                                                        <div className="col-md-12">
-                                                            <label for="">Attachment</label>
-                                                            <input type="file" className="form-control"/>
-                                                        </div>
-                                                    </div>
-                                                </div>
-
-                                                {/* <!-- Modal footer --> */}
-                                                <div className="modal-footer">
-                                                    <button type="button" className="btn btn-success">SAVE</button>
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                    </div>
+{isOpen && <AddNew viewData={viewData}
+setViewData={setViewData}
+getPolicies={getPolicies} show={isOpen} setShow={setIsOpen}/>}
+                       {isViewOpen && (
+              <View
+                viewData={viewData}
+                setViewData={setViewData}
+                show={isViewOpen}
+                setShow={setIsViewOpen}
+              />
+            )}             
 
 
                                 </div>
                             </div>
                         </div>
-                        {/* <!-- end col --> */}
+                      
                     </div>
     )
 };

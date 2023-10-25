@@ -21,7 +21,8 @@ const schema = new Schema({
     },
     end:{
         type:Date
-    }
+    },
+    addedBy:{type:Schema.Types.ObjectId,ref:"employee"}
 },{
     collection:"announcements",
     timestamps:true,

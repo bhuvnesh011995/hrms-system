@@ -1,38 +1,27 @@
 const db = require("../model")
 
 exports.addPolicy = async function(req,res,next){
- const {
-    company
- } = req.body
 
  try {
-    const companyDoc = await db.company.findOne({
-        _id:company
-    })
-    if(!companyDoc) return res.status(400).json({
-        success:false,
-        message:"no company found"
-    })
-    let obj = {company};
+   
+    let obj = {};
+    if(req.body.company) obj.company = req.body.company
         if(req.body.title) obj.title = req.body.title
         if(req.body.description) obj.description = req.body.description
-        if(req.file?.filename) obj.filename = req.file.filename
+        if(req.file) obj.filename = req.file.filename
+        obj.addedBy = req.id
 
     await db.policy.create(obj)
 
 
-    res.status(200).json({
-        success:true,
-        message:"policy created successfully"
-    })
+    res.status(201).end()
 
  } catch (error) {
     console.log(error)
 
     res.status(500).json({
         success:false,
-        message:"error occured",
-        error
+        message:"internal error occured",
     })
  }
 }
@@ -46,25 +35,17 @@ exports.getAllPolicy = async function(req,res,next){
     const {id} = req.params  // company id
 
     try {
-        let policies = await db.policy.find({company:id}).populate({path:"company",select:"name"})
-
-        if(!policies || !policies.length) return res.status(204).json({
-            success:false,
-            message:"no company policy found"
-        })
+        let policies = await db.policy.find().populate([{path:"company",select:"name"},{path:"addedBy",select:"fName lName"}])
 
 
-        res.status(200).json({
-            success:true,
-            policies
-        })
+        res.status(200).json(policies)
+
     } catch (error) {
         console.log(error)
 
         res.status(500).json({
             sucess:false,
-            message:"error occured",
-            error
+            message:"internal error occured",
         })
     }
 }
@@ -77,33 +58,25 @@ exports.getAllPolicy = async function(req,res,next){
 exports.updatePolicy = async function(req,res,next){
     const {id} = req.params // policy id
     try {
-        let policyDoc = await db.policy.findOne({_id:id})
 
-        if(!policyDoc) return res.status(400).json({
-            success:false,
-            message:"no policy found"
-        })
 
         let obj = {};
+        if(req.body.company) obj.company = req.body.company
         if(req.body.title) obj.title = req.body.title
         if(req.body.description) obj.description = req.body.description
-        if(req.file?.filename) obj.filename = req.file.filename
+        if(req.file) obj.filename = req.file.filename
 
         await db.policy.updateOne({_id:id},{
             $set:obj
         })
 
-        res.status(200).json({
-            success:true,
-            message:"policy updated successfully"
-        })
+        res.status(204).end()
     } catch (error) {
         console.log(error)
 
         res.status(500).json({
             success:false,
-            message:"error occured",
-            error:error
+            message:"internal error occured"
         })
     }
 }
@@ -113,26 +86,16 @@ exports.updatePolicy = async function(req,res,next){
 exports.deletePolicy = async function(req,res,next){
     const {id} = req.params  // policy id
     try {
-        let policyDoc = await db.policy.findOne({_id:id})
-
-        if(!policyDoc) return res.status(400).json({
-            success:false,
-            message:"no policy found"
-        })
-
+       
         await db.policy.deleteOne({_id:id})
 
-        res.status(200).json({
-            success:true,
-            message:"policy deleted successfully"
-        })
+        res.status(204).end()
     } catch (error) {
         console.log(error)
 
         res.status(500).json({
             success:false,
-            message:"error occured",
-            error:error
+            message:"internal error occured"
         })
     }
 }

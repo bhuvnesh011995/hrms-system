@@ -5,7 +5,7 @@ const schema = new Schema({
 
     employee:{type:Schema.Types.ObjectId,ref:"employee"},
 
-    awardType:String,
+    awardType:{type:Schema.Types.ObjectId,ref:"awardConstant"},
 
     date:Date,
 
@@ -19,7 +19,9 @@ const schema = new Schema({
 
     description:String,
 
-    filename:String
+    filename:String,
+
+    addedBy:{type:Schema.Types.ObjectId,ref:"employee"}
 },{
     collection:"award",
     timestamps:true,

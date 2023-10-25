@@ -135,7 +135,7 @@ mongoose.connect(dbConfig.URI, {
 
 // middleware
 
-  // app.use(methodOverride("_method"))
+// app.use(methodOverride("_method"))
 
   app.use(bodyParser.urlencoded({extended: false}))
 
@@ -146,6 +146,7 @@ mongoose.connect(dbConfig.URI, {
 
 // all routes
   app.use("/image",express.static("public"))
+  app.use("/files",express.static(path.join(__dirname, 'public/files')))
   require("./route/auth.route")(app)
   require("./route/role.route")(app)
   require("./route/system/constant.route")(app)

@@ -2,11 +2,11 @@ const {Schema,model} = require("mongoose")
 
 
 const schema = new Schema({
-    licenseName:{
+    name:{
         type:String
     },
     documentType:{
-        type:String
+        type:Schema.Types.ObjectId,ref:"documentConstant"
     },
     licenseNumber:{
         type:String
@@ -16,11 +16,12 @@ const schema = new Schema({
         type:Date
     },
     alarm:{
-        type:Date
+        type:String
     },
     filename:{
         type:String
-    }
+    },
+    addedBy:{type:Schema.Types.ObjectId,ref:"employee"}
 },{
     collection:"documents",
     timestamps:true,

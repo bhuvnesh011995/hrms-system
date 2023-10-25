@@ -1,0 +1,7 @@
+﻿^Space::
+send {WheelDown 1}
+return
+
+^+Space::
+send {WheelUp 1}
+return

@@ -12,7 +12,8 @@ const schema = new Schema({
     },
     filename:{
         type:String
-    }
+    },
+    addedBy:{type:Schema.Types.ObjectId,ref:"employee"}
 },{
     collection:"policy",
     timestamps:true,

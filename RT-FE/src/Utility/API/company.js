@@ -10,6 +10,8 @@ export const addCompany = async (data)=>{
     }
 }
 
+
+// these companies are for specific company module for description
 export const getAllcompany = async ()=>{
     try {
       let response = await api.get("/company")
@@ -44,7 +46,7 @@ export const updateCompany = async (id,data)=>{
     }
 }
 
-
+// these companies api is for select dropdown
 
 export const  getAllCompanies = async ()=>{
     try {

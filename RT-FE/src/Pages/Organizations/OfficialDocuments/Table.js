@@ -1,37 +1,63 @@
-import { useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import MaterialReactTable from "material-react-table";
 import { Box, IconButton } from "@mui/material";
 import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import AddNew from "./AddNew";
+import { deleteDocument, getAllDocuments } from "../../../Utility/API/document";
+import View from "./View";
 
 export default function Table() {
     const [isOpen,setIsOpen] = useState(false)
+    const [data, setData] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isError, setIsError] = useState(false);
+    const [viewData, setViewData] = useState(null);
+    const [isViewOpen, setIsViewOpen] = useState(false);
+  
+    const getdocs = useCallback(async () => {
+      setIsLoading(true);
+      let res = await getAllDocuments();
+      if (res.status === 200) {
+        setData(res.data);
+        setIsLoading(false);
+      } else {
+        console.log(res);
+        setIsLoading(false);
+        setIsError(true);
+      }
+    }, []);
+  
+    useEffect(() => {
+        getdocs();
+    }, []);
 
      const columns = useMemo(() => [
      {
-         accessorKey: 'DocumentType',
-         header: 'Document Type',                                      
-                                              
+         accessorFn: (row)=>row.documentType ? row.documentType.name : "not available",
+         id:"documentType",
+         header: 'Document Type',          
        },
 
          {                                                   
 
-             accessorKey: 'Title',
+             accessorKey: 'name',
              header: 'Title',
            },
          {                                                   
 
-             accessorKey: 'Company',
+            accessorFn: (row) => row.company?`${row.company.name}`:"not available",
+            id: "company",
              header: 'Company',
            },
          {                                                   
 
-             accessorKey: 'ExpiryDate',
+            accessorFn:  (row)=>row.expiryDate ? row.expiryDate.slice(0,10).split("-").reverse().join("/"):"not available",
+            id:"expiryDate",
              header: 'Expiry Date',
            },    
          {                                                   
 
-             accessorKey: 'Notifications',
+             accessorKey: 'alarm',
              header: 'Notifications',
            },   
      ],[])
@@ -95,10 +121,10 @@ export default function Table() {
 
                         </tbody>
                     </table> */}
-                    
+
   <MaterialReactTable
  columns={columns}
- data={[]}
+ data={data || []}
  enableColumnActions={false}
  enableColumnFilters={false}
  enableSorting={false}
@@ -111,17 +137,31 @@ export default function Table() {
                <Box
                  sx={{ display: "flex", flexWrap: "nowrap", gap: "8px" }}
                >
+                <IconButton
+                    color="info"
+                    onClick={() => {
+                      setViewData(row.original);
+                      setIsViewOpen(true);
+                    }}
+                  >
+                    <i className="fas fa-eye"></i>
+                  </IconButton>
                    <IconButton
                    color="secondary"
                    onClick={() => {
-                     table.setEditingRow(row);
+                    let obj = {...row.original,company:row.original.company._id,documentType:row.original.documentType._id,expiryDate:row.original.expiryDate?.slice(0,10)}
+                    setViewData(obj)
+                    setIsOpen(true)
                    }}
                  >
                    <EditIcon />
                  </IconButton>
                    <IconButton
                    color="error"
-                   onClick={() => {}}
+                   onClick={async () => {
+                    let res = await deleteDocument(row.original._id)
+                    if(res.status===204) getdocs()
+                   }}
                  >
                    <DeleteIcon />
                  </IconButton>
@@ -143,96 +183,18 @@ export default function Table() {
    },
  }}
  /> 
- 
-{isOpen && <AddNew show={isOpen} setShow={setIsOpen}/>}
-                    {/* <!-- The Modal --> */}
-                    <div className="modal fade" id="myModal">
-                        <div className="modal-dialog modal-lg">
-                            <div className="modal-content">
 
-                                {/* <!-- Modal Header --> */}
-                                <div className="modal-header">
-                                    <h4 className="modal-title">Add New Document</h4>
-                                    <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
-                                </div>
-
-                                {/* <!-- Modal body --> */}
-                                <div className="modal-body">
-                                    <div className="row">
-                                        <div className="col-md-6">
-                                            <div className="mb-3">
-                                                <label for="">License Name</label>
-                                                <input type="text" className="form-control" placeholder="Enter License Name"/>
-                                            </div>
-                                        </div>
-                                        <div className="col-md-3">
-                                            <div className="mb-3">
-                                                <label for="formrow-firstname-input" className="form-label">Document Type</label> <br/>
-                                                <select className="form-control select2-templating " style={{width: "100%"}}>
-                                                    <option value="DL">Driving License</option>
-                                                    <option value="LTVP">Long Term Visit Pass</option>
-
-
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div className="col-md-3">
-                                            <div className="mb-3">
-                                                <label for="">License Number</label>
-                                                <input type="text" className="form-control" placeholder="Enter License Name"/>
-                                            </div>
-                                        </div>
-                                        <div className="col-md-4">
-                                            <div className="mb-3">
-                                                <label for="formrow-firstname-input" className="form-label">
-                                                    Company
-                                                </label> <br/>
-                                                <select className="form-control select2-templating " style={{width: "100%"}}>
-                                                    <option value="KMAC">KMAC International PTE LTD</option>
-
-
-
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div className="col-md-4">
-                                            <div className="mb-3">
-                                                <label for="">Expiry Date</label>
-                                                <input type="date" className="form-control" placeholder=""/>
-                                            </div>
-                                        </div>
-                                        <div className="col-md-4">
-                                            <div className="mb-3">
-                                                <label for="formrow-firstname-input" className="form-label">
-                                                    Alarm Notifications
-                                                </label> <br/>
-                                                <select className="form-control select2-templating " style={{width: "100%"}}>
-                                                    <option value="noalarm">No Alarm</option>
-                                                    <option value="1month"> 1 Month</option>
-                                                    <option value="3month"> 3 Month</option>
-                                                    <option value="6month"> 6 Month</option>
-
-
-
-                                                </select>
-                                            </div>
-                                        </div>
-                                        <div className="col-md-4">
-                                            <label for="">Official Document</label>
-                                            <input type="file" placeholder="" className="form-control"/>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* <!-- Modal footer --> */}
-                                <div className="modal-footer">
-                                    <button type="button" className="btn btn-success">SAVE</button>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
-
+{isOpen && <AddNew viewData={viewData}
+setViewData={setViewData}
+getdocs={getdocs} show={isOpen} setShow={setIsOpen}/>}
+{isViewOpen && (
+              <View
+                viewData={viewData}
+                setViewData={setViewData}
+                show={isViewOpen}
+                setShow={setIsViewOpen}
+              />
+            )}
 
                 </div>
             </div>

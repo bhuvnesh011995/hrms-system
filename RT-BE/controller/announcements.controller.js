@@ -25,6 +25,7 @@ try {
     if(req.body.start) obj.start = new Date(req.body.start)
 
     if(req.body.end) obj.end= new Date(req.body.end)
+    obj.addedBy = req.id
 
     await db.announcement.create(obj)
 

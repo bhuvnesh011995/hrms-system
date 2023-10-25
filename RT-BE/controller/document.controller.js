@@ -15,7 +15,7 @@ exports.addDocument = async function(req,res,next){
 
         
     let obj ={company};
-    if(req.body.licenseName) obj.licenseName = req.body.licenseName;
+    if(req.body.name) obj.name = req.body.name;
     
     if(req.body.documentType) obj.documentType = req.body.documentType;
     
@@ -23,16 +23,13 @@ exports.addDocument = async function(req,res,next){
     
     if(req.body.expiryDate) obj.expiryDate = new Date(req.body.expiryDate);
     
-    if(req.body.alarm) obj.alarm =new Date(req.body.alarm);
+    if(req.body.alarm) obj.alarm =req.body.alarm;
 
-    if(req.file?.filename) obj.filename = req.file.filename 
-
+    if(req.file) obj.filename = req.file.filename 
+ obj.addedBy = req.id
         await db.documents.create(obj)
 
-        res.status(200).json({
-            success:true,
-            message:"document created successfully"
-        })
+        res.status(201).end()
 
 
     } catch (error) {
@@ -40,8 +37,7 @@ exports.addDocument = async function(req,res,next){
 
         res.status(500).json({
             success:false,
-            message:"error occured",
-            error:error
+            message:"internal error occured",
         })
     }
 }
@@ -49,27 +45,17 @@ exports.addDocument = async function(req,res,next){
 
 
 exports.getAllDocument = async function(req,res,next){
-    const {id} = req.params
 
     try {
-        const documents = await db.documents.find({company:id}).populate({path:'company',select:"name"})
+        const documents = await db.documents.find().populate([{path:'company',select:"name"},[{path:"documentType"}]])
 
-        if(!documents || !documents.length) return res.status(204).json({
-            success:true,
-            message:"no documents found"
-        })
-
-        res.status(200).json({
-            success:true,
-            documents
-        })
+        res.status(200).json(documents)
     } catch (error) {
         console.log(error)
 
         res.status(500).json({
             success:false,
-            message:"error occured",
-            error:error
+            message:"internal error occured",
         })
     }
 }
@@ -80,14 +66,9 @@ exports.updateDocument = async function(req,res,next){
     const {id} = req.params // document id
 
     try {
-       const documentDoc = await db.documents.findOne({_id:id})
 
-    if(!documentDoc) return res.status(400).json({
-        success:false,
-        message:"no document found"
-    })
     let obj ={};
-    if(req.body.licenseName) obj.licenseName = req.body.licenseName;
+    if(req.body.name) obj.name = req.body.name;
     
     if(req.body.documentType) obj.documentType = req.body.documentType;
     
@@ -97,24 +78,20 @@ exports.updateDocument = async function(req,res,next){
     
     if(req.body.alarm) obj.alarm =new Date(req.body.alarm);
 
-    if(req.file?.filename) obj.filename = req.file.filename
+    if(req.file) obj.filename = req.file.filename
 
 
     await db.documents.updateOne({_id:id},{
         $set:obj
     }) 
 
-    res.status(200).json({
-        success:true,
-        message:"document updated"
-    })
+    res.status(204).end()
     } catch (error) {
         console.log(error)
 
         res.status(500).json({
             success:false,
-            message:"error occured",
-            error:error
+            message:"internal error occured"
         })
     }
     
@@ -127,26 +104,16 @@ exports.updateDocument = async function(req,res,next){
 exports.deleteDocument = async function(req,res,next){
     const {id} = req.params
     try {
-        const documentDoc = await db.documents.findOne({_id:id})
-
-        if(!documentDoc) return res.status(400).json({
-            success:false,
-            message:'no document found'
-        })
-
+        
         await db.documents.deleteOne({_id:id})
 
-        res.status(200).json({
-            success:true,
-            message:"document deleted successfull"
-        })
+        res.status(204).end()
     } catch (error) {
         console.log(error)
 
         res.status(500).json({
             success:false,
-            message:"error occured",
-            error:error
+            message:"internal error occured",
         })
     }
 }
