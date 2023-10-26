@@ -1,11 +1,5 @@
 const {Schema,model} = require("mongoose")
 
-const daysSchema = new Schema({
-    
-},{
-    _id:false
-})
-
 
 const schema = new Schema({
 
@@ -41,6 +35,7 @@ const schema = new Schema({
         start:String,
         end:String
     },
+    addedBy:{type:Schema.Types.ObjectId,ref:"employee"}
 
     
 },{

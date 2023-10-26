@@ -1,4 +1,175 @@
+import MaterialReactTable from "material-react-table";
+import { Box, IconButton } from "@mui/material";
+import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import AddNew from "./AddNew";
+import { deleteShift, getAllShifts } from "../../../Utility/API/shift";
 export default function Table() {
+    const [isOpen,setIsOpen] = useState(false)
+    const [data, setData] = useState([{company:{name:"kmac"},name:"shift 1",monday:{start:"10:00 AM",end:"12:00 PM"}}]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isError, setIsError] = useState(false);
+    const [viewData, setViewData] = useState(null);
+    const [isViewOpen, setIsViewOpen] = useState(false);
+
+    const getShifts = useCallback(async () => {
+        setIsLoading(true);
+        let res = await getAllShifts();
+        if (res.status === 200) {
+          setData(res.data);
+          setIsLoading(false);
+        } else {
+          console.log(res);
+          setIsLoading(false);
+          setIsError(true);
+        }
+      }, []);
+    
+      useEffect(() => {
+        getShifts();
+      }, []);
+
+    const columns = useMemo(() => [
+           {
+             accessorFn: (row) => row.company?`${row.company.name}`:"not available",
+             id: "company",
+             header: "Comapany",
+             size:50
+           },
+           {
+            accessorKey:"name",
+            header:"Name",
+            size:50,
+           },
+           {
+            accessorFn:(row)=>({start:row.monday?.start,end:row.monday?.end}),
+            size:120,
+            id:"monday",
+            header:"Monday",
+            Cell:({cell})=>{
+               return (<div>
+                    <span>
+                    In Time :- {cell.getValue()?.start || "NA"}
+                </span>
+                <br/>
+                <span>
+                    Out Time :- {cell.getValue()?.end || "NA"}
+                </span>
+                </div>)
+                
+            }
+           },
+           {
+            accessorFn:(row)=>({start:row.tuesday?.start,end:row.tuesday?.end}),
+            size:120,
+            id:"tuesday",
+            header:"Tuesday",
+            Cell:({cell})=>{
+               return (<div>
+                    <span>
+                    In Time :- {cell.getValue()?.start || "NA"}
+                </span>
+                <br/>
+                <span>
+                    Out Time :- {cell.getValue()?.end || "NA"}
+                </span>
+                </div>)
+                
+            }
+           },
+           {
+            accessorFn:(row)=>({start:row.wednesday?.start,end:row.wednesday?.end}),
+            size:120,
+            id:"wednesday",
+            header:"Wednesday",
+            Cell:({cell})=>{
+               return (<div>
+                    <span>
+                    In Time :- {cell.getValue()?.start || "NA"}
+                </span>
+                <br/>
+                <span>
+                    Out Time :- {cell.getValue()?.end || "NA"}
+                </span>
+                </div>)
+                
+            }
+           },
+           {
+            accessorFn:(row)=>({start:row.thursday?.start,end:row.thursday?.end}),
+            size:120,
+            id:"thursday",
+            header:"Thursday",
+            Cell:({cell})=>{
+               return (<div>
+                    <span>
+                    In Time :- {cell.getValue()?.start || "NA"}
+                </span>
+                <br/>
+                <span>
+                    Out Time :- {cell.getValue()?.end || "NA"}
+                </span>
+                </div>)
+                
+            }
+           },
+           {
+            accessorFn:(row)=>({start:row.friday?.start,end:row.friday?.end}),
+            size:120,
+            id:"friday",
+            header:"Friday",
+            Cell:({cell})=>{
+               return (<div>
+                    <span>
+                    In Time :- {cell.getValue()?.start || "NA"}
+                </span>
+                <br/>
+                <span>
+                    Out Time :- {cell.getValue()?.end || "NA"}
+                </span>
+                </div>)
+                
+            }
+           },
+           {
+            accessorFn:(row)=>({start:row.saturday?.start,end:row.saturday?.end}),
+            size:120,
+            id:"saturday",
+            header:"Saturday",
+            Cell:({cell})=>{
+               return (<div>
+                    <span>
+                    In Time :- {cell.getValue()?.start || "NA"}
+                </span>
+                <br/>
+                <span>
+                    Out Time :- {cell.getValue()?.end || "NA"}
+                </span>
+                </div>)
+                
+            }
+           },
+           {
+            accessorFn:(row)=>({start:row.sunday?.start,end:row.sunday?.end}),
+            size:120,
+            id:"sunday",
+            header:"Sunday",
+            Cell:({cell})=>{
+               return (<div>
+                    <span>
+                    In Time :- {cell.getValue()?.start || "NA"}
+                </span>
+                <br/>
+                <span>
+                    Out Time :- {cell.getValue()?.end || "NA"}
+                </span>
+                </div>)
+                
+            }
+           },
+                           
+         ],[])
+    
     return(
         <div class="row">
                         <div class="col-12">
@@ -9,7 +180,7 @@ export default function Table() {
                                             <h4>Office Shifts</h4>
                                         </div>
                                         <div class="col-md-6 mb-3" style={{textAlign: "right"}}>
-                                            <button class="btn btn-primary text-right" data-bs-toggle="modal" data-bs-target="#myModal">Add New</button>
+                                            <button class="btn btn-primary text-right" onClick={()=>setIsOpen(true)}>Add New</button>
                                         </div>
                                     </div>
 
@@ -28,121 +199,63 @@ export default function Table() {
                                             Print
                                         </button>
                                     </p>
-                                    <table id="datatable" class="table table-bordered dt-responsive nowrap w-100">
-                                        <thead>
-                                            <tr>
-                                                <th>Company </th>
-                                                <th>Day</th>
-                                                <th>Monday </th>                                            
-                                                <th>Tuesdau</th>
-                                                <th>Wednesday</th>
-                                                <th>Thursday</th>
-                                                <th>Friday</th>
-                                                <th>Saturday</th>
-                                                <th>Sunday</th>
-                                                <th>Action</th>
+                                    <MaterialReactTable
+     columns={columns}
+     data={data||[]}
+     enableColumnActions={false}
+     enableColumnFilters={false}
+     enableSorting={false}
+     enableTopToolbar={false}
+     enableRowActions
+                 positionActionsColumn="last"
+                 enableRowNumbers
+                 rowNumberMode="static"
+                 renderRowActions={({ row, table }) => (
+                   <Box
+                     sx={{ display: "flex", flexWrap: "nowrap", gap: "8px" }}
+                   >
+                       <IconButton
+                       color="secondary"
+                       onClick={() => {
+                        let obj = {...row.original,company:row.original.company?._id};
+                          setViewData(obj);
+                          setIsOpen(true);
+                       }}
+                     >
+                       <EditIcon />
+                     </IconButton>
+                       <IconButton
+                       color="error"
+                       onClick={async () => {
+                        let res = await deleteShift(row.original._id)
+                        if(res.status===204) getShifts()
+                       }}
+                     >
+                       <DeleteIcon />
+                     </IconButton>
+                   </Box>
+                 )}
+     muiTableProps={{
+       sx: {
+         border: '1px solid rgba(81, 81, 81, 1)',
+       },
+     }}
+     muiTableHeadCellProps={{
+       sx: {
+         border: '1px solid rgba(81, 81, 81, 1)',
+       },
+     }}
+     muiTableBodyCellProps={{
+       sx: {
+         border: '1px solid rgba(81, 81, 81, 1)',
+       },
+     }}
+     />
 
-
-                                            </tr>
-                                        </thead>
-
-                                        <tbody>
-                                            <tr>
-                                              <td>KMAC International Pte Ltd</td>
-                                              <td> Monday To Friday 9am to 5pm</td>
-                                              <td>9am to 5pm</td>
-                                              <td>9am to 5pm</td>
-                                              <td>9am to 5pm</td>
-                                              <td>9am to 5pm</td>
-                                              <td>9am to 5pm</td>
-                                              <td>9am to 5pm</td>
-                                              <td>9am to 5pm</td>
-                                                <td>
-                                                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal"><i class="fas fa-edit" style={{fontSize:"10px"}}></i></button>
-                                                    <button class="btn btn-danger"><i class="fas fa-trash-alt" style={{fontSize:"10px"}}></i></button>
-                                                </td>
-
-                                            </tr>
-
-
-                                        </tbody>
-                                    </table>
-                                    {/* <!-- The Modal --> */}
-                                    <div class="modal fade" id="myModal">
-                                        <div class="modal-dialog modal-lg">
-                                            <div class="modal-content">
-
-                                                {/* <!-- Modal Header --> */}
-                                                <div class="modal-header">
-                                                    <h4 class="modal-title">Add New</h4>
-                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                                </div>
-
-                                                {/* <!-- Modal body --> */}
-                                                <div class="modal-body">
-                                                    <div class="row">
-                                                        <div class="col-md-12">
-                                                            <div class="mb-3">
-                                                                <label for="formrow-firstname-input" class="form-label">Company</label> <br/>
-                                                                <select class="form-control select2-templating " style={{width: "100%"}}>
-                                                                    <option value="HR">KMAC international pvt ltd</option>
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-12">
-                                                            <div class="mb-3">
-                                                                <label for="">Shift Name</label>
-                                                                <input type="text" class="form-control" placeholder="Enter Shift Name"/>
-                                                            </div>
-                                                        </div>
-                                                        <div class="col-md-12">
-                                                            
-                                                                
-                                                            
-                                                            <form class="repeater" enctype="multipart/form-data">
-                                                                <div data-repeater-list="group-a">
-                                                                    <div data-repeater-item class="row">
-                                                                        <label for="">Monday</label>
-                                                                        <div  class="mb-3 col-lg-5">
-                                                                            <label for="">In Time</label>
-                                                                            <input type="time" id="" name="untyped-input" class="form-control" placeholder="Enter In Time"/>
-                                                                        </div>
-                            
-                                                                        <div  class="mb-3 col-lg-5">
-                                                                            <label for="">Out Time</label>
-                                                                            <input type="time" id="" class="form-control" placeholder="Enter Out Time"/>
-                                                                        </div>
-                            
-                                                                        
-                                                                        
-                                                                        <div class="col-lg-2 align-self-center">
-                                                                            <div class="d-grid">
-                                                                                <input data-repeater-delete type="button" class="btn btn-primary" value="Delete"/>
-                                                                            </div>
-                                                                        </div>
-                                                                    </div>
-                                                                    
-                                                                </div>
-                                                                <input data-repeater-create type="button" class="btn btn-success mt-3 mt-lg-0" value="Add"/>
-                                                            </form>
-                                                        </div>
-                                                      
-                                                        
-
-
-                                                    </div>
-                                                </div>
-
-                                                {/* <!-- Modal footer --> */}
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-success">SAVE</button>
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                    </div>
-
-
+{isOpen && <AddNew viewData={viewData}
+setViewData={setViewData}
+getShifts={getShifts} show={isOpen} setShow={setIsOpen}/>}
+                                    
                                 </div>
                             </div>
                         </div>
