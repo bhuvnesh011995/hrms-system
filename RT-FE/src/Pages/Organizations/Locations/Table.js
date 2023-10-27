@@ -156,7 +156,8 @@ export default function Table() {
                    <IconButton
                    color="secondary"
                    onClick={() => {
-                     setUpdateData(row.original)
+                    let obj = {...row.original,company:row.original.company?._id,head:row.original.head?._id,country:{value:row.original.country,label:row.original.country}}
+                     setUpdateData(obj)
                      setIsOpen(true)
                    }}
                  >

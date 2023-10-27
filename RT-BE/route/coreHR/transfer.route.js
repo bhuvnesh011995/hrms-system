@@ -1,11 +1,13 @@
 const transferContoroller = require("../../controller/coreHR/transfer.controller")
-
+const midware = require("../../middleware")
 
 module.exports = function (app){
-    app.post("rt/api/v1/transfer/:id",[],transferContoroller.addTransfer) //employee id
+    app.post("/rt/api/v1/transfer",[midware.verifyToken],transferContoroller.addTransfer)
 
-    app.get("rt/api/v1/transfer/:id",[],transferContoroller.getAllTransfer) //company id
+    app.get("/rt/api/v1/transfer",[],transferContoroller.getAllTransfer) 
 
-    app.put("rt/api/v1/transfer/:id",[],transferContoroller.updateTransfer) //employee id
-    app.delete("rt/api/v1/transfer/:id",[],transferContoroller.deleteTransfer) //employee id
+    app.put("/rt/api/v1/transfer/:id",[],transferContoroller.updateTransfer)
+
+    app.delete("/rt/api/v1/transfer/:id",[],transferContoroller.deleteTransfer)
+
 }

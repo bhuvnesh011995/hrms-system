@@ -24,7 +24,9 @@ export default function AddNew({updateData, setUpdateData, getLocations,show, se
 
   const onSubmit = useCallback(async (data,dataToUpdate) => {
     if(!updateData){
+      console.log(data)
       data.country = data.country.value
+      console.log(data)
       let res = await addLocation(data)
       if(res.status===201){
         setShow(false)
@@ -80,9 +82,6 @@ export default function AddNew({updateData, setUpdateData, getLocations,show, se
     getAllCountries("https://restcountries.com/v3.1/all");
     getCompanies();
     if(updateData){
-      updateData.company = updateData.company._id
-      updateData.head = updateData.head._id
-      updateData.country = {value:updateData.country,label:updateData.country}
       reset(updateData)
     }
 
@@ -330,7 +329,7 @@ export default function AddNew({updateData, setUpdateData, getLocations,show, se
                 </label>{" "}
                 <br />
                 <Controller
-                  name="country.value"
+                  name="country"
                   control={control}
                   rules={{ required: "countruy is required" }}
                   render={({ field }) => (

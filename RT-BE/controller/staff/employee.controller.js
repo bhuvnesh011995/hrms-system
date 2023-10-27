@@ -104,8 +104,17 @@ exports.addEmployee = async function(req,res,next){
         if(req.body.finNo) obj.finNo = req.body.finNo
 
         if(req.body.vaccination) obj.vaccination = req.body.vaccination
+        if(req.body.status) obj.status = req.body.status
 
 
+        if(req.body.company) obj.company = req.body.company
+        if(req.body.location) obj.location = req.body.location
+        if(req.body.department) obj.department = req.body.department
+
+        
+        if(req.body.designation) obj.designation = req.body.designation
+        if(req.body.shift) obj.shift = req.body.shift
+        if(req.body.subdepartment) obj.subdepartment = req.body.subdepartment
         await db.employee.create(obj)
 
 
@@ -152,11 +161,6 @@ exports.updateEmployee = async function(req,res,next){
     try {
         const {id} = req.params
 
-        if(!await utility.employeeExist(id)) return res.status(400).json({
-            success:false,
-            message:"employee does not exist"
-        })
-
         let obj ={}
 
         if(req.body.fName ) obj.fName = req.body.fName 
@@ -199,6 +203,12 @@ exports.updateEmployee = async function(req,res,next){
 
         if(req.body.status) obj.status = req.body.status
         if(req.body.company) obj.company = req.body.company
+        if(req.body.location) obj.location = req.body.location
+        if(req.body.department) obj.department = req.body.department
+        
+        if(req.body.designation) obj.designation = req.body.designation
+        if(req.body.shift) obj.shift = req.body.shift
+        if(req.body.subdepartment) obj.subdepartment = req.body.subdepartment
         await db.employee.updateOne({_id:id},{
             $set:obj
         })

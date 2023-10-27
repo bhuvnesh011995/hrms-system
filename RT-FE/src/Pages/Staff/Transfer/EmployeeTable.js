@@ -1,4 +1,63 @@
+import { useCallback, useEffect, useMemo, useState } from "react";					  
+import MaterialReactTable from "material-react-table";
+import { Box, IconButton } from "@mui/material";
+import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
+import { deleteTransfer, getAllTransfers } from "../../../Utility/API/transfer";
+import AddNew from "./AddNew";
+
+
 export default function EmployeeTable() {
+    const [isOpen,setIsOpen] = useState(false)
+    const [data, setData] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isError, setIsError] = useState(false);
+    const [viewData, setViewData] = useState(null);
+    const [isViewOpen, setIsViewOpen] = useState(false);
+  
+    const getTransfers = useCallback(async () => {
+      setIsLoading(true);
+      let res = await getAllTransfers();
+      if (res.status === 200) {
+        setData(res.data);
+        setIsLoading(false);
+      } else {
+        console.log(res);
+        setIsLoading(false);
+        setIsError(true);
+      }
+    }, []);
+  
+    useEffect(() => {
+      getTransfers();
+    }, []);
+
+     const columns = useMemo(() => [
+     {
+         accessorFn: (row)=>row.employee?`${row.employee.fName} ${row.employee.lName}`:"not available",
+         header: 'Employee Name',
+       },
+       {
+         accessorFn: (row) => row.to?.company ? `${row.to.company.name}`:"not available",
+         id: "company",
+         header: "Comapany",
+       },
+        {
+            accessorFn:  (row)=>row.date ? row.date.slice(0,10).split("-").reverse().join("/"):"not available",
+            id:"date",
+            header: 'Transfer Date',
+          },
+          {
+            accessorFn:(row)=>row.status,
+            id:"status",
+            header:"Status",
+            Cell:({renderedCellValue,row})=>(
+                <span style={{color:!renderedCellValue?"red":"green"}}>{renderedCellValue?"Success":"Pending"}</span>
+            )
+          }
+                       
+     ],[])
+
+
     return(
         <div className="row">
                         <div className="col-12">
@@ -9,7 +68,7 @@ export default function EmployeeTable() {
                                             <h4>List All Transfers</h4>
                                         </div>
                                         <div className="col-md-6 mb-3" style={{textAlign: "right"}}>
-                                            <button className="btn btn-primary text-right" data-bs-toggle="modal" data-bs-target="#myModal">Add New</button>
+                                            <button className="btn btn-primary text-right" onClick={()=>setIsOpen(true)}>Add New</button>
                                         </div>
                                     </div>
 
@@ -28,7 +87,78 @@ export default function EmployeeTable() {
                                             Print
                                         </button>
                                     </p>
-                                    <table id="datatable" className="table table-bordered dt-responsive nowrap w-100">
+                                    <MaterialReactTable
+ columns={columns}
+ data={data||[]}
+ enableColumnActions={false}
+ enableColumnFilters={false}
+ enableSorting={false}
+ enableTopToolbar={false}
+ enableRowActions
+             positionActionsColumn="last"
+             enableRowNumbers
+             rowNumberMode="static"
+             renderRowActions={({ row, table }) => (
+               <Box
+                 sx={{ display: "flex", flexWrap: "nowrap", gap: "8px" }}
+               >
+                <IconButton
+                    color="info"
+                    onClick={() => {
+                      setViewData(row.original);
+                      setIsViewOpen(true);
+                    }}
+                  >
+                    <i className="fas fa-eye"></i>
+                  </IconButton>
+
+                   <IconButton
+                   color="secondary"
+                   onClick={() => {
+                    let obj = {
+                        id: row.original._id,
+                        company: row.original.company._id,
+                        description: row.original.description,
+                        title: row.original.title,
+                      };
+                      setViewData(obj);
+                      setIsOpen(true);
+                   }}
+                 >
+                   <EditIcon />
+                 </IconButton>
+                   <IconButton
+                   color="error"
+                   onClick={async () => {
+                    let res = await deleteTransfer(row.original._id)
+                    if(res.status===204) getTransfers()
+                   }}
+                 >
+                   <DeleteIcon />
+                 </IconButton>
+               </Box>
+             )}
+ muiTableProps={{
+   sx: {
+     border: '1px solid rgba(81, 81, 81, 1)',
+   },
+ }}
+ muiTableHeadCellProps={{
+   sx: {
+     border: '1px solid rgba(81, 81, 81, 1)',
+   },
+ }}
+ muiTableBodyCellProps={{
+   sx: {
+     border: '1px solid rgba(81, 81, 81, 1)',
+   },
+ }}
+ /> 
+
+{isOpen && <AddNew viewData={viewData}
+setViewData={setViewData}
+getTransfers={getTransfers} show={isOpen} setShow={setIsOpen}/>}
+                                    {/* <table id="datatable" className="table table-bordered dt-responsive nowrap w-100">
                                         <thead>
                                             <tr>
                                                 <th>Employee Name</th>
@@ -56,7 +186,7 @@ export default function EmployeeTable() {
 
 
                                         </tbody>
-                                    </table>
+                                    </table> */}
                                     {/* <!-- The Modal --> */}
                                     <div className="modal fade" id="myModal">
                                         <div className="modal-dialog modal-lg">
