@@ -6,12 +6,12 @@ import AddNewEmployee from "./Modals/AddNewEmployee";
 
 
 export default function Employees() {
-    const [isOpen,setIsOpen] = useState(false)
+    
     return(
         <MainPage title={"EMPOLYEES"}>
             <EmployeeSummery />
-            <ListAllEmployees setIsOpen={setIsOpen} />
-            {isOpen && <AddNewEmployee show={isOpen} setShow={setIsOpen}/>}
+            <ListAllEmployees />
+            
         </MainPage>
     )
 };

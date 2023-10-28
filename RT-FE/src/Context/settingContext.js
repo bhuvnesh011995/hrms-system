@@ -5,6 +5,11 @@ import axios from "axios";
 import BASEURL, { imgUrl } from "../Config/Config";
 import { getConstant } from "../Utility/API/constant";
 import { getAllLanguage } from "../Utility/API/system";
+import { ToastContainer } from "react-toastify";
+
+import 'react-toastify/dist/ReactToastify.css'
+
+
 let settingContext = createContext()
 
 let getLanguage;
@@ -77,7 +82,20 @@ useEffect(()=>{
     return (
         <settingContext.Provider value={{getAllSetting,systemLogo,lanCode,getLanguage,theme,setting,constants,paymentGateway,setupModule}}>
             <IntlProvider locale={lanCode} messages={language}>
-                {children}
+            <ToastContainer
+position="top-right"
+autoClose={5000}
+hideProgressBar={false}
+newestOnTop={false}
+closeOnClick
+rtl={false}
+pauseOnFocusLoss
+pauseOnHover
+theme="colored"
+/>
+{children}
+<ToastContainer />
+                
             </IntlProvider>
         </settingContext.Provider>
     )

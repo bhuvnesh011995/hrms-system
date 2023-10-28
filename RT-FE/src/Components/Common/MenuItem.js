@@ -43,7 +43,7 @@ export default [
       { to: "/officialDocument", name: "Official Documents" },
       { to: "/locations", name: "Locations" },
       { to: "/department", name: "Department" },
-      { to: "/subDepartment", name: "Sub Department" },
+      { to: "/subdepartment", name: "Sub Department" },
       { to: "/grouping", name: "Grouping" },
       { to: "/designations", name: "Designations" },
       { to: "/announcements", name: "Announcements" },

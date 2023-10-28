@@ -55,3 +55,13 @@ export const getDepartmentByCompanyId = async (id)=>{
         return error.response
     }
 }
+
+export const getDepartmentByLocationId = async (id)=>{
+    try {
+        let response = await api.get("/location/department/"+id)
+        return response
+    } catch (error) {
+        console.log(error)
+        return error.response
+    }
+}

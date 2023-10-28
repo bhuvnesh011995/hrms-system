@@ -104,7 +104,7 @@ root.render(
       <Route path='officialDocument' element={<Common><OfficialDocuments/></Common>}/>
       <Route path='locations' element={<Common><Locations/></Common>}/>
       <Route path='department' element={<Common><Departments/></Common>}/>
-      <Route path='subDepartment' element={<Common><SubDepartment/></Common>}/>
+      <Route path='subdepartment' element={<Common><SubDepartment/></Common>}/>
       <Route path='grouping' element={<Common><Grouping/></Common>}/>
       <Route path='announcements' element={<Common><Announcements/></Common>}/>
       <Route path='companyPolicy' element={<Common><CompanyPolicy/></Common>}/>

@@ -4,6 +4,7 @@ import { Box, IconButton } from "@mui/material";
 import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import { deleteTransfer, getAllTransfers } from "../../../Utility/API/transfer";
 import AddNew from "./AddNew";
+import View from "./View";
 
 
 export default function EmployeeTable() {
@@ -37,7 +38,7 @@ export default function EmployeeTable() {
          header: 'Employee Name',
        },
        {
-         accessorFn: (row) => row.to?.company ? `${row.to.company.name}`:"not available",
+         accessorFn: (row) => row.company ? `${row.company.name}`:"not available",
          id: "company",
          header: "Comapany",
        },
@@ -117,9 +118,13 @@ export default function EmployeeTable() {
                    onClick={() => {
                     let obj = {
                         id: row.original._id,
-                        company: row.original.company._id,
+                        company: row.original.company?._id,
+                        department: row.original.to?.department?._id,
+                        subdepartment: row.original.to?.subdepartment?._id,
+                        location: row.original.to?.location?._id,
                         description: row.original.description,
-                        title: row.original.title,
+                        date:row.original.date?.slice(0,10),
+                        employee:row.original.employee?._id
                       };
                       setViewData(obj);
                       setIsOpen(true);
@@ -158,118 +163,16 @@ export default function EmployeeTable() {
 {isOpen && <AddNew viewData={viewData}
 setViewData={setViewData}
 getTransfers={getTransfers} show={isOpen} setShow={setIsOpen}/>}
-                                    {/* <table id="datatable" className="table table-bordered dt-responsive nowrap w-100">
-                                        <thead>
-                                            <tr>
-                                                <th>Employee Name</th>
-                                                <th>Company</th>
-                                                <th>Transfer Date</th>
-                                                <th>Status</th>
-                                                <th>Action</th>
 
-
-                                            </tr>
-                                        </thead>
-
-                                        <tbody>
-                                            <tr>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td>
-                                                    <button className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal"><i className="fas fa-edit" style={{fontSize:"10px"}}></i></button>
-                                                    <button className="btn btn-danger"><i className="fas fa-trash-alt" style={{fontSize:"10px"}}></i></button>
-                                                </td>
-
-                                            </tr>
-
-
-                                        </tbody>
-                                    </table> */}
-                                    {/* <!-- The Modal --> */}
-                                    <div className="modal fade" id="myModal">
-                                        <div className="modal-dialog modal-lg">
-                                            <div className="modal-content">
-
-                                                {/* <!-- Modal Header --> */}
-                                                <div className="modal-header">
-                                                    <h4 className="modal-title">Add New Transfer</h4>
-                                                    <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
-                                                </div>
-
-                                                {/* <!-- Modal body --> */}
-                                                <div className="modal-body">
-                                                    <div className="row">
-                                                        <div className="col-md-12">
-                                                            <div className="mb-3">
-                                                                <label for="formrow-firstname-input" className="form-label">Company</label> <br/>
-                                                                <select className="form-control select2-templating " style={{width: "100%"}}>
-                                                                    <option value="HR">KMAC international pvt ltd</option>
-
-
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-12">
-                                                            <div className="mb-3">
-                                                                <label for="formrow-firstname-input" className="form-label">Employee To Transfer</label> <br/>
-                                                                <select className="form-control select2-templating " style={{width: "100%"}}>
-                                                                    <option value="Suriyana Suriyana"> Suriyana Suriyana</option>
-                                                                    <option value="Shi">Ng Shi Qian</option>
-
-
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-4">
-                                                            <div className="mb-3">
-                                                                <label for="">Transfer Date</label>
-                                                                <input type="date" className="form-control" placeholder="Date"/>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-4">
-                                                            <div className="mb-3">
-                                                                <label for="formrow-firstname-input" className="form-label">Transfer To (Department)</label> <br/>
-                                                                <select className="form-control select2-templating " style={{width: "100%"}}>
-                                                                    <option value=""></option>
-
-
-
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-4">
-                                                            <div className="mb-3">
-                                                                <div className="mb-3">
-                                                                    <label for="formrow-firstname-input" className="form-label">Transfer To (Locations)</label> <br/>
-                                                                    <select className="form-control select2-templating " style={{width: "100%"}}>
-                                                                        <option value=""></option>
-                                                                    </select>
-                                                                </div>
-                                                            </div>
-                                                        </div>
-
-
-                                                        <div className="col-md-12">
-                                                            <div className="mb-3">
-                                                                <label for="">Description</label>
-                                                                <textarea name="" id="" cols="30" rows="10" className="form-control" style={{height: "70px"}}></textarea>
-                                                            </div>
-                                                        </div>
-
-                                                    </div>
-                                                </div>
-
-                                                {/* <!-- Modal footer --> */}
-                                                <div className="modal-footer">
-                                                    <button type="button" className="btn btn-success">SAVE</button>
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                    </div>
-
+{isViewOpen && (
+              <View
+                viewData={viewData}
+                setViewData={setViewData}
+                show={isViewOpen}
+                setShow={setIsViewOpen}
+              />
+            )}
+                                    
 
                                 </div>
                             </div>

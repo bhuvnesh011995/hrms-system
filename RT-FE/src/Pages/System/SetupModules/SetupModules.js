@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import MainPage from "../../../Components/Common/MainPage";
 import { getModulesSetting, updateModulesSetting } from "../../../Utility/API/system";
 import { Toast, ToastContainer } from "react-bootstrap";
+import { useSettingContext } from "../../../Context/settingContext";
 
 export default function SetupModules() {
       const [data,setData] = useState({})
@@ -16,6 +17,7 @@ const getValue = useCallback((field)=>{
     else return false
 },[updateData,data])
 
+const {getAllSetting} = useSettingContext()
         const handleSubmit = useCallback(async ()=>{
             try {
                 if(!updateData) return
@@ -52,6 +54,7 @@ const getValue = useCallback((field)=>{
         },[])
         useEffect(()=>{
             getmodulesdata()
+            return ()=>getAllSetting()
         },[])
     return(
         <MainPage title={"Modules"}>
@@ -186,8 +189,8 @@ const getValue = useCallback((field)=>{
                             </div>
                             <div class="col-md-2">
                                 <input
-                                checked={getValue("subDepartment")}
-                                onChange={e=>setUpdateData(preVal=>({...preVal,subDepartment:e.target.checked}))}
+                                checked={getValue("subdepartment")}
+                                onChange={e=>setUpdateData(preVal=>({...preVal,subdepartment:e.target.checked}))}
                                 type="checkbox" id="switch10" switch="bool" />
                                 <label for="switch10" data-on-label="Yes" data-off-label="No"></label>
 

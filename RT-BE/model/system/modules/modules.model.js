@@ -29,7 +29,7 @@ const schema = new Schema({
         type:Boolean,
         default:true
     },
-    subDepartment:{
+    subdepartment:{
         type:Boolean,
         default:true
     },

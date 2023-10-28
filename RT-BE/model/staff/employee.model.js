@@ -9,15 +9,15 @@ const schema = new Schema({
     email:String,
     DOB:Date,
     phone:String,
-    type:{
+    role:{
         type:Schema.Types.ObjectId,
         ref:"role"
     },
-    reportTo:String,
+    reportTo:{type:Schema.Types.ObjectId,ref:"employee"},
     passport:String,
     address:String,
     immigrationStatus:String,
-    prEffectiveDate:String,
+    prEffectiveDate:Date,
     dateOfJoining:Date,
     confirmationDate:Date,
     department:{type:Schema.Types.ObjectId,ref:"department"},
@@ -26,15 +26,20 @@ const schema = new Schema({
     gender:String,
     shift:{type:Schema.Types.ObjectId,ref:"officeShift"},
     password:String,
-    nricNo:String,
-    finNo :String,
-    vaccination:Boolean,
+    identification:{
+        name:String,
+        number:String
+    },
+    employeeId:String,
+    workPermitNumber:String,
+    vaccination:String,
     status:{
         type:String,
         required:true,
         default:"ACTIVE",
         emum:["ACTIVE","INACTIVE","BLOCK"]
-    }
+    },
+    addedBy:{type:Schema.Types.ObjectId,ref:"employee"}
 },{
     collection:"employee",
     timestamps:true

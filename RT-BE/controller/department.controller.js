@@ -114,3 +114,19 @@ exports.getDepartmentByCompanyId = async (req,res,next)=>{
         })
     }
 }
+
+
+exports.getDepartmentByLocationId = async (req,res,next)=>{
+    try {
+        let departments = await db.department.find({location:req.params.id}).select("name").lean()
+
+        res.status(200).json(departments)
+
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            success:false,
+            message:"internal error occured"
+        })
+    }
+}

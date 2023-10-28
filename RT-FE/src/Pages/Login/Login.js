@@ -3,6 +3,7 @@ import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { login } from "../../Utility/API/auth";
 import { authContext } from "../../Context/AuthContext";
+import { toast } from "react-toastify";
 
 
 
@@ -28,8 +29,9 @@ try {
       email:response.email || "",
       token:response.data.accessToken
     })
+    toast.success("login successfull")
     navigate(-1 || "/")
-  }else if(response.status===401) setError("wrong username or password")
+  }else if(response.status===401) toast.error("wrong username or password")
   else if(response.status===404) setError("pass correct inputs")
   else if(response.status===500) setError("some internal error occured")
 } catch (error) {

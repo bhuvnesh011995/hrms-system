@@ -170,7 +170,7 @@ getPolicies={getPolicies} show={isOpen} setShow={setIsOpen}/>}
                 show={isViewOpen}
                 setShow={setIsViewOpen}
               />
-            )}             
+            )}
 
 
                                 </div>

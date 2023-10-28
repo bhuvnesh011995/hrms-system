@@ -7,7 +7,12 @@ const schema = new Schema({
         {
             type:String
         }
-    ]
+    ],
+    status:{
+        type:String,
+        default:"ACTIVE",
+        enum:["ACTIVE","INACTIVE"]
+    }
 },{
     collection:"role",
     timestamps:true,

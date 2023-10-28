@@ -28,7 +28,7 @@ exports.updateModules = async (req,res,next)=>{
         if(req.body.organizationChart!=undefined) obj = {...obj,organizationChart:req.body.organizationChart}
         if(req.body.eventMeetings!=undefined) obj = {...obj,eventMeetings:req.body.eventMeetings}
         if(req.body.chatBox!=undefined) obj = {...obj,chatBox:req.body.chatBox}
-        if(req.body.subDepartment!=undefined) obj = {...obj,subDepartment:req.body.subDepartment}
+        if(req.body.subdepartment!=undefined) obj = {...obj,subdepartment:req.body.subdepartment}
         if(req.body.payroll!=undefined) obj = {...obj,payroll:req.body.payroll}
         if(req.body.performance!=undefined) obj = {...obj,performance:req.body.performance}
 
