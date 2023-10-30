@@ -44,3 +44,12 @@ export const deleteDesignation = async (id)=>{
 }
 
 
+export const getDesignationsByCompanyId = async id=>{
+    try {
+        let response = await api.get("/designation/"+id)
+        return response
+    } catch (error) {
+        console.log(error)
+        return error.response
+    }
+}

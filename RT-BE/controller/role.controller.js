@@ -91,4 +91,20 @@ exports.getPermissions = async function(req,res,next){
             message:"error occured"
         })
     }
+
 }
+
+
+    exports.getAllRolesName = async (req,res,next)=>{
+        try {
+            let roles = await db.role.find({}).select("name")
+            res.status(200).json(roles)
+
+        } catch (error) {
+            console.log(error)
+            res.status(500).json({
+                success:false,
+                message:"internal error occured"
+            })
+        }
+    }

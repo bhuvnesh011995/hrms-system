@@ -6,4 +6,5 @@ module.exports = function(app){
     app.get("/rt/api/v1/shift",[],shiftController.getAllShift)
     app.put("/rt/api/v1/shift/:id",[],shiftController.updateShift)
     app.delete("/rt/api/v1/shift/:id",[],shiftController.deleteShift)
+    app.get("/rt/api/v1/shift/:id",[],shiftController.getShiftsByCompanyId)
 }

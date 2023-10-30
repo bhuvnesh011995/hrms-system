@@ -3,7 +3,14 @@ import { useSettingContext } from "../../../Context/settingContext";
 import { useCallback, useEffect, useState } from "react";
 import { addEmployee, getEmployeeByCompany, updateEmployee } from "../../../Utility/API/employee";
 import { getAllCompanies } from "../../../Utility/API/company";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
+import { getAllRolesName } from "../../../Utility/API/role";
+import { toast } from "react-toastify";
+import { getLocationByCompanyId } from "../../../Utility/API/location";
+import { getDepartmentByLocationId } from "../../../Utility/API/department";
+import { getDesignationsByCompanyId } from "../../../Utility/API/designation";
+import { getSubdepartmentByDepartmentId } from "../../../Utility/API/subdepartment";
+import { getShiftsByCompanyId } from "../../../Utility/API/shift";
 
 export default function AddNew({ viewData,
   setViewData,
@@ -15,7 +22,11 @@ export default function AddNew({ viewData,
   const [companies, setCompanies] = useState();
   const [employees, setEmployees] = useState();
   const [locations, setLocations] = useState();
-
+  const [departments, setDepartments] = useState();
+  const [subdepartments, setSubdepartments] = useState();
+  const [designations,setDesignations] = useState()
+  const [roles,setRoles] = useState()
+    const [shifts,setShifts] = useState()
   const {
     register,
     reset,
@@ -28,14 +39,17 @@ export default function AddNew({ viewData,
 
   const onSubmit = useCallback(async (data, dataToUpdate) => {
     if (!viewData) {
+      if(data.password !== data.cpassword) return toast.error("password and confirm password must be identical")
       let res = await addEmployee(data);
       if (res.status === 201) {
+        toast.success("employee added successfully")
         setShow(false);
         getEmployees();
       } else console.log(res);
     } else {
       let res = await updateEmployee(viewData._id, dataToUpdate);
       if (res.status === 204) {
+        toast.info("employee updated")
         setShow(false);
         getEmployees();
       } else console.log(res);
@@ -52,11 +66,100 @@ export default function AddNew({ viewData,
 
     if (res.status === 200) {
       setEmployees(res.data);
+    }else{
+      setEmployees([])
     }
   }, []);
 
+const getAllRoles = useCallback(async ()=>{
+  try {
+    let res = await getAllRolesName()
+
+    if(res.status===200){
+      setRoles(res.data)
+    }else {
+      setRoles([])
+    toast.error("error in getting roles")
+    }
+  } catch (error) {
+    console.log(error)
+  }
+})
+
+
+const getDepartments = useCallback(async (id)=>{
+  try {
+    let res = await getDepartmentByLocationId(id)
+    if(res.status===200){
+      setDepartments(res.data)
+    }else {
+      console.log(res)
+    setDepartments([])
+  }
+  } catch (error) {
+    console.log(error)
+  }
+})
+
+const getLocations = useCallback(async (id)=>{
+  try {
+    let res = await getLocationByCompanyId(id)
+    if(res.status===200){
+      setLocations(res.data)
+      // setValue("department",null)
+      // setValue('subdepartment',null)
+    }else {
+      console.log(res)
+      setSubdepartments([])
+    }
+  } catch (error) {
+    console.log(error)
+  }
+})
+
+const getSubdepartments = useCallback(async id=>{
+  try {
+    let res = await getSubdepartmentByDepartmentId(id)
+    if(res.status===200){
+      setSubdepartments(res.data)
+    }else{
+      console.log(res)
+      setSubdepartments([])
+    }
+  } catch (error) {
+    console.log(error)
+  }
+})
+
+const getDesignations = useCallback(async id=>{
+  try {
+    let res = await getDesignationsByCompanyId(id)
+    if(res.status===200){
+      setDesignations(res.data)
+    }else console.log(res)
+  } catch (error) {
+    console.log(error)
+  }
+})
+
+const getShifts = useCallback(async id=>{
+  try {
+    let res = await getShiftsByCompanyId(id)
+    if(res.status===200){
+      setShifts(res.data)
+    }else{
+      setShifts([])
+      console.log(res)
+    }
+  } catch (error) {
+    console.log(error)
+  }
+})
+
   useEffect(() => {
     getCompanies();
+    getAllRoles();
+    
     if (viewData) {
       reset(viewData);
     }
@@ -69,11 +172,31 @@ export default function AddNew({ viewData,
   useEffect(() => {
     if (watch("company")) {
       getEmployeesOfCompany(watch("company"));
+      getLocations(watch("company"))
+      getDesignations(watch("company"))
+      getShifts(watch("company"))
     } else {
+      setShifts([])
+      setDesignations([])
       setEmployees([]);
+      setLocations([]);
     }
   }, [watch("company")]);
 
+useEffect(()=>{
+  if(watch("location")){
+    getDepartments(watch("location"))
+  }else setDepartments([])
+},[watch("location")])
+
+
+useEffect(()=>{
+  if(watch("department")){
+    getSubdepartments(watch("department"))
+  }else{
+    setSubdepartments([])
+  }
+},[watch("department")])
 
 
   return (
@@ -127,36 +250,57 @@ export default function AddNew({ viewData,
                       Company
                     </label>{" "}
                     <br />
-                    <select
-                    {...register("company",{
-                        required:"this field is required",
-                        onChange:e=>setDataToUpdate(preVal=>({...preVal,company:e.target.value}))
-                    })}
+                    <Controller name="company" control={control} rules={{required:"this field is required"}} render={({field})=>(
+                      <select
+                      {...field}
+                      onChange={e=>{
+                        setDataToUpdate(preVal=>({...preVal,company:e.target.value}))
+                        setValue("location","")
+                        setValue("department","")
+                        setValue("designation","")
+                        setValue("reportTo","")
+                        setValue("subdepartment","")
+                        setValue("shift","")
+                        field.onChange(e)
+                      }}
 
-                      className="form-control select2-templating "
-                      style={{ width: "100%" }}
-                    >
-                      <option value="">KMAC International Pte Ltd</option>
-                    </select>{errors.company && <span style={{color:'red'}}>{errors.company.message}</span>}
+                    className="form-control select2-templating "
+                    style={{ width: "100%" }}
+                  >
+                    <option value="">Choose</option>
+                    {companies?.map((ele,i)=>(<option key={i} value={ele._id}>{ele.name}</option>))}
+                  </select>
+                    )} />
+                    {errors.company && <span style={{color:'red'}}>{errors.company.message}</span>}
                   </div>
                 </div>
                 <div className="col-md-6">
                   <div className="mb-3">
                     <label for="formrow-firstname-input" className="form-label">
                       Location
-                    </label>{" "}
+                    </label>
                     <br />
-                    <select
-                    {...register("location",{
-                        required:"this field is required",
-                        onChange:e=>setDataToUpdate(preVal=>({...preVal,location:e.target.value}))
-                    })}
+                    <Controller name="location" control={control} rules={{required:"this field is required"}} render={({field})=>(
+                      <select
+                    key={watch("company")+"1"}
+                    
+                        {...field}
+                        onChange={e=>{
+                        setDataToUpdate(preVal=>({...preVal,location:e.target.value}))
+                        setValue("department","")
+                        setValue("subdepartment","")
+                        field.onChange(e)
+                        }}
+                   
 
                       className="form-control select2-templating "
                       style={{ width: "100%" }}
                     >
-                      <option value=""></option>
-                    </select>{errors.location && <span style={{color:'red'}}>{errors.location.message}</span>}
+                      <option value="">Choose</option>
+                      {locations?.map((ele,i)=>(<option key={i} value={ele._id}>{ele.name}</option>))}
+                    </select>
+)} />
+                    {errors.location && <span style={{color:'red'}}>{errors.location.message}</span>}
                   </div>
                 </div>
                 <div className="col-md-6">
@@ -225,20 +369,22 @@ export default function AddNew({ viewData,
                       Roles
                     </label>
                     <br />
-                    <select
-                    {...register("role",{
-                        required:"this field is required",
-                        onChange:e=>setDataToUpdate(preVal=>({...preVal,role:e.target.value}))
-                    })}
+                    <Controller name="role" control={control} rules={{required:"this field is required"}} render={({field})=>(
+                      <select
+                      {...field}
+                        onChange={e=>{
+                          setDataToUpdate(preVal=>({...preVal,role:e.target.value}))
+field.onChange(e)
+                        }}
 
                       className="form-control select2-templating "
                       style={{ width: "100%" }}
                     >
-                      <option value="">Director</option>
-                      <option value="">HR Admin</option>
-                      <option value="">Super Admin</option>
-                      <option value="">Sales Department</option>
-                    </select>{errors.role && <span style={{color:'red'}}>{errors.role.message}</span>}
+                      <option value="">Choose</option>
+                      {roles?.map((ele,i)=>(<option key={i} value={ele._id}>{ele.name}</option>))}
+                    </select>
+)} />
+                    {errors.role && <span style={{color:'red'}}>{errors.role.message}</span>}
                   </div>
                 </div>
                 <div className="col-md-6">
@@ -247,17 +393,23 @@ export default function AddNew({ viewData,
                       Reports To
                     </label>{" "}
                     <br />
-                    <select
-                    {...register("reportTo",{
-                        required:"this field is required",
-                        onChange:e=>setDataToUpdate(preVal=>({...preVal,reportTo:e.target.value}))
-                    })}
+                    <Controller name="reportTo" control={control} rules={{required:"this field is required"}} render={({field})=>(
+                      <select
+                    key={watch("company")+"1"}
+                    {...field}
+                        onChange={e=>{setDataToUpdate(preVal=>({...preVal,reportTo:e.target.value}))
+field.onChange(e)
+                        }}
+                   
 
                       className="form-control select2-templating "
                       style={{ width: "100%" }}
                     >
-                      <option value=""></option>
-                    </select>{errors.reportTo && <span style={{color:'red'}}>{errors.reportTo.message}</span>}
+                      <option value="">Choose</option>
+                      {employees?.map((ele,i)=>(<option key={i} value={ele._id}>{ele.fName +" "+ele.lName}</option>))}
+                    </select>
+)} />
+                    {errors.reportTo && <span style={{color:'red'}}>{errors.reportTo.message}</span>}
                   </div>
                 </div>
                 <div className="col-md-12">
@@ -305,14 +457,14 @@ export default function AddNew({ viewData,
                       className="form-control select2-templating "
                       style={{ width: "100%" }}
                     >
-                      <option value="">Singapore Citizen</option>
-                      <option value="">Foreign Employee</option>
+                      <option value="singaporeCitizen">Singapore Citizen</option>
+                      <option value="foreignEmployee">Foreign Employee</option>
                     </select>{errors.immigrationStatus && <span style={{color:'red'}}>{errors.immigrationStatus.message}</span>}
                   </div>
                 </div>
                 <div className="col-md-6">
                   <div className="mb-3">
-                    <label for="">PR Effective Date</label>
+                    <label>PR Effective Date</label>
                     <input
                     {...register("prEffectiveDate",{
                         required:"this field is required",
@@ -368,7 +520,7 @@ export default function AddNew({ viewData,
                         onChange:e=>setDataToUpdate(preVal=>({...preVal,confirmationDate:e.target.value}))
                     })}
 
-                      type="text"
+                      type="date"
                       className="form-control"
                       placeholder="Confirmation Date"
                     />{errors.confirmationDate && <span style={{color:'red'}}>{errors.confirmationDate.message}</span>}
@@ -378,19 +530,26 @@ export default function AddNew({ viewData,
                   <div className="mb-3">
                     <label for="formrow-firstname-input" className="form-label">
                       Main Department
-                    </label>{" "}
+                    </label>
                     <br />
-                    <select
-                    {...register("department",{
-                        required:"this field is required",
-                        onChange:e=>setDataToUpdate(preVal=>({...preVal,department:e.target.value}))
-                    })}
+                    <Controller name="department" control={control} rules={{required:"this field is required"}} render={({field})=>(
+                      <select
+                    key={watch("location")+watch("company")+"1"}
+                    {...field}
+                        onChange={e=>{setDataToUpdate(preVal=>({...preVal,department:e.target.value}))
+                          setValue("subdepartment","")
+field.onChange(e)
+                        }}
+                   
 
                       className="form-control select2-templating "
                       style={{ width: "100%" }}
                     >
-                      <option value=""></option>
-                    </select>{errors.department && <span style={{color:'red'}}>{errors.department.message}</span>}
+                      <option value="">Choose</option>
+                      {departments?.map((ele,i)=>(<option key={i} value={ele._id}>{ele.name}</option>))}
+                    </select>
+)} />
+                    {errors.department && <span style={{color:'red'}}>{errors.department.message}</span>}
                   </div>
                 </div>
                 <div className="col-md-4">
@@ -399,17 +558,23 @@ export default function AddNew({ viewData,
                       Sub Department
                     </label>{" "}
                     <br />
-                    <select
-                    {...register("subdepartment",{
-                        required:"this field is required",
-                        onChange:e=>setDataToUpdate(preVal=>({...preVal,subdepartment:e.target.value}))
-                    })}
+                    <Controller name="subdepartment" control={control} rules={{required:"this field is required"}} render={({field})=>(
+                      <select
+                    key={watch("location")+watch("company")+"1"+watch("department")}
+                    {...field}
+                        onChange={e=>{setDataToUpdate(preVal=>({...preVal,subdepartment:e.target.value}))
+field.onChange(e)
+                        }}
+                    
 
                       className="form-control select2-templating "
                       style={{ width: "100%" }}
                     >
-                      <option value=""></option>
-                    </select>{errors.subdepartment && <span style={{color:'red'}}>{errors.subdepartment.message}</span>}
+                      <option value="">Choose</option>
+                      {subdepartments?.map((ele,i)=>(<option key={i} value={ele._id}>{ele.name}</option>))}
+                    </select>
+)} />
+                    {errors.subdepartment && <span style={{color:'red'}}>{errors.subdepartment.message}</span>}
                   </div>
                 </div>
                 <div className="col-md-4">
@@ -418,17 +583,23 @@ export default function AddNew({ viewData,
                       Designation
                     </label>{" "}
                     <br />
-                    <select
-                    {...register("designation",{
-                        required:"this field is required",
-                        onChange:e=>setDataToUpdate(preVal=>({...preVal,designation:e.target.value}))
-                    })}
+                    <Controller name="designation" control={control} rules={{required:"this field is required"}} render={({field})=>(
+                      <select
+                    key={watch("company")+"1"}
+                    {...field}
+                        onChange={e=>{setDataToUpdate(preVal=>({...preVal,designation:e.target.value}))
+field.onChange(e)
+                        }}
+                    
 
                       className="form-control select2-templating "
                       style={{ width: "100%" }}
                     >
-                      <option value=""></option>
-                    </select>{errors.designation && <span style={{color:'red'}}>{errors.designation.message}</span>}
+                      <option value="">Choose</option>
+                      {designations?.map((ele,i)=>(<option key={i} value={ele._id}>{ele.name}</option>))}
+                    </select>
+)} />
+                    {errors.designation && <span style={{color:'red'}}>{errors.designation.message}</span>}
                   </div>
                 </div>
                 <div className="col-md-6">
@@ -446,6 +617,7 @@ export default function AddNew({ viewData,
                       className="form-control select2-templating "
                       style={{ width: "100%" }}
                     >
+                      <option value="">Chose...</option>
                       <option value="male">Male</option>
                       <option value="female">Female</option>
                     </select>{errors.gender && <span style={{color:'red'}}>{errors.gender.message}</span>}
@@ -455,19 +627,23 @@ export default function AddNew({ viewData,
                   <div className="mb-3">
                     <label for="formrow-firstname-input" className="form-label">
                       Office Shift
-                    </label>{" "}
+                    </label>
                     <br />
-                    <select
-                    {...register("shift",{
-                        required:"this field is required",
-                        onChange:e=>setDataToUpdate(preVal=>({...preVal,shift:e.target.value}))
-                    })}
-
+                    <Controller name="shift" control={control} rules={{required:"this field is required"}} render={({field})=>(
+                      <select
+                    key={watch("company")+"1"}
+                    {...field}
+                        onChange={e=>{setDataToUpdate(preVal=>({...preVal,shift:e.target.value}))
+field.onChange(e)
+                        }}
                       className="form-control select2-templating "
                       style={{ width: "100%" }}
                     >
-                      <option value=""></option>
-                    </select>{errors.shift && <span style={{color:'red'}}>{errors.shift.message}</span>}
+                      <option value="">Choose...</option>
+                      {shifts?.map((ele,i)=>(<option key={i} value={ele._id}>{ele.name}</option>))}
+                    </select>
+)} />
+                    {errors.shift && <span style={{color:'red'}}>{errors.shift.message}</span>}
                   </div>
                 </div>
                 <div className="col-md-6">
@@ -475,7 +651,7 @@ export default function AddNew({ viewData,
                     <label for="">Password</label>
                     <input
                     {...register("password",{
-                        required:"this field is required",
+                        required:viewData?false:"this field is required",
                         onChange:e=>setDataToUpdate(preVal=>({...preVal,password:e.target.value}))
                     })}
 
@@ -490,12 +666,12 @@ export default function AddNew({ viewData,
                     <label for="">Confirm Password</label>
                     <input
                     {...register("cpassword",{
-                        required:"this field is required",
+                      required:viewData?false:"this field is required",
                         onChange:e=>setDataToUpdate(preVal=>({...preVal,cpassword:e.target.value}))
                     })}
 
                       type="password"
-                      className="form-control"
+                      className={watch("password")&& watch("password")===watch('cpassword') ? "form-control is-valid":watch("password")&&watch("cpassword")&&watch("password")!=watch("cpassword")?"form-control is-invalid":"form-control"}
                       placeholder="confirm passowrd"
                     />{errors.cpassword && <span style={{color:'red'}}>{errors.cpassword.message}</span>}
                   </div>
@@ -509,15 +685,19 @@ export default function AddNew({ viewData,
                     <select
                     {...register("identification.name",{
                         required:"this field is required",
-                        onChange:e=>setDataToUpdate(preVal=>({...preVal,[preVal.identification.name]:e.target.value}))
+                        onChange:e=>{
+                          setDataToUpdate(preVal=>({...preVal,identification:{...preVal?.identification,name:e.target.value}}))
+                          setValue("identification?.number",null)
+                        }
                     })}
 
                       className="form-control select2-templating "
                       style={{ width: "100%" }}
                     >
-                      <option value="">NRIC</option>
-                      <option value="">FIN</option>
-                    </select>{errors.identification.name && <span style={{color:'red'}}>{errors.identification.name.message}</span>}
+                      <option value="">Choose...</option>
+                      <option value="NRIC">NRIC</option>
+                      <option value="FIN">FIN</option>
+                    </select>{errors?.identification?.name && <span style={{color:'red'}}>{errors?.identification?.name.message}</span>}
                   </div>
                 </div>
                 <div className="col-md-6">
@@ -526,7 +706,7 @@ export default function AddNew({ viewData,
                     <input
                     {...register("identification.number",{
                         required:"this field is required",
-                        onChange:e=>setDataToUpdate(preVal=>({...preVal,[preVal.identification.number]:e.target.value}))
+                        onChange:e=>setDataToUpdate(preVal=>({...preVal,identification:{...preVal?.identification,number:e.target.value}}))
                     })}
 
                       type="text"

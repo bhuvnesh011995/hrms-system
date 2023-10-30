@@ -10,21 +10,21 @@ exports.addShift = async function (req,res,next){
         
 
     let obj = {}
-        if(req.body.company) obj.company = req.body.company
-        if(req.body.name) obj.name = req.body.name
-        if(req.body.monday) obj.monday = {start:req.body.monday.start,end:req.body.monday.end}
+        if(req.body.company !=undefined) obj.company = req.body.company
+        if(req.body.name !=undefined) obj.name = req.body.name
+        if(req.body.monday !=undefined) obj.monday = {start:req.body.monday.start,end:req.body.monday.end}
 
-        if(req.body.tuesday) obj.tuesday = {start:req.body.tuesday.start,end:req.body.tuesday.end}
+        if(req.body.tuesday !=undefined) obj.tuesday = {start:req.body.tuesday.start,end:req.body.tuesday.end}
 
-        if(req.body.wednesday) obj.wednesday = {start:req.body.wednesday.start,end:req.body.wednesday.end}
+        if(req.body.wednesday !=undefined) obj.wednesday = {start:req.body.wednesday.start,end:req.body.wednesday.end}
 
-        if(req.body.thursday) obj.thursday = {start:req.body.thursday.start,end:req.body.thursday.end}
+        if(req.body.thursday !=undefined) obj.thursday = {start:req.body.thursday.start,end:req.body.thursday.end}
 
-        if(req.body.friday) obj.friday = {start:req.body.friday.start,end:req.body.friday.end}
+        if(req.body.friday !=undefined) obj.friday = {start:req.body.friday.start,end:req.body.friday.end}
 
-        if(req.body.saturday) obj.saturday = {start:req.body.saturday.start,end:req.body.saturday.end}
+        if(req.body.saturday !=undefined) obj.saturday = {start:req.body.saturday.start,end:req.body.saturday.end}
 
-        if(req.body.sunday) obj.sunday = {start:req.body.sunday.start,end:req.body.sunday.end}
+        if(req.body.sunday !=undefined) obj.sunday = {start:req.body.sunday.start,end:req.body.sunday.end}
 obj.addedBy = req.id
 
         await db.officeShift.create(obj)
@@ -143,6 +143,21 @@ exports.deleteShift = async function (req,res,next){
         res.status(500).json({
             success:false,
             message:"internal error occured",
+        })
+    }
+}
+
+
+exports.getShiftsByCompanyId = async (req,res,next)=>{
+    try {
+        let shifts = await db.officeShift.find({company:req.params.id})
+
+        res.status(200).json(shifts)
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            success:"false",
+            message:"internal error occured"
         })
     }
 }

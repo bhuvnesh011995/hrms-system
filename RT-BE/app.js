@@ -64,11 +64,11 @@ mongoose.connect(dbConfig.URI, {
 
     // check if a Super Admin present 
 
-    let superAdmin = await dbs.employee.findOne({type:role._id})
+    let superAdmin = await dbs.employee.findOne({role:role._id})
 
     if(!superAdmin){ 
       await dbs.employee.create({
-      username:"superadmin",fName:"Super",lName:"Admin",type:role._id,password:bcrypt.hashSync("123",8)
+      username:"superadmin",fName:"Super",lName:"Admin",role:role._id,password:bcrypt.hashSync("123",8)
     })
     console.info("Supre Admin is created")
 }else console.info("Super Admin is already present")

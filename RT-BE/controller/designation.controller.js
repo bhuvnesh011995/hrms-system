@@ -104,3 +104,18 @@ exports.deleteDesignation = async function(req,res,next){
         })
     }
 }
+
+
+exports.getDesignationByCompanyId = async (req,res,next)=>{
+    try {
+        let designations = await db.designation.find({company:req.params.id}).lean()
+        res.status(200).json(designations)
+    } catch (error) {
+        console.log(error)
+        res.status(500).json({
+            success:false,
+            message:"internal error occured"
+
+        })
+    }
+}

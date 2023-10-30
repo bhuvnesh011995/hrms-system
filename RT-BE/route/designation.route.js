@@ -6,4 +6,5 @@ module.exports = function (app){
     app.get("/rt/api/v1/designation/",[],designationController.getAllDesignation)
     app.put("/rt/api/v1/designation/:id",[],designationController.updateDesignation)
     app.delete("/rt/api/v1/designation/:id",[],designationController.deleteDesignation)
+    app.get("/rt/api/v1/designation/:id",designationController.getDesignationByCompanyId)
 }

@@ -45,3 +45,17 @@ export const deleteRole = async (id)=>{
 
 
 }
+
+
+
+export const getAllRolesName = async id =>{
+    try {
+        let response = await api.get("/rolesName")
+        return response
+    } catch (error) {
+        console.log(error)
+        return error.response
+    }
+    
+
+} 

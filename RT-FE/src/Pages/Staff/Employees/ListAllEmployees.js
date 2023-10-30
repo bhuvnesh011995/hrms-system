@@ -3,10 +3,11 @@ import { MaterialReactTable } from "material-react-table"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { Button } from "react-bootstrap"
 import AddNewEmployee from "./Modals/AddNewEmployee"
-import { getAllEmployees } from "../../../Utility/API/employee"
+import { deleteEmployee, getAllEmployees } from "../../../Utility/API/employee"
 import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import AddNew from "./AddNew"
 import View from "./View"
+import { toast } from "react-toastify"
 
 
 
@@ -155,6 +156,7 @@ let columns = useMemo(()=>[
             
                 <MaterialReactTable columns={columns}
                 data={data}
+                isLoading={isLoading}
                 enableRowActions
                 positionActionsColumn="last"
                 renderRowActions={({row})=>(
@@ -169,11 +171,38 @@ let columns = useMemo(()=>[
 
                         <IconButton
                         color="secondary"
+                        onClick={()=>{
+                            let obj = {
+                                ...row.original,
+                                company:row.original.company?._id,
+                                department:row.original.department?._id,
+                                subdepartment:row.original.subdepartment?._id,
+                                designation:row.original.designation?._id,
+                                shift:row.original.shift?._id,
+                                role:row.original.role?._id,
+                                location:row.original.location?._id,
+                                reportTo:row.original.reportTo?._id,
+                                confirmationDate:row.original.confirmationDate?.slice(0,10),
+                                dateOfJoining:row.original.dateOfJoining?.slice(0,10),
+                                prEffectiveDate:row.original.prEffectiveDate?.slice(0,10),
+                                DOB:row.original.DOB?.slice(0,10),
+                            }
+                            setViewData(obj)
+                            setIsOpen(true)
+                        }}
                         >
                             <EditIcon />
                         </IconButton>
                         <IconButton
-                        color="error">
+                        color="error"
+                        onClick={async ()=>{
+                            let res = await deleteEmployee(row.original._id)
+                            if(res.status===204){
+                                toast.success("employee deleted")
+                                getEmployees()
+                            }
+                        }}
+                        >
                        <DeleteIcon />
                         </IconButton>
                     </Box>

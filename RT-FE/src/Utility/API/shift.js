@@ -44,3 +44,12 @@ export const deleteShift = async (id)=>{
 }
 
 
+export const getShiftsByCompanyId = async id=>{
+    try {
+        let response = await api.get("/shift/"+id)
+        return response
+    } catch (error) {
+        console.log(error)
+        return error.response
+    }
+}
