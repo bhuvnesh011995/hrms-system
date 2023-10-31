@@ -6,7 +6,7 @@ exports.verifyToken = async function(req,res,next){
     const token = req.headers["x-access-token"]
 try {
     if(!token) return res.status(401).end()
-
+    
     jwt.verify(token,process.env.SECRET_KEY,(err,decode)=>{
         if(err) return res.status(401).end()
 

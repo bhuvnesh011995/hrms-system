@@ -2,12 +2,12 @@ import { Box, IconButton } from "@mui/material"
 import { MaterialReactTable } from "material-react-table"
 import { useCallback, useEffect, useMemo, useState } from "react"
 import { Button } from "react-bootstrap"
-import AddNewEmployee from "./Modals/AddNewEmployee"
 import { deleteEmployee, getAllEmployees } from "../../../Utility/API/employee"
 import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import AddNew from "./AddNew"
 import View from "./View"
 import { toast } from "react-toastify"
+import { useAuth } from "../../../Context/AuthContext"
 
 
 
@@ -20,7 +20,26 @@ export default function ListAllEmployees() {
     const [isError, setIsError] = useState(false);
     const [viewData, setViewData] = useState(null);
     const [isViewOpen, setIsViewOpen] = useState(false);
-  
+    const {permissions} = useAuth()
+
+
+
+    const havePermission = useCallback((type,role)=>{
+        if(type==="edit"){
+            if(role==="Super Admin") return false
+            if(permissions.includes("All")) return true
+            else return false
+        }else if(type==='delete'){
+            if(role==="Super Admin") return false
+            if(permissions?.includes("All")) return true
+            else return false
+        }else if(type==="add"){
+            if(permissions.includes("All")) return true
+            else return false
+        }
+        return true
+    },[permissions])
+
     const getEmployees = useCallback(async () => {
       setIsLoading(true);
       let res = await getAllEmployees();
@@ -148,10 +167,10 @@ let columns = useMemo(()=>[
         <div className="card">
             <div className="card-body">
                 <h4>All Employees List</h4>
-                <div className="d-flex justify-content-end me-5">
+                {havePermission('add') &&<div className="d-flex justify-content-end me-5">
                     <Button onClick={()=>{
                     setIsOpen(true)}}>Add New</Button>
-                </div>
+                </div>}
                
             
                 <MaterialReactTable columns={columns}
@@ -163,13 +182,13 @@ let columns = useMemo(()=>[
                     <Box
                     sx={{ display: "flex", flexWrap: "nowrap", gap: "8px" }}
                     >
-                        <IconButton
+                        {havePermission("view",row.original.role?.name)?<IconButton
                         color="info"
                         >
                             <i className="fas fa-eye"></i>
-                        </IconButton>
+                        </IconButton>:null}
 
-                        <IconButton
+                        {havePermission("edit",row.original.role?.name)?<IconButton
                         color="secondary"
                         onClick={()=>{
                             let obj = {
@@ -192,8 +211,8 @@ let columns = useMemo(()=>[
                         }}
                         >
                             <EditIcon />
-                        </IconButton>
-                        <IconButton
+                        </IconButton>:null}
+                        {havePermission("delete",row.original.role?.name)?<IconButton
                         color="error"
                         onClick={async ()=>{
                             let res = await deleteEmployee(row.original._id)
@@ -204,7 +223,7 @@ let columns = useMemo(()=>[
                         }}
                         >
                        <DeleteIcon />
-                        </IconButton>
+                        </IconButton>:null}
                     </Box>
                 )}
 

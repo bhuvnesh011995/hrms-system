@@ -15,7 +15,7 @@ try {
 
     if(!isValid) return res.status(401).end();
 
-    let token = jwt.sign({username,role:user.type,id:user._id},process.env.SECRET_KEY,{expiresIn:"1d"})
+    let token = jwt.sign({username,role:user.role,id:user._id},process.env.SECRET_KEY,{expiresIn:"1d"})
 
     let obj = {success:true, accessToken:token,username,name:user.fName +" "+ user.lName,email:user.email || "",role:user.type}
 

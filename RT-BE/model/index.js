@@ -20,5 +20,7 @@ module.exports = {
     themes:require('./system/themeSetting.model'),
     language:require('./system/language.model'),
     grouping:require("./grouping.model"),
-
+    resignations:require("./coreHR/resignation.model"),
+    travel:require("./coreHR/travel.model"),
+    promotion:require("./coreHR/promotion.model")
 }

@@ -1,4 +1,97 @@
+import MaterialReactTable from "material-react-table";
+import { Box, IconButton } from "@mui/material";
+import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { deleteTravel, getAllTravels } from "../../../Utility/API/travel";
+import AddNew from "./AddNew";
+import View from "./View";
+import { useAuth } from "../../../Context/AuthContext";
+
+
+
 export default function EmployeeTable() {
+
+    const [isOpen,setIsOpen] = useState(false)
+    const [data, setData] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isError, setIsError] = useState(false);
+    const [viewData, setViewData] = useState(null);
+    const [isViewOpen, setIsViewOpen] = useState(false);
+    const {permissions} = useAuth()
+
+
+    const havePermission = useCallback((type,status)=>{
+        if(type==="edit"){
+            if(status!="Pending") return false
+            else return true
+        }else if(type==="delete"){
+            if(status!="Pending") return false
+            else return true
+        }else if(type==="view"){
+            return true
+        }
+    },[permissions])
+    const getTravels = useCallback(async () => {
+      setIsLoading(true);
+      let res = await getAllTravels();
+      if (res.status === 200) {
+        setData(res.data);
+        setIsLoading(false);
+      } else {
+        console.log(res);
+        setIsLoading(false);
+        setIsError(true);
+      }
+    }, []);
+  
+    useEffect(() => {
+        getTravels();
+    }, []);
+
+    const columns = useMemo(() => [
+        {
+            accessorFn: (row)=>`${row.employee.fName} ${row.employee.lName}`,
+            id:"employee",
+            header: 'Employee Name',
+            Cell:({renderedCellValue,row})=>(
+                <Box sx={{
+                    display:"flex",
+                    flexDirection:"column"
+                }}>
+                    <div>{renderedCellValue}</div><br/>
+                    <div style={{color:row.original.status==="Pending"?"red":"green"}}>{`${row.original.status}`}</div>
+                </Box>
+            )
+          },
+        {
+            accessorFn: (row)=>row.company?row.company.name:"NA",
+            id:"company",
+            header: 'Company',                                      
+
+          },
+          {
+              accessorKey: "place",
+              header: 'Place of Visit',                                      
+
+            },
+          {
+              accessorFn: row=>row.start?row.start.slice(0,10).split("-").reverse().join("/"):"not available",
+              id:"start",
+              header: 'Start Date',                                      
+
+            },
+            {
+                accessorFn: row=>row.end?row.end.slice(0,10).split("-").reverse().join("/"):"not available",
+                id:"end",
+                header: 'End Date',
+
+              },
+   
+   
+        ],[])
+
+
+
     return(
         <div className="row">
                         <div className="col-12">
@@ -9,7 +102,7 @@ export default function EmployeeTable() {
                                             <h4>List All Travels</h4>
                                         </div>
                                         <div className="col-md-6 mb-3" style={{textAlign: "right"}}>
-                                            <button className="btn btn-primary text-right" data-bs-toggle="modal" data-bs-target="#myModal">Add New</button>
+                                            <button className="btn btn-primary text-right" onClick={()=>setIsOpen(true)}>Add New</button>
                                         </div>
                                     </div>
 
@@ -28,147 +121,87 @@ export default function EmployeeTable() {
                                             Print
                                         </button>
                                     </p>
-                                    <table id="datatable" className="table table-bordered dt-responsive nowrap w-100">
-                                        <thead>
-                                            <tr>
-                                                <th>Employee </th>
-                                                <th>Company</th>
-                                                <th>Place Of Visit</th>
-                                                <th>Start Date</th>
-                                                <th>End Date</th>
-                                                <th>Action</th>
+                                    <MaterialReactTable
+ columns={columns}
+ data={data || []}
+ enableColumnActions={false}
+ enableColumnFilters={false}
+ enableSorting={false}
+ enableTopToolbar={false}
+ enableRowActions
+             positionActionsColumn="last"
+             enableRowNumbers
+             rowNumberMode="static"
+             renderRowActions={({ row, table }) => (
+               <Box
+                 sx={{ display: "flex", flexWrap: "nowrap", gap: "8px" }}
+               >
+                 {havePermission("view") && <IconButton
+                    color="info"
+                    onClick={() => {
+                      setViewData(row.original);
+                      setIsViewOpen(true);
+                    }}
+                  >
+                    <i className="fas fa-eye"></i>
+                  </IconButton>}
 
+                   {havePermission("edit",row.original.status) && <IconButton
+                   color="secondary"
+                   onClick={() => {
+                    let obj = {
+                        ...row.original,
+                        company: row.original.company?._id,
+                        start:row.original.start?.slice(0,10),
+                        end:row.original.end?.slice(0,10),
+                        employee:row.original.employee?._id,
+                        travelType:row.original.travelType?._id
+                      };
+                      setViewData(obj);
+                      setIsOpen(true);
+                   }}
+                 >
+                   <EditIcon />
+                 </IconButton>}
+                {havePermission("delete",row.original.status)&&<IconButton
+                color="error"
+                onClick={async () => {
+                let res = await deleteTravel(row.original._id)
+                if(res.status===204) getTravels()
+                }}
+                >
+                <DeleteIcon />
+                </IconButton>}
+               </Box>
+             )}
+ muiTableProps={{
+   sx: {
+     border: '1px solid rgba(81, 81, 81, 1)',
+   },
+ }}
+ muiTableHeadCellProps={{
+   sx: {
+     border: '1px solid rgba(81, 81, 81, 1)',
+   },
+ }}
+ muiTableBodyCellProps={{
+   sx: {
+     border: '1px solid rgba(81, 81, 81, 1)',
+   },
+ }}
+ /> 
+                                    {isOpen && <AddNew viewData={viewData}
+setViewData={setViewData}
+getTravels={getTravels} show={isOpen} setShow={setIsOpen}/>}
 
-                                            </tr>
-                                        </thead>
-
-                                        <tbody>
-                                            <tr>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td>
-                                                    <button className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal"><i className="fas fa-edit" style={{fontSize:"10px"}}></i></button>
-                                                    <button className="btn btn-danger"><i className="fas fa-trash-alt" style={{fontSize:"10px"}}></i></button>
-                                                </td>
-
-                                            </tr>
-
-
-                                        </tbody>
-                                    </table>
-                                    <div className="modal fade" id="myModal">
-                                        <div className="modal-dialog modal-lg">
-                                            <div className="modal-content">
-
-                                                
-                                                <div className="modal-header">
-                                                    <h4 className="modal-title">Add New Travel</h4>
-                                                    <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
-                                                </div>
-
-                                                <div className="modal-body">
-                                                    <div className="row">
-                                                        <div className="col-md-12">
-                                                            <div className="mb-3">
-                                                                <label for="formrow-firstname-input" className="form-label">Company</label> <br/>
-                                                                <select className="form-control select2-templating " style={{width: "100%"}}>
-                                                                    <option value="HR">KMAC international pvt ltd</option>
-
-
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-12">
-                                                            <div className="mb-3">
-                                                                <label for="formrow-firstname-input" className="form-label"> Employee</label> <br/>
-                                                                <select className="form-control select2-templating " style={{width: "100%"}}>
-                                                                    <option value=""> </option>
-
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-6">
-                                                            <div className="mb-3">
-                                                                <label for="">Start Date</label>
-                                                                <input type="date" className="form-control" placeholder="Date"/>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-6">
-                                                            <div className="mb-3">
-                                                                <label for="">End Date</label>
-                                                                <input type="date" className="form-control" placeholder="Date"/>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-6">
-                                                            <div className="mb-3">
-                                                                <label for="">Expected Budget</label>
-                                                                <input type="text" className="form-control" placeholder="Expected Budget"/>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-6">
-                                                            <div className="mb-3">
-                                                                <label for="">Actual Budget</label>
-                                                                <input type="text" className="form-control" placeholder="Actual Budget"/>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-6">
-                                                            <div className="mb-3">
-                                                                <label for="">Purpose Of Visit</label>
-                                                                <input type="text" className="form-control" placeholder="visit purpose"/>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-6">
-                                                            <div className="mb-3">
-                                                                <label for="">Place of Visit</label>
-                                                                <input type="text" className="form-control" placeholder="Place of visit"/>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-6">
-                                                            <div className="mb-3">
-                                                                <label for="formrow-firstname-input" className="form-label"> Travel Mode</label> <br/>
-                                                                <select className="form-control select2-templating " style={{width: "100%"}}>
-                                                                    <option value="bus"> By Bus</option>
-                                                                    <option value="train">By Train</option>
-                                                                    <option value="plane">By Plane</option>
-                                                                    <option value="taxi">By Taxi</option>
-                                                                    <option value="rentcar">By Rental Car</option>
-
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-6">
-                                                            <div className="mb-3">
-                                                                <label for="formrow-firstname-input" className="form-label"> Arrangement Type</label> <br/>
-                                                                <select className="form-control select2-templating " style={{width: "100%"}}>
-                                                                    <option value="Corporation"> Corporation</option>
-                                                                    <option value="guest-house">Guest House</option>
-                                                                </select>
-                                                            </div>
-                                                        </div>
-
-
-
-
-                                                        <div className="col-md-12">
-                                                            <div className="mb-3">
-                                                                <label for="">Description</label>
-                                                                <textarea name="" id="" cols="30" rows="10" className="form-control" style={{height: "70px"}}></textarea>
-                                                            </div>
-                                                        </div>
-
-                                                    </div>
-                                                </div>
-
-                                                <div className="modal-footer">
-                                                    <button type="button" className="btn btn-success">SAVE</button>
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                    </div>
+{isViewOpen && (
+              <View
+                viewData={viewData}
+                setViewData={setViewData}
+                show={isViewOpen}
+                setShow={setIsViewOpen}
+              />
+            )}
 
 
                                 </div>

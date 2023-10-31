@@ -19,8 +19,9 @@ const schema = new Schema({
     date:Date,
 
     status:{
-        type:Boolean,
-        default:false
+        type:String,
+        enum:["Approved","Pending","Rejected"],
+        default:"Pending"
     },
     addedBy:{type:Schema.Types.ObjectId,ref:"employee"},
 

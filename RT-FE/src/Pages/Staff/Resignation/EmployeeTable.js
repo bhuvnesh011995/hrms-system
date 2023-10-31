@@ -1,4 +1,83 @@
+
+import MaterialReactTable from "material-react-table";
+import { Box, IconButton } from "@mui/material";
+import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { deleteResignation, getAllResignations } from "../../../Utility/API/resignation";
+import AddNew from "./AddNew";
+import View from "./View";
+
+
 export default function EmployeeTable() {
+
+    const [isOpen,setIsOpen] = useState(false)
+    const [data, setData] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isError, setIsError] = useState(false);
+    const [viewData, setViewData] = useState(null);
+    const [isViewOpen, setIsViewOpen] = useState(false);
+  
+    const getResignations = useCallback(async () => {
+      setIsLoading(true);
+      let res = await getAllResignations();
+      if (res.status === 200) {
+        setData(res.data);
+        setIsLoading(false);
+      } else {
+        console.log(res);
+        setIsLoading(false);
+        setIsError(true);
+      }
+    }, []);
+  
+    useEffect(() => {
+      getResignations();
+    }, []);
+
+    const columns = useMemo(() => [
+        {
+            accessorFn: (row)=>row.employee?row.employee.fName+" "+row.employee.lName:"NA",
+            id:"employee",
+            header: 'Employee Name',                                      
+                                                 
+          },
+        {
+            accessorFn: (row)=>row.company?row.company.name:"NA",
+            id:"company",
+            header: 'Company',                                      
+                                                 
+          },
+          {
+              accessorFn: row=>row.noticeDate?row.noticeDate.slice(0,10).split("-").reverse().join("/"):"not available",
+              id:"noticeDate",
+              header: 'Notice Date',                                      
+
+            },
+            {
+                accessorFn: row=>row.resignationDate?row.resignationDate.slice(0,10).split("-").reverse().join("/"):"not available",
+                id:"resignationDate",
+                header: 'Resignation Date',
+
+              },
+              {
+                accessorFn:row=>row.status,
+                id:"status",
+                header:"Status",
+                Cell:({renderedCellValue})=> (
+                <Box sx={{
+                    display:"flex",
+                    alignItems:"center"
+                }}>
+                    <span style={{color:renderedCellValue==="Not Approved"?"red":"green"}}>{renderedCellValue}</span>
+                </Box>
+                )
+              }
+   
+   
+        ],[])
+
+
+
     return(
         <div className="row">
                         <div className="col-12">
@@ -9,7 +88,7 @@ export default function EmployeeTable() {
                                             <h4>List All Resignations</h4>
                                         </div>
                                         <div className="col-md-6 mb-3" style={{textAlign: "right"}}>
-                                            <button className="btn btn-primary text-right" data-bs-toggle="modal" data-bs-target="#myModal">Add New</button>
+                                            <button className="btn btn-primary text-right" onClick={()=>setIsOpen(true)}>Add New</button>
                                         </div>
                                     </div>
 
@@ -28,109 +107,88 @@ export default function EmployeeTable() {
                                             Print
                                         </button>
                                     </p>
-                                    <table id="datatable" className="table table-bordered dt-responsive nowrap w-100">
-                                        <thead>
-                                            <tr>
-                                                <th>Employee Name</th>
-                                                <th>Company</th>
-                                                <th>Notice Date</th>
-                                                <th>Resignations Date</th>
-                                                <th>Action</th>
+                                    <MaterialReactTable
+ columns={columns}
+ data={data || []}
+ enableColumnActions={false}
+ enableColumnFilters={false}
+ enableSorting={false}
+ enableTopToolbar={false}
+ enableRowActions
+             positionActionsColumn="last"
+             enableRowNumbers
+             rowNumberMode="static"
+             renderRowActions={({ row, table }) => (
+               <Box
+                 sx={{ display: "flex", flexWrap: "nowrap", gap: "8px" }}
+               >
+                  <IconButton
+                    color="info"
+                    onClick={() => {
+                      setViewData(row.original);
+                      setIsViewOpen(true);
+                    }}
+                  >
+                    <i className="fas fa-eye"></i>
+                  </IconButton>
 
+                   <IconButton
+                   color="secondary"
+                   onClick={() => {
+                    let obj = {
+                        id: row.original._id,
+                        company: row.original.company?._id,
+                        resignationReason: row.original.resignationReason,
+                        noticeDate:row.original.noticeDate?.slice(0,10),
+                        resignationDate:row.original.resignationDate?.slice(0,10),
+                        employee:row.original.employee?._id,
+                        status:row.original.status
+                      };
+                      setViewData(obj);
+                      setIsOpen(true);
+                   }}
+                 >
+                   <EditIcon />
+                 </IconButton>
+                   <IconButton
+                   color="error"
+                   onClick={async () => {
+                    let res = await deleteResignation(row.original._id)
+                    if(res.status===204) getResignations()
+                   }}
+                 >
+                   <DeleteIcon />
+                 </IconButton>
+               </Box>
+             )}
+ muiTableProps={{
+   sx: {
+     border: '1px solid rgba(81, 81, 81, 1)',
+   },
+ }}
+ muiTableHeadCellProps={{
+   sx: {
+     border: '1px solid rgba(81, 81, 81, 1)',
+   },
+ }}
+ muiTableBodyCellProps={{
+   sx: {
+     border: '1px solid rgba(81, 81, 81, 1)',
+   },
+ }}
+ /> 
+ {isOpen && <AddNew viewData={viewData}
+setViewData={setViewData}
+getResignations={getResignations} show={isOpen} setShow={setIsOpen}/>}
 
-                                            </tr>
-                                        </thead>
-
-                                        <tbody>
-                                            <tr>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td>
-                                                    <button className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal"><i className="fas fa-edit" style={{fontSize:"10px"}}></i></button>
-                                                    <button className="btn btn-danger"><i className="fas fa-trash-alt" style={{fontSize:"10px"}}></i></button>
-                                                </td>
-
-                                            </tr>
-
-
-                                        </tbody>
-                                    </table>
-                                    {/* <!-- The Modal --> */}
-                                    <div className="modal fade" id="myModal">
-                                        <div className="modal-dialog modal-lg">
-                                            <div className="modal-content">
-
-                                                {/* <!-- Modal Header --> */}
-                                                <div className="modal-header">
-                                                    <h4 className="modal-title">Add New Resignation</h4>
-                                                    <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
-                                                </div>
-
-                                                {/* <!-- Modal body --> */}
-                                                <div className="modal-body">
-                                                    <div className="row">
-                                                        <div className="col-md-12">
-                                                            <div className="mb-3">
-                                                                <label for="formrow-firstname-input" className="form-label">Company</label> <br/>
-                                                                <select className="form-control select2-templating " style={{width: "100%"}}>
-                                                                    <option value="HR">KMAC international pvt ltd</option>
-
-
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-12">
-                                                            <div className="mb-3">
-                                                                <label for="formrow-firstname-input" className="form-label">Resigning Employee</label> <br/>
-                                                                <select className="form-control select2-templating " style={{width: "100%"}}>
-                                                                    <option value="Suriyana Suriyana"> Suriyana Suriyana</option>
-                                                                    <option value="Shi">Ng Shi Qian</option>
-
-
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-6">
-                                                            <div className="mb-3">
-                                                                <label for="">Notice Date</label>
-                                                                <input type="date" className="form-control" placeholder="Date"/>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-6">
-                                                            <div className="mb-3">
-                                                                <label for="formrow-firstname-input" className="form-label">Resignation Date</label> <br/>
-                                                                <select className="form-control select2-templating " style={{width: "100%"}}>
-                                                                    <option value=""></option>
-
-
-
-                                                                </select>
-                                                            </div>
-                                                        </div>
-
-
-
-                                                        <div className="col-md-12">
-                                                            <div className="mb-3">
-                                                                <label for="">Resignation Reason</label>
-                                                                <textarea name="" id="" cols="30" rows="10" className="form-control" style={{height: "70px"}}></textarea>
-                                                            </div>
-                                                        </div>
-
-                                                    </div>
-                                                </div>
-
-                                                {/* <!-- Modal footer --> */}
-                                                <div className="modal-footer">
-                                                    <button type="button" className="btn btn-success">SAVE</button>
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                    </div>
-
+{isViewOpen && (
+              <View
+                viewData={viewData}
+                setViewData={setViewData}
+                show={isViewOpen}
+                setShow={setIsViewOpen}
+              />
+            )}
 
                                 </div>
                             </div>

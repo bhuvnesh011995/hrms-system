@@ -3,49 +3,24 @@ import { Modal } from "react-bootstrap";
 import { Controller, useForm } from "react-hook-form";
 
 import { getAllCompanies } from "../../../Utility/API/company";
-import { getDepartmentByCompanyId, getDepartmentByLocationId } from "../../../Utility/API/department";
-import { getLocationByCompanyId } from "../../../Utility/API/location";
-import { addTransfer, updateTransfer } from "../../../Utility/API/transfer";
 import { getEmployeeByCompany } from "../../../Utility/API/employee";
 import { useSettingContext } from "../../../Context/settingContext";
-import { getSubdepartmentByDepartmentId } from "../../../Utility/API/subdepartment";
+import { addTravel, updateTravel } from "../../../Utility/API/travel";
 
 export default function AddNew({
   viewData,
   setViewData,
-  getTransfers,
+  getTravels,
   show,
   setShow,
 }) {
   const {setupModule} = useSettingContext()
   const [companies, setCompanies] = useState([]);
   const [dataToUpdate, setDataToUpdate] = useState();
-  const [departments, setDepartments] = useState();
-  const [locations, setLocatons] = useState();
   const [employees, setEmployees] = useState();
-  const [subdepartments,setSubdepartments] = useState()
-
-  const getDepartments = useCallback(async (id) => {
-    let res = await getDepartmentByLocationId(id);
-    if (res.status === 200) {
-      setDepartments(res.data);
-    }
-  });
-
-  const getSubdepartments = useCallback(async (id) => {
-    let res = await getSubdepartmentByDepartmentId(id);
-    if (res.status === 200) {
-      setSubdepartments(res.data);
-    }
-  });
+    const {constants} = useSettingContext()
 
 
-  const getLocations = useCallback(async (id) => {
-    let res = await getLocationByCompanyId(id);
-    if (res.status === 200) {
-      setLocatons(res.data);
-    }
-  });
 
   const getEmployees = useCallback(async (id) => {
     let res = await getEmployeeByCompany(id);
@@ -67,18 +42,16 @@ export default function AddNew({
 
   const onSubmit = useCallback(async (data, dataToUpdate) => {
     if (!viewData) {
-      if (data.file) data.file = data.file[0];
-      let res = await addTransfer(data);
+      let res = await addTravel(data);
       if (res.status === 201) {
         setShow(false);
-        getTransfers();
+        getTravels();
       } else console.log(res);
     } else {
-      if (dataToUpdate.file) dataToUpdate.file = dataToUpdate.file[0];
-      let res = await updateTransfer(viewData.id, dataToUpdate);
+      let res = await updateTravel(viewData._id, dataToUpdate);
       if (res.status === 204) {
         setShow(false);
-        getTransfers();
+        getTravels();
       } else console.log(res);
     }
   });
@@ -101,39 +74,18 @@ export default function AddNew({
 
   useEffect(() => {
     if (watch("company")) {
-      getDepartments(watch("company"));
-      
       getEmployees(watch("company"));
     } else {
-      setDepartments([]);
-      setLocatons([]);
-      setValue("location", null);
-      
-      setValue("employee", null);
+      setEmployees([]);
     }
   }, [watch("company")]);
 
-  useEffect(()=>{
-    if(watch("department")){
-      getSubdepartments(watch("department"))
-    }else{
-      setValue("subdepartment",null)
-    }
-  },[watch("department")])
 
-  useEffect(()=>{
-    if(watch('location')){
-      getLocations(watch("location"));
-      
-    }else{
-      setValue("department", null);
-    }
-  },[watch("location")])
   return (
     <Modal size="lg" show={show} onHide={() => setShow(false)}>
       <Modal.Header closeButton>
         <Modal.Title>
-          {viewData ? "Update Transfer" : "Add New Transfer"}
+          {viewData ? "Update Travel" : "Add New Travel"}
         </Modal.Title>
       </Modal.Header>
 
@@ -165,9 +117,6 @@ export default function AddNew({
                           company: e.target.value,
                         }));
                         setValue("employee","")
-                        setValue("location","")
-                        setValue("department","")
-                        setValue("subdepartment","")
                         field.onChange(e);
                       }}
                       className="form-control select2-templating"
@@ -191,7 +140,7 @@ export default function AddNew({
               <div className="mb-3">
                 <label for="formrow-firstname-input" className="form-label">
                   Employee
-                </label>{" "}
+                </label>
                 <br />
                 <Controller
                   name="employee"
@@ -199,9 +148,13 @@ export default function AddNew({
                   rules={{ required: "this is required field" }}
                   render={({ field }) => (
                     <select
-                    key={watch("company")}
+                    disabled={viewData ? true : false}
+                    key={watch("company")+"1"}
                       {...field}
-                      disabled={viewData ? true : false}
+                      onChange={e=>{
+                        setDataToUpdate(preVal=>({...preVal,employee:e.target.value}))
+                        field.onChange(e)
+                      }}
                       className="form-control select2-templating"
                       style={{ width: "100%" }}
                     >
@@ -222,11 +175,11 @@ export default function AddNew({
               </div>
             </div>
 
-            <div className={setupModule.subdepartment ? "col-md-3":"col-md-4"}>
+            <div className={"col-md-6"}>
               <div className="mb-3">
-                <label for="">Date</label>
+                <label for="">Start Date</label>
                 <Controller
-                  name="date"
+                  name="start"
                   control={control}
                   rules={{ required: "this is required field" }}
                   render={({ field }) => (
@@ -235,7 +188,7 @@ export default function AddNew({
                       onChange={(e) => {
                         setDataToUpdate((preVal) => ({
                           ...preVal,
-                          date: e.target.value,
+                          start: e.target.value,
                         }));
                         field.onChange(e);
                       }}
@@ -245,80 +198,229 @@ export default function AddNew({
                     />
                   )}
                 />
-                {errors.date && (
-                  <span style={{ color: "red" }}>{errors.date.message}</span>
+                {errors.start && (
+                  <span style={{ color: "red" }}>{errors.start.message}</span>
                 )}
               </div>
             </div>
-            <div className="mb-3">
+            
+            <div className={"col-md-6"}>
+              <div className="mb-3">
+                <label for="">End Date</label>
+                <Controller
+                  name="end"
+                  control={control}
+                  rules={{ required: "this is required field" }}
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      onChange={(e) => {
+                        setDataToUpdate((preVal) => ({
+                          ...preVal,
+                          end: e.target.value,
+                        }));
+                        field.onChange(e);
+                      }}
+                      type="date"
+                      className="form-control"
+                      placeholder=""
+                    />
+                  )}
+                />
+                {errors.end && (
+                  <span style={{ color: "red" }}>{errors.end.message}</span>
+                )}
+              </div>
+            </div>
+            
+
+
+            <div className={"col-md-6"}>
+              <div className="mb-3">
+                <label for="">Expected Budget</label>
+                <Controller
+                  name="expectedBudget"
+                  control={control}
+                  rules={{ required: "this is required field" }}
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      onChange={(e) => {
+                        setDataToUpdate((preVal) => ({
+                          ...preVal,
+                          expectedBudget: e.target.value,
+                        }));
+                        field.onChange(e);
+                      }}
+                      type="text"
+                      className="form-control"
+                      placeholder="Expected Budget"
+                    />
+                  )}
+                />
+                {errors.expectedBudget && (
+                  <span style={{ color: "red" }}>{errors.expectedBudget.message}</span>
+                )}
+              </div>
+            </div>
+            
+            <div className={"col-md-6"}>
+              <div className="mb-3">
+                <label for="">Actual Budget</label>
+                <Controller
+                  name="actualBudget"
+                  control={control}
+                  rules={{ required: "this is required field" }}
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      onChange={(e) => {
+                        setDataToUpdate((preVal) => ({
+                          ...preVal,
+                          actualBudget: e.target.value,
+                        }));
+                        field.onChange(e);
+                      }}
+                      type="text"
+                      className="form-control"
+                      placeholder="Actual Budget"
+                    />
+                  )}
+                />
+                {errors.actualBudget && (
+                  <span style={{ color: "red" }}>{errors.actualBudget.message}</span>
+                )}
+              </div>
+            </div>
+
+
+
+
+
+            <div className={"col-md-6"}>
+              <div className="mb-3">
+                <label for="">Purpose Of Visit</label>
+                <Controller
+                  name="purpose"
+                  control={control}
+                  rules={{ required: "this is required field" }}
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      onChange={(e) => {
+                        setDataToUpdate((preVal) => ({
+                          ...preVal,
+                          purpose: e.target.value,
+                        }));
+                        field.onChange(e);
+                      }}
+                      type="text"
+                      className="form-control"
+                      placeholder="Purpose Of Visit"
+                    />
+                  )}
+                />
+                {errors.purpose && (
+                  <span style={{ color: "red" }}>{errors.purpose.message}</span>
+                )}
+              </div>
+            </div>
+            
+            <div className={"col-md-6"}>
+              <div className="mb-3">
+                <label for="">Place Of Visit</label>
+                <Controller
+                  name="place"
+                  control={control}
+                  rules={{ required: "this is required field" }}
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      onChange={(e) => {
+                        setDataToUpdate((preVal) => ({
+                          ...preVal,
+                          place: e.target.value,
+                        }));
+                        field.onChange(e);
+                      }}
+                      type="text"
+                      className="form-control"
+                      placeholder=""
+                    />
+                  )}
+                />
+                {errors.place && (
+                  <span style={{ color: "red" }}>{errors.place.message}</span>
+                )}
+              </div>
+            </div>
+
+
+
+            <div className="col-md-6">
+              <div className="mb-3">
                 <label for="formrow-firstname-input" className="form-label">
-                  Transfer To (Locations)
+                  Travel Mode
                 </label>
                 <br />
                 <Controller
-                  name="location"
+                  name="travelMode"
                   control={control}
                   rules={{ required: "this is required field" }}
                   render={({ field }) => (
                     <select
-                    key={watch('company')+"1"}
                       {...field}
                       onChange={(e) => {
                         setDataToUpdate((preVal) => ({
                           ...preVal,
-                          location: e.target.value,
+                          travelMode: e.target.value,
                         }));
-                        setValue("department","")
-                        setValue("subdepartment","")
-                        
+                        setValue("employee","")
                         field.onChange(e);
                       }}
-                      className="form-control select2-templating "
+                      className="form-control select2-templating"
                       style={{ width: "100%" }}
                     >
-                      <option value="">choose...</option>
-                      {locations?.map((ele, i) => (
-                        <option key={i} value={ele._id}>
-                          {ele.name}
-                        </option>
-                      ))}
+                        <option value="">choose...</option>
+                        <option value="bus"> By Bus</option>
+                        <option value="train">By Train</option>
+                        <option value="plane">By Plane</option>
+                        <option value="taxi">By Taxi</option>
+                        <option value="rentcar">By Rental Car</option>
                     </select>
                   )}
                 />
-                {errors.location && (
-                  <span style={{ color: "red" }}>
-                    {errors.location.message}
-                  </span>
+                {errors.travelMode && (
+                  <span style={{ color: "red" }}>{errors.travelMode.message}</span>
                 )}
               </div>
-            <div className={setupModule.subdepartment ? "col-md-3":"col-md-4"}>
+            </div>
+
+            <div className="col-md-6">
               <div className="mb-3">
                 <label for="formrow-firstname-input" className="form-label">
-                  Transfer To (Department)
+                    Arrangement Type
                 </label>
                 <br />
                 <Controller
-                  name="department"
+                  name="travelType"
                   control={control}
                   rules={{ required: "this is required field" }}
                   render={({ field }) => (
                     <select
-                    key={watch("location")+"1"}
                       {...field}
                       onChange={(e) => {
                         setDataToUpdate((preVal) => ({
                           ...preVal,
-                          department: e.target.value,
+                          travelType: e.target.value,
                         }));
-                        setValue("subdepartment","")
-                        
                         field.onChange(e);
                       }}
-                      className="form-control select2-templating "
+                      className="form-control select2-templating"
                       style={{ width: "100%" }}
                     >
                       <option value="">choose...</option>
-                      {departments?.map((ele, i) => (
+                      {constants?.travelArrangement.map((ele, i) => (
                         <option key={i} value={ele._id}>
                           {ele.name}
                         </option>
@@ -326,58 +428,54 @@ export default function AddNew({
                     </select>
                   )}
                 />
-                {errors.department && (
-                  <span style={{ color: "red" }}>
-                    {errors.department.message}
-                  </span>
+                {errors.travelType && (
+                  <span style={{ color: "red" }}>{errors.travelType.message}</span>
                 )}
               </div>
             </div>
-            {setupModule.subdepartment && <div className="col-md-3">
+
+            {viewData && <div className="col-md-12">
               <div className="mb-3">
                 <label for="formrow-firstname-input" className="form-label">
-                  Transfer To (Subdepartment)
-                </label>
+                  Status
+                </label>{" "}
                 <br />
                 <Controller
-                  name="subdepartment"
+                  name="status"
                   control={control}
+                  rules={{ required: "this is required field" }}
                   render={({ field }) => (
                     <select
-                    key={watch("department")+"1"}
                       {...field}
                       onChange={(e) => {
                         setDataToUpdate((preVal) => ({
                           ...preVal,
-                          subdepartment: e.target.value,
+                          status: e.target.value,
                         }));
                         field.onChange(e);
                       }}
-                      className="form-control select2-templating "
+                      className="form-control select2-templating"
                       style={{ width: "100%" }}
                     >
-                      <option value="">choose...</option>
-                      {subdepartments?.map((ele, i) => (
-                        <option key={i} value={ele._id}>
-                          {ele.name}
-                        </option>
-                      ))}
+                        <option value="Pending">Pending</option>
+                        <option value="Rejected">Rejected</option>
+                        <option value="Accepted">Accepted</option>
                     </select>
                   )}
                 />
-                {errors.subdepartment && (
-                  <span style={{ color: "red" }}>
-                    {errors.subdepartment.message}
-                  </span>
+                {errors.status && (
+                  <span style={{ color: "red" }}>{errors.status.message}</span>
                 )}
               </div>
             </div>}
-            <div className={setupModule.subdepartment ? "col-md-3":"col-md-4"}>
-            </div>
+
+
+
+          
 
             <div className="col-md-12">
               <div className="mb-3">
-                <label for="">Description</label>
+                <label for="">Resignation Reason</label>
                 <Controller
                   control={control}
                   name="description"

@@ -1,4 +1,4 @@
-import { createContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import BASEURL from "../Config/Config";
 
@@ -69,5 +69,7 @@ useEffect(()=>{
         </authContext.Provider>
     )
 }
+const useAuth = ()=>useContext(authContext)
 
-export {authContext,api,formApi}
+
+export {authContext,api,formApi,useAuth}

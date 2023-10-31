@@ -3,49 +3,24 @@ import { Modal } from "react-bootstrap";
 import { Controller, useForm } from "react-hook-form";
 
 import { getAllCompanies } from "../../../Utility/API/company";
-import { getDepartmentByCompanyId, getDepartmentByLocationId } from "../../../Utility/API/department";
-import { getLocationByCompanyId } from "../../../Utility/API/location";
-import { addTransfer, updateTransfer } from "../../../Utility/API/transfer";
 import { getEmployeeByCompany } from "../../../Utility/API/employee";
 import { useSettingContext } from "../../../Context/settingContext";
-import { getSubdepartmentByDepartmentId } from "../../../Utility/API/subdepartment";
+import { addResignation, updateResignation } from "../../../Utility/API/resignation";
 
 export default function AddNew({
   viewData,
   setViewData,
-  getTransfers,
+  getResignations,
   show,
   setShow,
 }) {
   const {setupModule} = useSettingContext()
   const [companies, setCompanies] = useState([]);
   const [dataToUpdate, setDataToUpdate] = useState();
-  const [departments, setDepartments] = useState();
-  const [locations, setLocatons] = useState();
   const [employees, setEmployees] = useState();
-  const [subdepartments,setSubdepartments] = useState()
-
-  const getDepartments = useCallback(async (id) => {
-    let res = await getDepartmentByLocationId(id);
-    if (res.status === 200) {
-      setDepartments(res.data);
-    }
-  });
-
-  const getSubdepartments = useCallback(async (id) => {
-    let res = await getSubdepartmentByDepartmentId(id);
-    if (res.status === 200) {
-      setSubdepartments(res.data);
-    }
-  });
 
 
-  const getLocations = useCallback(async (id) => {
-    let res = await getLocationByCompanyId(id);
-    if (res.status === 200) {
-      setLocatons(res.data);
-    }
-  });
+
 
   const getEmployees = useCallback(async (id) => {
     let res = await getEmployeeByCompany(id);
@@ -67,18 +42,17 @@ export default function AddNew({
 
   const onSubmit = useCallback(async (data, dataToUpdate) => {
     if (!viewData) {
-      if (data.file) data.file = data.file[0];
-      let res = await addTransfer(data);
+      let res = await addResignation(data);
       if (res.status === 201) {
         setShow(false);
-        getTransfers();
+        getResignations();
       } else console.log(res);
     } else {
       if (dataToUpdate.file) dataToUpdate.file = dataToUpdate.file[0];
-      let res = await updateTransfer(viewData.id, dataToUpdate);
+      let res = await updateResignation(viewData.id, dataToUpdate);
       if (res.status === 204) {
         setShow(false);
-        getTransfers();
+        getResignations();
       } else console.log(res);
     }
   });
@@ -101,39 +75,18 @@ export default function AddNew({
 
   useEffect(() => {
     if (watch("company")) {
-      getDepartments(watch("company"));
-      
       getEmployees(watch("company"));
     } else {
-      setDepartments([]);
-      setLocatons([]);
-      setValue("location", null);
-      
-      setValue("employee", null);
+      setEmployees([]);
     }
   }, [watch("company")]);
 
-  useEffect(()=>{
-    if(watch("department")){
-      getSubdepartments(watch("department"))
-    }else{
-      setValue("subdepartment",null)
-    }
-  },[watch("department")])
 
-  useEffect(()=>{
-    if(watch('location')){
-      getLocations(watch("location"));
-      
-    }else{
-      setValue("department", null);
-    }
-  },[watch("location")])
   return (
     <Modal size="lg" show={show} onHide={() => setShow(false)}>
       <Modal.Header closeButton>
         <Modal.Title>
-          {viewData ? "Update Transfer" : "Add New Transfer"}
+          {viewData ? "Update Resignation" : "Add New Resignation"}
         </Modal.Title>
       </Modal.Header>
 
@@ -165,9 +118,6 @@ export default function AddNew({
                           company: e.target.value,
                         }));
                         setValue("employee","")
-                        setValue("location","")
-                        setValue("department","")
-                        setValue("subdepartment","")
                         field.onChange(e);
                       }}
                       className="form-control select2-templating"
@@ -199,7 +149,7 @@ export default function AddNew({
                   rules={{ required: "this is required field" }}
                   render={({ field }) => (
                     <select
-                    key={watch("company")}
+                    key={watch("company")+"1"}
                       {...field}
                       disabled={viewData ? true : false}
                       className="form-control select2-templating"
@@ -222,11 +172,11 @@ export default function AddNew({
               </div>
             </div>
 
-            <div className={setupModule.subdepartment ? "col-md-3":"col-md-4"}>
+            <div className={"col-md-6"}>
               <div className="mb-3">
-                <label for="">Date</label>
+                <label for="">Notice Date</label>
                 <Controller
-                  name="date"
+                  name="noticeDate"
                   control={control}
                   rules={{ required: "this is required field" }}
                   render={({ field }) => (
@@ -235,7 +185,7 @@ export default function AddNew({
                       onChange={(e) => {
                         setDataToUpdate((preVal) => ({
                           ...preVal,
-                          date: e.target.value,
+                          noticeDate: e.target.value,
                         }));
                         field.onChange(e);
                       }}
@@ -245,149 +195,88 @@ export default function AddNew({
                     />
                   )}
                 />
-                {errors.date && (
-                  <span style={{ color: "red" }}>{errors.date.message}</span>
+                {errors.noticeDate && (
+                  <span style={{ color: "red" }}>{errors.noticeDate.message}</span>
                 )}
               </div>
             </div>
-            <div className="mb-3">
+            
+            <div className={"col-md-6"}>
+              <div className="mb-3">
+                <label for="">Resignation Date</label>
+                <Controller
+                  name="resignationDate"
+                  control={control}
+                  rules={{ required: "this is required field" }}
+                  render={({ field }) => (
+                    <input
+                      {...field}
+                      onChange={(e) => {
+                        setDataToUpdate((preVal) => ({
+                          ...preVal,
+                          resignationDate: e.target.value,
+                        }));
+                        field.onChange(e);
+                      }}
+                      type="date"
+                      className="form-control"
+                      placeholder=""
+                    />
+                  )}
+                />
+                {errors.resignationDate && (
+                  <span style={{ color: "red" }}>{errors.resignationDate.message}</span>
+                )}
+              </div>
+            </div>
+            {viewData && <div className="col-md-12">
+              <div className="mb-3">
                 <label for="formrow-firstname-input" className="form-label">
-                  Transfer To (Locations)
-                </label>
+                  Status
+                </label>{" "}
                 <br />
                 <Controller
-                  name="location"
+                  name="status"
                   control={control}
                   rules={{ required: "this is required field" }}
                   render={({ field }) => (
                     <select
-                    key={watch('company')+"1"}
                       {...field}
                       onChange={(e) => {
                         setDataToUpdate((preVal) => ({
                           ...preVal,
-                          location: e.target.value,
-                        }));
-                        setValue("department","")
-                        setValue("subdepartment","")
-                        
-                        field.onChange(e);
-                      }}
-                      className="form-control select2-templating "
-                      style={{ width: "100%" }}
-                    >
-                      <option value="">choose...</option>
-                      {locations?.map((ele, i) => (
-                        <option key={i} value={ele._id}>
-                          {ele.name}
-                        </option>
-                      ))}
-                    </select>
-                  )}
-                />
-                {errors.location && (
-                  <span style={{ color: "red" }}>
-                    {errors.location.message}
-                  </span>
-                )}
-              </div>
-            <div className={setupModule.subdepartment ? "col-md-3":"col-md-4"}>
-              <div className="mb-3">
-                <label for="formrow-firstname-input" className="form-label">
-                  Transfer To (Department)
-                </label>
-                <br />
-                <Controller
-                  name="department"
-                  control={control}
-                  rules={{ required: "this is required field" }}
-                  render={({ field }) => (
-                    <select
-                    key={watch("location")+"1"}
-                      {...field}
-                      onChange={(e) => {
-                        setDataToUpdate((preVal) => ({
-                          ...preVal,
-                          department: e.target.value,
-                        }));
-                        setValue("subdepartment","")
-                        
-                        field.onChange(e);
-                      }}
-                      className="form-control select2-templating "
-                      style={{ width: "100%" }}
-                    >
-                      <option value="">choose...</option>
-                      {departments?.map((ele, i) => (
-                        <option key={i} value={ele._id}>
-                          {ele.name}
-                        </option>
-                      ))}
-                    </select>
-                  )}
-                />
-                {errors.department && (
-                  <span style={{ color: "red" }}>
-                    {errors.department.message}
-                  </span>
-                )}
-              </div>
-            </div>
-            {setupModule.subdepartment && <div className="col-md-3">
-              <div className="mb-3">
-                <label for="formrow-firstname-input" className="form-label">
-                  Transfer To (Subdepartment)
-                </label>
-                <br />
-                <Controller
-                  name="subdepartment"
-                  control={control}
-                  render={({ field }) => (
-                    <select
-                    key={watch("department")+"1"}
-                      {...field}
-                      onChange={(e) => {
-                        setDataToUpdate((preVal) => ({
-                          ...preVal,
-                          subdepartment: e.target.value,
+                          status: e.target.value,
                         }));
                         field.onChange(e);
                       }}
-                      className="form-control select2-templating "
+                      className="form-control select2-templating"
                       style={{ width: "100%" }}
                     >
-                      <option value="">choose...</option>
-                      {subdepartments?.map((ele, i) => (
-                        <option key={i} value={ele._id}>
-                          {ele.name}
-                        </option>
-                      ))}
+                        <option value="Not Approved">Not Approved</option>
+                        <option value="Manager Level Approved">Manager Level Approved</option>
+                        <option value="HRD Level Approved">HRD Level Approved</option>
+                        <option value="GM/OM Level Approved">GM/OM Level Approved</option>
                     </select>
                   )}
                 />
-                {errors.subdepartment && (
-                  <span style={{ color: "red" }}>
-                    {errors.subdepartment.message}
-                  </span>
+                {errors.status && (
+                  <span style={{ color: "red" }}>{errors.status.message}</span>
                 )}
               </div>
             </div>}
-            <div className={setupModule.subdepartment ? "col-md-3":"col-md-4"}>
-            </div>
-
             <div className="col-md-12">
               <div className="mb-3">
-                <label for="">Description</label>
+                <label for="">Resignation Reason</label>
                 <Controller
                   control={control}
-                  name="description"
+                  name="resignationReason"
                   render={({ field }) => (
                     <textarea
                       {...field}
                       onChange={(e) => {
                         setDataToUpdate((preVal) => ({
                           ...preVal,
-                          description: e.target.value,
+                          resignationReason: e.target.value,
                         }));
                         field.onChange(e);
                       }}

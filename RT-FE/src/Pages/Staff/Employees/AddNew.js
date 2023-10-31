@@ -65,7 +65,11 @@ export default function AddNew({ viewData,
     let res = await getEmployeeByCompany(id);
 
     if (res.status === 200) {
-      setEmployees(res.data);
+      let data = res.data
+      if(viewData){
+        data = data.filter(ele=>viewData._id != ele._id)
+      }
+      setEmployees(data);
     }else{
       setEmployees([])
     }

@@ -161,7 +161,6 @@ mongoose.connect(dbConfig.URI, {
   require("./route/timesheet/officeShift.route")(app)
   require("./route/coreHR/award.route")(app)
   require("./route/staff/employee.route")(app)
-  // transfer route is not tested in postman so test before using it
   require("./route/coreHR/transfer.route")(app)
   require("./route/system/paymentGateway.route")(app)
   require("./route/system/setting/system.route")(app)
@@ -172,6 +171,7 @@ mongoose.connect(dbConfig.URI, {
   require("./route/system/languageSetting.route")(app)
   require("./route/system/system.route")(app)
   require("./route/grouping.route")(app)
-
-  
+  require("./route/coreHR/resignation.route")(app)
+  require("./route/coreHR/travel.route")(app)
+  require("./route/coreHR/promotion.route")(app)
 exports.app = app
