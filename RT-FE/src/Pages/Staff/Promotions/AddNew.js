@@ -3,9 +3,10 @@ import { Modal } from "react-bootstrap";
 import { Controller, useForm } from "react-hook-form";
 
 import { getAllCompanies } from "../../../Utility/API/company";
-import { getEmployeeByCompany } from "../../../Utility/API/employee";
+import { getEmployeeByCompany, getEmployeeDetailById } from "../../../Utility/API/employee";
 import { getDesignationsByCompanyId } from "../../../Utility/API/designation";
 import { addPromotion, updatePromotion } from "../../../Utility/API/promotion";
+import { toast } from "react-toastify";
 
 export default function AddNew({
   viewData,
@@ -19,7 +20,7 @@ export default function AddNew({
   const [dataToUpdate, setDataToUpdate] = useState();
   const [employees, setEmployees] = useState();
   const [designations, setDesignations] = useState();
-
+  const [employee,setEmployee] = useState()
 
 
   const getEmployees = useCallback(async (id) => {
@@ -64,6 +65,25 @@ export default function AddNew({
       } else console.log(res);
     }
   });
+
+
+  const employeeDetail = useCallback(async id =>{
+    try {
+      let res = await getEmployeeDetailById(id)
+
+      if(res.status===200){
+        setEmployee(res.data)
+      }else {
+        toast.error("error while getting employee details")
+        console.log(res)
+        setEmployee({})
+      }
+    } catch (error) {
+      console.log(error)
+      toast.error("error while getting employee details")
+    }
+  })
+
   const getCompanies = useCallback(async () => {
     let res = await getAllCompanies();
     if (res.status === 200) {
@@ -92,11 +112,19 @@ export default function AddNew({
   }, [watch("company")]);
 
 
+  useEffect(()=>{
+    if(watch("employee")){
+      employeeDetail(watch("employee"))
+    }else{
+      setEmployee({})
+    }
+  },[watch("employee")])
+
   return (
     <Modal size="lg" show={show} onHide={() => setShow(false)}>
       <Modal.Header closeButton>
         <Modal.Title>
-          {viewData ? "Update Resignation" : "Add New Resignation"}
+          {viewData ? "Update Promotion" : "Add New Promotion"}
         </Modal.Title>
       </Modal.Header>
 
@@ -201,7 +229,7 @@ export default function AddNew({
                     >
                       <option value="">choose...</option>
                       {designations?.map((ele, i) => (
-                        <option key={i} value={ele._id}>
+                        <option disabled={employee?.designation === ele._id} key={i} value={ele._id}>
                           {ele.name}
                         </option>
                       ))}

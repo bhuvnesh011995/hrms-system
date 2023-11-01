@@ -22,5 +22,7 @@ module.exports = {
     grouping:require("./grouping.model"),
     resignations:require("./coreHR/resignation.model"),
     travel:require("./coreHR/travel.model"),
-    promotion:require("./coreHR/promotion.model")
+    promotion:require("./coreHR/promotion.model"),
+    complaints:require("./coreHR/complaint.model"),
+    
 }

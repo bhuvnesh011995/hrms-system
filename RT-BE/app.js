@@ -13,6 +13,8 @@ const express=require('express')
 // const methodOverride = require('method-override');
 
 // connecting to database
+
+console.log(dbConfig.URI)
 mongoose.connect(dbConfig.URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
@@ -58,7 +60,7 @@ mongoose.connect(dbConfig.URI, {
       name:"Super Admin",
       permission:["All"]
     })
-    console.info("role is created")
+    console.info("super admin role is created")
 }else console.info("role is already present")
 
 
@@ -174,4 +176,6 @@ mongoose.connect(dbConfig.URI, {
   require("./route/coreHR/resignation.route")(app)
   require("./route/coreHR/travel.route")(app)
   require("./route/coreHR/promotion.route")(app)
+  require("./route/coreHR/complaint.route")(app)
+  
 exports.app = app

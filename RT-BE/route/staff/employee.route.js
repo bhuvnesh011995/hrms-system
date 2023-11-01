@@ -7,4 +7,5 @@ module.exports = async function(app){
     app.put("/rt/api/v1/employee/:id",[],employeeController.updateEmployee)
     app.delete("/rt/api/v1/employee/:id",[],employeeController.deleteEmployee)
     app.get("/rt/api/v1/employee/:id",[],employeeController.getEmployeeByCompany)
+    app.get("/rt/api/v1/company/employee/:id",[],employeeController.getEmployeeDetailById)
 }

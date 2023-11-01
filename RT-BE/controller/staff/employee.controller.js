@@ -215,3 +215,17 @@ exports.getEmployeeByCompany = async (req,res,next)=>{
         res.status(500).json({success:false,message:"internal error occured"})
     }
 }
+
+
+
+exports.getEmployeeDetailById = async (req,res,next)=>{
+    try {
+        let employee = await db.employee.findOne({_id:req.params.id}).select("-password").lean()
+
+        res.status(200).json(employee)
+    } catch (error) {
+        console.log(error)
+        
+        res.status(500).json({success:false,message:"internal error occured"})
+    }
+} 

@@ -4,6 +4,7 @@ import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { deletePromotion, getAllPromotions } from "../../../Utility/API/promotion";
 import AddNew from "./AddNew";
+import View from "./View";
 
 
 
@@ -160,109 +161,16 @@ export default function EmployeeTable() {
  {isOpen && <AddNew viewData={viewData}
 setViewData={setViewData}
 getPromotions={getPromotions} show={isOpen} setShow={setIsOpen}/>}
-                                    {<table id="datatable" className="table table-bordered dt-responsive nowrap w-100">
-                                        <thead>
-                                            <tr>
-                                                <th>Employee Name </th>
-                                                <th>Company</th>
-                                                <th>Promotion Title</th>
-                                                <th>Date</th>
-                                                <th>Action</th>
 
 
-                                            </tr>
-                                        </thead>
-
-                                        <tbody>
-                                            <tr>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td>
-                                                    <button className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal"><i className="fas fa-edit" style={{fontSize:"10px"}}></i></button>
-                                                    <button className="btn btn-danger"><i className="fas fa-trash-alt" style={{fontSize:"10px"}}></i></button>
-                                                </td>
-
-                                            </tr>
-
-
-                                        </tbody>
-                                    </table>}
-                                    {/* <!-- The Modal --> */}
-                                    <div className="modal fade" id="myModal">
-                                        <div className="modal-dialog modal-lg">
-                                            <div className="modal-content">
-
-                                                {/* <!-- Modal Header --> */}
-                                                <div className="modal-header">
-                                                    <h4 className="modal-title">Add New Promotion</h4>
-                                                    <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
-                                                </div>
-
-                                                {/* <!-- Modal body --> */}
-                                                <div className="modal-body">
-                                                    <div className="row">
-                                                        <div className="col-md-12">
-                                                            <div className="mb-3">
-                                                                <label for="formrow-firstname-input" className="form-label">Company</label> <br/>
-                                                                <select className="form-control select2-templating " style={{width: "100%"}}>
-                                                                    <option value="HR">KMAC international pvt ltd</option>
-                                                                </select>
-                                                            </div>
-                                                        </div>
-
-                                                        <div className="col-md-6">
-                                                            <div className="mb-3">
-                                                                <label for="formrow-firstname-input" className="form-label">Promotion For</label> <br/>
-                                                                <select className="form-control select2-templating " style={{width: "100%"}}>
-                                                                    <option value=""></option>
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-6">
-                                                            <div className="mb-3">
-                                                                <label for="formrow-firstname-input" className="form-label">Designation</label> <br/>
-                                                                <select className="form-control select2-templating " style={{width: "100%"}}>
-                                                                    <option value=""></option>
-                                                                </select>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-6">
-                                                            <div className="mb-3">
-                                                                <label for="">Promotion Title </label>
-                                                                <input type="text" className="form-control" placeholder="promotion title"/>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-6">
-                                                            <div className="mb-3">
-                                                                <label for="">Promotion Date</label>
-                                                                <input type="date" className="form-control" placeholder=""/>
-                                                            </div>
-                                                        </div>
-
-
-
-
-                                                        <div className="col-md-12">
-                                                            <div className="mb-3">
-                                                                <label for="">Description</label>
-                                                                <textarea name="" id="" cols="30" rows="10" className="form-control" style={{height: "70px"}}></textarea>
-                                                            </div>
-                                                        </div>
-
-                                                    </div>
-                                                </div>
-
-                                                {/* <!-- Modal footer --> */}
-                                                <div className="modal-footer">
-                                                    <button type="button" className="btn btn-success">SAVE</button>
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                    </div>
-
+{isViewOpen && (
+              <View
+                viewData={viewData}
+                setViewData={setViewData}
+                show={isViewOpen}
+                setShow={setIsViewOpen}
+              />
+            )}
 
                                 </div>
                             </div>

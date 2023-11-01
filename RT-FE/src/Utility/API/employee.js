@@ -53,3 +53,16 @@ export const deleteEmployee = async (id)=>{
         return error.response
     }
 }
+
+
+
+export const getEmployeeDetailById = async id=>{
+    try {
+        let response = await api.get("/company/employee/"+id)
+
+        return response
+    } catch (error) {
+        console.log(error)
+        return error.response
+    }
+}
