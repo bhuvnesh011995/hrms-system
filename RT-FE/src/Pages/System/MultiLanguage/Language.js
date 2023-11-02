@@ -17,7 +17,7 @@ const getLanguages = useCallback(async ()=>{
   let res = await getAllLanguage()
 
   if(res.status===200){
-    setData(res.data.languages)
+    setData(res.data?.languages)
     setIsLoading(false)
   }else{
     console.log(res)

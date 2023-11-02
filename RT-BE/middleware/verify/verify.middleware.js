@@ -14,7 +14,11 @@ try {
         req.role = decode.role
         req.id = decode.id
 
+        next()
+
     })
+
+    
     
 } catch (error) {
     console.log(error)
@@ -24,6 +28,6 @@ try {
     })
 }
 
-next()
+
     
 }

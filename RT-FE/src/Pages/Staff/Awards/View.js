@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { Modal } from "react-bootstrap";
+import { imgUrl } from "../../../Config/Config";
 
 export default function View({ viewData, setViewData, show, setShow }) {
   useEffect(() => {
@@ -118,7 +119,7 @@ export default function View({ viewData, setViewData, show, setShow }) {
             </p>
           </div>
           <div className="col-md-8">
-            <p>{viewData?.filename?.slice(8)}  <a target="_blank" download={viewData?.filename} href={"http://localhost:8080/image/"+viewData?.filename}>Download</a></p>
+            <p>{viewData?.filename?.slice(8)}  <a target="_blank" download={viewData?.filename} href={`${imgUrl}/`+viewData?.filename}>Download</a></p>
           </div>
         </div>
         

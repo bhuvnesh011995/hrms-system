@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { Modal } from "react-bootstrap";
+import { fileUrl } from "../../../Config/Config";
 
 export default function View({ viewData, setViewData, show, setShow }) {
   useEffect(() => {
@@ -84,7 +85,7 @@ export default function View({ viewData, setViewData, show, setShow }) {
             </p>
           </div>
           <div className="col-md-8">
-            <p>{viewData?.filename} " " <a target="_blank" download={viewData.filename} href={"http://localhost:8080/files/"+viewData.filename}>Download</a></p>
+            <p>{viewData?.filename} " " <a target="_blank" download={viewData.filename} href={`${fileUrl}/`+viewData.filename}>Download</a></p>
           </div>
         </div>
         

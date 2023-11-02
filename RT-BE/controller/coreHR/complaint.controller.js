@@ -36,7 +36,7 @@ exports.addComplaint = async function(req,res,next){
 
 exports.getAllComplaints = async function(req,res,next){
     try {
-
+      
         let complaints = await db.complaints.find().populate([{path:"company",select:"name"},{path:"from",select:"fName lName"},{path:"against",select:"fName lName"}])
 
         res.status(200).json(complaints)
@@ -96,6 +96,22 @@ exports.updateComplaint = async function(req,res,next){
 exports.deleteComplaint = async function(req,res,next){
     try {
         const {id} = req.params
+
+        let complaint = await db.complaints.findOne({_id:id}).select('files')
+
+        if(complaint.files?.length){
+            complaint.files.forEach(ele=>{
+                if(fs.existsSync("./public/files/"+ele)){
+                    fs.unlink("./public/files/"+ele,(err)=>{
+                        if(err){
+                            console.log(err)
+                        }else{
+                            console.log(`file ${ele} deleted`)
+                        }
+                    })
+                }
+            })
+        }
 
         await db.complaints.deleteOne({_id:id})
 

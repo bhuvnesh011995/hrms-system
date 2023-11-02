@@ -27,8 +27,8 @@ getLanguage = async (id="")=>{
     let res = await api.get("/language/?id="+id)
     
     if(res.status===200){
-        setLanCode(res.data.language.code)
-        setLanguage(res.data.language.language)
+        setLanCode(res?.data?.language?.code)
+        setLanguage(res?.data?.language?.language)
     }
 }
 

@@ -230,7 +230,7 @@ export default function AddNew({
                       onChange={(e) => {
                         setDataToUpdate((preVal) => ({
                           ...preVal,
-                          data: e.target.value,
+                          date: e.target.value,
                         }));
                         field.onChange(e);
                       }}

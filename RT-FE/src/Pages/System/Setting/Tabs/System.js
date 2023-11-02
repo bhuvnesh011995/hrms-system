@@ -38,7 +38,7 @@ export default function System({getSettingData,data}) {
                     }
 
                     if(langRes.status===200){
-                      setLanguage(langRes.data.languages)
+                      setLanguage(langRes.data?.languages)
                     }
                     setIsLoading(false)
                 } catch (error) {

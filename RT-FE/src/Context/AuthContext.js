@@ -37,6 +37,7 @@ export default function AuthProvider({children}){
     return
     }
 useEffect(()=>{
+    console.log(BASEURL)
     getPermission()
 },[user])
 
