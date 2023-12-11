@@ -48,7 +48,7 @@ export default function Navbar({inactive,setInactive}){
     },[user])
 async function getAllLanguages(){
     let res = await getAllLanguage()
-    if(res.status ===200){
+    if(res?.status ===200){
         setLanguages(res.data?.languages)
     }
 }
