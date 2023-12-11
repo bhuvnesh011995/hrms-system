@@ -24,5 +24,8 @@ module.exports = {
     travel:require("./coreHR/travel.model"),
     promotion:require("./coreHR/promotion.model"),
     complaints:require("./coreHR/complaint.model"),
+    warnings:require("./coreHR/warning.model"),
+    terminations:require("./coreHR/termination.model"),
     
+
 }

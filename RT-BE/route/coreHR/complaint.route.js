@@ -21,7 +21,8 @@ module.exports = app=>{
     app.post("/rt/api/v1/complaint",[midware.verifyToken, upload.array("files")],complaintController.addComplaint)
     app.put("/rt/api/v1/complaint/:id",[upload.array("files")],complaintController.updateComplaint)
     app.delete("/rt/api/v1/complaint/:id",[],complaintController.deleteComplaint)
-    app.delete("/rt/file/:filename/:id",[],complaintController.deleteFileFromComplaint)
+    app.delete("/rt/api/v1/complaint/file/:filename/:id",[],complaintController.deleteFileFromComplaint)
+    app.get("/rt/api/v1/complaint/:id",[],complaintController.getComplaintById)
 }
 
     

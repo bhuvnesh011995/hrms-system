@@ -1,21 +1,21 @@
 import { useCallback, useEffect, useState } from "react";
 import { Modal } from "react-bootstrap";
 import { Controller, useForm } from "react-hook-form";
-import { addComplaint, updateComplaint } from "../../../Utility/API/complaint";
 import { getAllCompanies } from "../../../Utility/API/company";
 import { getEmployeeByCompany } from "../../../Utility/API/employee";
 import { toast } from "react-toastify";
+import { addTermination, updateTermination } from "../../../Utility/API/termination";
 
 export default function AddNew({viewData,
     setViewData,
-    getComplaints,show,setShow}) {
+    getTerminations,show,setShow}) {
 
  
         const [dataToUpdate, setDataToUpdate] = useState();
         const [companies, setCompanies] = useState();
         const [employees, setEmployees] = useState();
 
-      
+
         const {
           register,
           reset,
@@ -39,10 +39,10 @@ export default function AddNew({viewData,
               formData.append(key,data[key])
             }
            }
-            let res = await addComplaint(formData);
+            let res = await addTermination(formData);
             if (res.status === 201) {
               setShow(false);
-              getComplaints();
+              getTerminations();
             } else console.log(res);
           } else {
             if(!dataToUpdate) return toast.error("no data to update")
@@ -57,13 +57,13 @@ export default function AddNew({viewData,
               formData.append(key,data[key])
             }
            }
-          
 
-            let res = await updateComplaint(viewData._id, formData);
+
+            let res = await updateTermination(viewData._id, formData);
             if (res.status === 204) {
               toast.success("complaint updated")
               setShow(false);
-              getComplaints();
+              getTerminations();
             } else console.log(res);
           }
         },[viewData]);
@@ -80,9 +80,7 @@ export default function AddNew({viewData,
             setEmployees(res.data);
           }
         }, []);
-      
-       
-      
+
         useEffect(() => {
           getCompanies();
           if (viewData) {
@@ -107,7 +105,7 @@ export default function AddNew({viewData,
     return(
         <Modal size="lg" show={show} onHide={() => setShow(false)}>
           <Modal.Header closeButton>
-            <Modal.Title>Add New Complaint</Modal.Title>
+            <Modal.Title>Add New Termination</Modal.Title>
           </Modal.Header>
     
           <Modal.Body>
@@ -154,11 +152,11 @@ export default function AddNew({viewData,
               </div>
             </div>
 
-                                                        <div className="col-md-6">
-                                                            <div className="mb-3">
-                                                                <label for="formrow-firstname-input" className="form-label">Complaint From</label> <br/>
-                                                                <Controller
-                  name="from"
+               <div className="col-md-6">
+                <div className="mb-3">
+                 <label for="formrow-firstname-input" className="form-label">Terminate Employee</label> <br/>
+                 <Controller
+                  name="employee"
                   control={control}
                   rules={{ required: "this is required field" }}
                   render={({ field }) => (
@@ -169,7 +167,7 @@ export default function AddNew({viewData,
                       onChange={(e) => {
                         setDataToUpdate((preVal) => ({
                           ...preVal,
-                          from: e.target.value,
+                          employee: e.target.value,
                         }));
                         field.onChange(e);
                       }}
@@ -185,48 +183,18 @@ export default function AddNew({viewData,
                     </select>
                   )}
                 />
-                {errors.from && (
+                {errors.employee && (
                   <span style={{ color: "red" }}>
-                    {errors.from.message}
+                    {errors.employee.message}
                   </span>
                 )}
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-6">
-                                                            <div className="mb-3">
-                                                                <label for="">Complaint Title</label>
-                                                                <Controller
-                  name="title"
-                  control={control}
-                  rules={{
-                    required: "thihs is required field",
-                  }}
-                  render={({ field }) => (
-                    <input
-                      {...field}
-                      onChange={(e) => {
-                        setDataToUpdate((preVal) => ({
-                          ...preVal,
-                          title: e.target.value,
-                        }));
-                        field.onChange(e);
-                      }}
-                      className="form-control"
-                    />
-                  )}
-                />
-                {errors.title && (
-                  <span style={{ color: "red" }}>
-                    {errors.title.message}
-                  </span>
-                )}
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-6">
-                                                            <div className="mb-3">
-                                                                <label for="">Complaint Date </label>
-                                                                <Controller
-                  name="date"
+                    </div>
+                      </div>
+                       <div className="col-md-6">
+                         <div className="mb-3">
+                          <label for="">Notice Date </label>
+                           <Controller
+                  name="noticeDate"
                   control={control}
                   rules={{ required: "this is required field" }}
                   render={({ field }) => (
@@ -235,7 +203,7 @@ export default function AddNew({viewData,
                       onChange={(e) => {
                         setDataToUpdate((preVal) => ({
                           ...preVal,
-                          date: e.target.value,
+                          noticeDate: e.target.value,
                         }));
                         field.onChange(e);
                       }}
@@ -245,62 +213,52 @@ export default function AddNew({viewData,
                     />
                   )}
                 />
-                {errors.date && (
-                  <span style={{ color: "red" }}>{errors.date.message}</span>
+                {errors.noticeDate && (
+                  <span style={{ color: "red" }}>{errors.noticeDate.message}</span>
                 )}
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-6">
-                                                            <div className="mb-3">
-                                                                <label for="formrow-firstname-input" className="form-label">Complaint Against</label> <br/>
-                                                                <Controller
-                  name="against"
+                </div>
+                 </div>
+                  <div className="col-md-6">
+                         <div className="mb-3">
+                          <label for="">Notice Date </label>
+                           <Controller
+                  name="terminationDate"
                   control={control}
                   rules={{ required: "this is required field" }}
                   render={({ field }) => (
-                    <select
-                    disabled={viewData?true:false}
-                      key={watch("company")}
+                    <input
                       {...field}
                       onChange={(e) => {
                         setDataToUpdate((preVal) => ({
                           ...preVal,
-                          against: e.target.value,
+                          terminationDate: e.target.value,
                         }));
                         field.onChange(e);
                       }}
-                      className="form-control select2-templating "
-                      style={{ width: "100%" }}
-                    >
-                      <option value="">choose...</option>
-                      {employees?.map((ele, i) => (
-                        <option disabled={ele._id===watch("from")} key={i} value={ele._id}>
-                          {ele.fName + " " + ele.lName}
-                        </option>
-                      ))}
-                    </select>
+                      type="date"
+                      className="form-control"
+                      placeholder=""
+                    />
                   )}
                 />
-                {errors.against && (
-                  <span style={{ color: "red" }}>
-                    {errors.against.message}
-                  </span>
+                {errors.terminationDate && (
+                  <span style={{ color: "red" }}>{errors.terminationDate.message}</span>
                 )}
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-12">
-                                                            <div className="mb-3">
-                                                                <label for="">Attachment</label>
-                                                                <input {...register("files",{onChange:e=>{
-                                                                  setDataToUpdate(preVAl=>({...preVAl,files:e.target.files}))
-                                                                  }})} multiple type="file" className="form-control"/>
-                                                            </div>
-                                                        </div>
-                                                        {viewData && <div className="col-md-12">
+                </div>
+                </div>
+                <div className="col-md-12">
+                    <div className="mb-3">
+                        <label for="">Attachment</label>
+                        <input {...register("files",{onChange:e=>{
+                            setDataToUpdate(preVAl=>({...preVAl,files:e.target.files}))
+                            }})} multiple type="file" className="form-control"/>
+                    </div>
+                </div>
+                {viewData && <div className="col-md-12">
               <div className="mb-3">
                 <label for="formrow-firstname-input" className="form-label">
                   Status
-                </label>{" "}
+                </label>
                 <br />
                 <Controller
                   name="status"

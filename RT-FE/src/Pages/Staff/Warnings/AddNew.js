@@ -1,16 +1,17 @@
 import { useCallback, useEffect, useState } from "react";
 import { Modal } from "react-bootstrap";
 import { Controller, useForm } from "react-hook-form";
-import { addComplaint, updateComplaint } from "../../../Utility/API/complaint";
 import { getAllCompanies } from "../../../Utility/API/company";
 import { getEmployeeByCompany } from "../../../Utility/API/employee";
 import { toast } from "react-toastify";
+import { addWarning, updateWarning } from "../../../Utility/API/warning";
+import { useSettingContext } from "../../../Context/settingContext";
 
 export default function AddNew({viewData,
     setViewData,
-    getComplaints,show,setShow}) {
+    getWarnings,show,setShow}) {
 
- 
+        const { constants } = useSettingContext();
         const [dataToUpdate, setDataToUpdate] = useState();
         const [companies, setCompanies] = useState();
         const [employees, setEmployees] = useState();
@@ -39,10 +40,11 @@ export default function AddNew({viewData,
               formData.append(key,data[key])
             }
            }
-            let res = await addComplaint(formData);
+            let res = await addWarning(formData);
             if (res.status === 201) {
+                toast('warning added')
               setShow(false);
-              getComplaints();
+              getWarnings();
             } else console.log(res);
           } else {
             if(!dataToUpdate) return toast.error("no data to update")
@@ -59,11 +61,11 @@ export default function AddNew({viewData,
            }
           
 
-            let res = await updateComplaint(viewData._id, formData);
+            let res = await updateWarning(viewData._id, formData);
             if (res.status === 204) {
-              toast.success("complaint updated")
+              toast.success("warning updated")
               setShow(false);
-              getComplaints();
+              getWarnings();
             } else console.log(res);
           }
         },[viewData]);
@@ -154,11 +156,11 @@ export default function AddNew({viewData,
               </div>
             </div>
 
-                                                        <div className="col-md-6">
+                                                        <div className="col-md-12">
                                                             <div className="mb-3">
-                                                                <label for="formrow-firstname-input" className="form-label">Complaint From</label> <br/>
+                                                                <label for="formrow-firstname-input" className="form-label">Warning To</label> <br/>
                                                                 <Controller
-                  name="from"
+                  name="to"
                   control={control}
                   rules={{ required: "this is required field" }}
                   render={({ field }) => (
@@ -169,7 +171,7 @@ export default function AddNew({viewData,
                       onChange={(e) => {
                         setDataToUpdate((preVal) => ({
                           ...preVal,
-                          from: e.target.value,
+                          to: e.target.value,
                         }));
                         field.onChange(e);
                       }}
@@ -178,25 +180,25 @@ export default function AddNew({viewData,
                     >
                       <option value="">choose...</option>
                       {employees?.map((ele, i) => (
-                        <option disabled={ele._id===watch("against")} key={i} value={ele._id}>
+                        <option disabled={ele._id===watch("by")} key={i} value={ele._id}>
                           {ele.fName + " " + ele.lName}
                         </option>
                       ))}
                     </select>
                   )}
                 />
-                {errors.from && (
+                {errors.to && (
                   <span style={{ color: "red" }}>
-                    {errors.from.message}
+                    {errors.to.message}
                   </span>
                 )}
                                                             </div>
                                                         </div>
                                                         <div className="col-md-6">
                                                             <div className="mb-3">
-                                                                <label for="">Complaint Title</label>
+                                                                <label for="">Warning subject</label>
                                                                 <Controller
-                  name="title"
+                  name="subject"
                   control={control}
                   rules={{
                     required: "thihs is required field",
@@ -207,24 +209,29 @@ export default function AddNew({viewData,
                       onChange={(e) => {
                         setDataToUpdate((preVal) => ({
                           ...preVal,
-                          title: e.target.value,
+                          subject: e.target.value,
                         }));
                         field.onChange(e);
                       }}
+                      name=""
+                      id=""
+                      cols="30"
+                      rows="10"
                       className="form-control"
+                      style={{ height: "70px" }}
                     />
                   )}
                 />
-                {errors.title && (
+                {errors.subject && (
                   <span style={{ color: "red" }}>
-                    {errors.title.message}
+                    {errors.subject.message}
                   </span>
                 )}
                                                             </div>
                                                         </div>
                                                         <div className="col-md-6">
                                                             <div className="mb-3">
-                                                                <label for="">Complaint Date </label>
+                                                                <label for="">Warning Date </label>
                                                                 <Controller
                   name="date"
                   control={control}
@@ -251,10 +258,49 @@ export default function AddNew({viewData,
                                                             </div>
                                                         </div>
                                                         <div className="col-md-6">
+              <div className="mb-3">
+                <label for="formrow-firstname-input" className="form-label">
+                  Warning Type
+                </label>{" "}
+                <br />
+                <Controller
+                  name="warningType"
+                  control={control}
+                  rules={{ required: "this is required field" }}
+                  render={({ field }) => (
+                    <select
+                      {...field}
+                      onChange={(e) => {
+                        setDataToUpdate((preVal) => ({
+                          ...preVal,
+                          warningType: e.target.value,
+                        }));
+                        field.onChange(e);
+                      }}
+                      className="form-control select2-templating "
+                      style={{ width: "100%" }}
+                    >
+                      <option value="">choose...</option>
+                      {constants?.warning?.map((ele, i) => (
+                        <option key={i} value={ele._id}>
+                          {ele.name}
+                        </option>
+                      ))}
+                    </select>
+                  )}
+                />
+                {errors.warningType && (
+                  <span style={{ color: "red" }}>
+                    {errors.warningType.message}
+                  </span>
+                )}
+              </div>
+            </div>
+                                                        <div className="col-md-6">
                                                             <div className="mb-3">
-                                                                <label for="formrow-firstname-input" className="form-label">Complaint Against</label> <br/>
+                                                                <label for="formrow-firstname-input" className="form-label">Warning By</label> <br/>
                                                                 <Controller
-                  name="against"
+                  name="by"
                   control={control}
                   rules={{ required: "this is required field" }}
                   render={({ field }) => (
@@ -265,7 +311,7 @@ export default function AddNew({viewData,
                       onChange={(e) => {
                         setDataToUpdate((preVal) => ({
                           ...preVal,
-                          against: e.target.value,
+                          by: e.target.value,
                         }));
                         field.onChange(e);
                       }}
@@ -274,16 +320,16 @@ export default function AddNew({viewData,
                     >
                       <option value="">choose...</option>
                       {employees?.map((ele, i) => (
-                        <option disabled={ele._id===watch("from")} key={i} value={ele._id}>
+                        <option disabled={ele._id===watch("to")} key={i} value={ele._id}>
                           {ele.fName + " " + ele.lName}
                         </option>
                       ))}
                     </select>
                   )}
                 />
-                {errors.against && (
+                {errors.by && (
                   <span style={{ color: "red" }}>
-                    {errors.against.message}
+                    {errors.by.message}
                   </span>
                 )}
                                                             </div>

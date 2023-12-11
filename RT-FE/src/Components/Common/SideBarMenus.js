@@ -96,9 +96,9 @@ export default function SideBarMenu({ele,i}){
                 
             </Link>
             {ele.children && isActive ? (<ul class="sub-menu" aria-expanded="false">
-            {ele.children.map(e=>{
+            {ele.children.map((e,i)=>{
                 return(
-                <li className={pathname === e.to ? "mm-active" : ""}><Link to={e.to}>{e.name}</Link></li>
+                <li key={i} className={pathname === e.to ? "mm-active" : ""}><Link to={e.to}>{e.name}</Link></li>
             )
             })}
             </ul>):(<></>)}

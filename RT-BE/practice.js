@@ -65,21 +65,21 @@ let schema = new mongoose.Schema({
 },{collection:"number"})
 
 
-let model = mongoose.model("number",schema)
+// let model = mongoose.model("number",schema)
 
 
-  app.post("/uploads",upload.single("file"),async (req,res)=>{
+  // app.post("/uploads",upload.single("file"),async (req,res)=>{
 
-    await model.create({
-        name:req.file.originalname,
-        dec:req.body.dec,
-        id:req.file.id
-    })
-    res.status(200).json({
-        success:true,
-        file:req.file
-    })
-  })
+  //   await model.create({
+  //       name:req.file.originalname,
+  //       dec:req.body.dec,
+  //       id:req.file.id
+  //   })
+  //   res.status(200).json({
+  //       success:true,
+  //       file:req.file
+  //   })
+  // })
 
 
   app.get("/uploads",async (req,res)=>{
@@ -113,6 +113,7 @@ let model = mongoose.model("number",schema)
 
   app.listen(8000,()=>{
     console.log("server statred")
+    
   })
 
 
@@ -164,4 +165,16 @@ let lanSchema = new Schema({
 
 
 let langModel = model("lang",lanSchema)
+console.log("hi")
+fun()
+
+async function fun(){
+console.log("hiiiiiiiii")
+  try {
+    let lan = await langModel.find({name:"abc"}).lean()
+console.log(lan)
+  } catch (error) {
+    console.log(error)
+  }
+}
 

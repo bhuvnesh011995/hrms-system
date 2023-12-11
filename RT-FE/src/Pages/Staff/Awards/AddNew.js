@@ -33,6 +33,8 @@ export default function AddNew({
   const onSubmit = useCallback(async (data, dataToUpdate) => {
     if (!viewData) {
       if (data.img) data.img = data.img[0];
+
+
       console.log(data);
       let res = await addAward(data);
       if (res.status === 201) {

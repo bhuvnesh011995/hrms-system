@@ -5,19 +5,19 @@ const schema = new Schema({
     company:{
         type:Schema.Types.ObjectId,ref:"company"
     },
-    from:{
+    employee:{
         type:Schema.Types.ObjectId,ref:"employee"
     },
-    against:{
-        type:Schema.Types.ObjectId,ref:"employee"
-    },
-    title:{
-        type:String
+    terminationType:{
+        type:Schema.Types.ObjectId,ref:"terminationConstant"
     },
     description:{
         type:String
     },
-    date:{
+    noticeDate:{
+        type:Date
+    },
+    terminationDate:{
         type:Date
     },
     files:[String],
@@ -29,9 +29,9 @@ const schema = new Schema({
         default:"Pending"
     }
 },{
-    collection:"complaints",
+    collection:"terminations",
     timestamps:true
 })
 
 
-module.exports = model("complaints",schema)
+module.exports = model("terminations",schema)

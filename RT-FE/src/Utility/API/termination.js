@@ -1,8 +1,8 @@
 import { api, formApi } from "../../Context/AuthContext"
 
-export const getAllComplaints = async ()=>{
+export const getAllTerminations = async ()=>{
     try {
-        let response = await api.get("/complaint")
+        let response = await api.get("/termination")
         return response
     } catch (error) {
         console.log(error)
@@ -10,20 +10,9 @@ export const getAllComplaints = async ()=>{
     }
 }
 
-export const addComplaint = async (data)=>{
+export const addTermination = async (data)=>{
     try {
-        let response = await formApi.post("/complaint",data)
-        return response
-    } catch (error) {
-        console.log(error)
-        return error.response
-    }
-}
-
-
-export const updateComplaint = async (id,data)=>{
-    try {
-        let response = await formApi.put("/complaint/"+id,data)
+        let response = await formApi.post("/termination",data)
         return response
     } catch (error) {
         console.log(error)
@@ -32,10 +21,9 @@ export const updateComplaint = async (id,data)=>{
 }
 
 
-
-export const deleteComplaint = async (id)=>{
+export const updateTermination = async (id,data)=>{
     try {
-        let response = await api.delete("/complaint/"+id)
+        let response = await formApi.put("/termination/"+id,data)
         return response
     } catch (error) {
         console.log(error)
@@ -44,9 +32,10 @@ export const deleteComplaint = async (id)=>{
 }
 
 
-export const getComplaintById = async id =>{
+
+export const deleteTermination = async (id)=>{
     try {
-        let response = api.get("/complaint/"+id)
+        let response = await api.delete("/termination/"+id)
         return response
     } catch (error) {
         console.log(error)
@@ -55,9 +44,20 @@ export const getComplaintById = async id =>{
 }
 
 
-export const deleteComplaintFile = async (id,file)=>{
+export const getTerminationById = async id =>{
     try {
-        let response = await api.delete("/complaint/file/"+file+"/"+id)
+        let response = api.get("/termination/"+id)
+        return response
+    } catch (error) {
+        console.log(error)
+        return error.response
+    }
+}
+
+
+export const deleteTerminationFile = async (id,file)=>{
+    try {
+        let response = await api.delete("/termination/file/"+file+"/"+id)
         return response
     } catch (error) {
         console.log(error)

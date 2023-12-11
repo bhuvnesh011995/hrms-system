@@ -3,7 +3,9 @@ import AddNew from "./AddNew";
 import MaterialReactTable from "material-react-table";
 import { Box, IconButton } from "@mui/material";
 import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
-import { getAllComplaints } from "../../../Utility/API/complaint";
+import { deleteComplaint, getAllComplaints } from "../../../Utility/API/complaint";
+import { toast } from "react-toastify";
+import View from "./View";
 export default function EmployeeTable() {
   const [isOpen,setIsOpen] = useState(false)
     const [data, setData] = useState([]);
@@ -105,14 +107,35 @@ export default function EmployeeTable() {
               renderRowActions={({ row, table }) => (
                 <Box sx={{ display: "flex", flexWrap: "nowrap", gap: "8px" }}>
                   <IconButton
+                    color="info"
+                    onClick={() => {
+                      setViewData(row.original);
+                      setIsViewOpen(true);
+                    }}
+                  >
+                    <i className="fas fa-eye"></i>
+                  </IconButton>
+                  <IconButton
                     color="secondary"
                     onClick={() => {
-                      table.setEditingRow(row);
+                      let obj = {...row.original,company:row.original?.company?._id,against:row.original.against?._id,from:row.original.from?._id,date:row.original.date?.slice(0,10)}
+                      setViewData(obj)
+                      setIsOpen(true)
                     }}
                   >
                     <EditIcon />
                   </IconButton>
-                  <IconButton color="error" onClick={() => {}}>
+                  <IconButton color="error" onClick={async () => {
+                    try {
+                      let res = await deleteComplaint(row.original._id)
+                      if(res.status===204){
+                        toast.success("complaint deleted")
+                        getComplaints()
+                      }else console.log(res)
+                    } catch (error) {
+                      console.log(error)
+                    }
+                  }}>
                     <DeleteIcon />
                   </IconButton>
                 </Box>
@@ -138,7 +161,16 @@ export default function EmployeeTable() {
 setViewData={setViewData}
 getComplaints={getComplaints} show={isOpen} setShow={setIsOpen}/>}
 
-            
+
+{isViewOpen && (
+              <View
+              getComplaints={getComplaints}
+                viewData={viewData}
+                setViewData={setViewData}
+                show={isViewOpen}
+                setShow={setIsViewOpen}
+              />
+            )}  
           </div>
         </div>
       </div>

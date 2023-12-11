@@ -27,3 +27,7 @@ yarn-error.log*
 
 # Local Netlify folder
 .netlify
+
+
+/Chicken-Rice-BE/public/uploads/*
+/Chicken-Rice-BE/public/files/*

@@ -1,4 +1,81 @@
+import MaterialReactTable from "material-react-table";
+import { Box, IconButton } from "@mui/material";
+import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
+import View from "./View";
+import AddNew from "./AddNew";
+import { deleteWarning, getAllWarnings } from "../../../Utility/API/warning";
+import { useCallback, useEffect, useMemo, useState } from "react";
+import { toast } from "react-toastify";
+
+
+
 export default function EmployeeTable() {
+    const [isOpen,setIsOpen] = useState(false)
+    const [data, setData] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isError, setIsError] = useState(false);
+    const [viewData, setViewData] = useState(null);
+    const [isViewOpen, setIsViewOpen] = useState(false);
+  
+    const getWarnings = useCallback(async () => {
+      setIsLoading(true);
+      let res = await getAllWarnings();
+      if (res.status === 200) {
+        setData(res.data);
+        setIsLoading(false);
+      } else {
+        console.log(res);
+        setIsLoading(false);
+        setIsError(true);
+      }
+    }, []);
+  
+    useEffect(() => {
+        getWarnings();
+    }, []);
+
+
+
+     const columns = useMemo(() => [
+
+         {                                                   
+
+            accessorFn: (row)=>row.to?row.to.fName + " "+row.to.lName: "not available",
+            id:"to",
+             header: 'Warning To',
+           },
+           {                                                   
+  
+              accessorFn: (row)=>row.company?row.company.name:"not available",
+              id:"company",
+               header: 'Company',
+             },
+
+           {                                                   
+  
+              accessorFn: (row)=>row.by?row.by.fName + " "+row.by.lName: "not available",
+              id:"by",
+               header: 'Warning By',
+             },
+
+         {                                                   
+
+            accessorFn: (row)=>row.warningType?row.warningType.name:"not available",
+            id:"warningType",
+             header: 'Warning Type',
+           },
+           {
+             accessorKey: "subject",
+             header: "Warning Subject",
+           },
+           {
+             accessorFn: (row)=>row.date?row.date.slice(0,10).split("-").reverse().join("/"):"NA",
+             id:"date",
+             header: "Warning Date",
+           },
+     ],[])
+
+
     return(
         <div className="row">
                         <div className="col-12">
@@ -9,7 +86,7 @@ export default function EmployeeTable() {
                                             <h4>List All Warnings</h4>
                                         </div>
                                         <div className="col-md-6 mb-3" style={{textAlign: "right"}}>
-                                            <button className="btn btn-primary text-right" data-bs-toggle="modal" data-bs-target="#myModal">Add New</button>
+                                            <button className="btn btn-primary text-right" onClick={()=>setIsOpen(true)}>Add New</button>
                                         </div>
                                     </div>
 
@@ -28,7 +105,86 @@ export default function EmployeeTable() {
                                             Print
                                         </button>
                                     </p>
-                                    <table id="datatable" className="table table-bordered dt-responsive nowrap w-100">
+
+                                    <MaterialReactTable
+              columns={columns}
+              data={data||[]}
+              enableColumnActions={false}
+              enableColumnFilters={false}
+              enableSorting={false}
+              enableTopToolbar={false}
+              enableRowActions
+              positionActionsColumn="last"
+              enableRowNumbers
+              rowNumberMode="static"
+              renderRowActions={({ row, table }) => (
+                <Box sx={{ display: "flex", flexWrap: "nowrap", gap: "8px" }}>
+                  <IconButton
+                    color="info"
+                    onClick={() => {
+                      setViewData(row.original);
+                      setIsViewOpen(true);
+                    }}
+                  >
+                    <i className="fas fa-eye"></i>
+                  </IconButton>
+                  <IconButton
+                    color="secondary"
+                    onClick={() => {
+                      let obj = {...row.original,company:row.original?.company?._id,by:row.original.by?._id,to:row.original.to?._id,date:row.original.date?.slice(0,10),warningType:row.original.warningType?._id}
+                      setViewData(obj)
+                      setIsOpen(true)
+                    }}
+                  >
+                    <EditIcon />
+                  </IconButton>
+                  <IconButton color="error" onClick={async () => {
+                    try {
+                      let res = await deleteWarning(row.original._id)
+                      if(res.status===204){
+                        toast.success("complaint deleted")
+                        getWarnings()
+                      }else console.log(res)
+                    } catch (error) {
+                      console.log(error)
+                    }
+                  }}>
+                    <DeleteIcon />
+                  </IconButton>
+                </Box>
+              )}
+              muiTableProps={{
+                sx: {
+                  border: "1px solid rgba(81, 81, 81, 1)",
+                },
+              }}
+              muiTableHeadCellProps={{
+                sx: {
+                  border: "1px solid rgba(81, 81, 81, 1)",
+                },
+              }}
+              muiTableBodyCellProps={{
+                sx: {
+                  border: "1px solid rgba(81, 81, 81, 1)",
+                },
+              }}
+            />
+
+{isOpen && <AddNew viewData={viewData}
+setViewData={setViewData}
+getWarnings={getWarnings} show={isOpen} setShow={setIsOpen}/>}
+
+
+{isViewOpen && (
+              <View
+              getWarnings={getWarnings}
+                viewData={viewData}
+                setViewData={setViewData}
+                show={isViewOpen}
+                setShow={setIsViewOpen}
+              />
+            )}  
+                                    {/* <table id="datatable" className="table table-bordered dt-responsive nowrap w-100">
                                         <thead>
                                             <tr>
                                                 <th>Employee </th>
@@ -58,7 +214,7 @@ export default function EmployeeTable() {
 
 
                                         </tbody>
-                                    </table>
+                                    </table> */}
                                     
                                     <div className="modal fade" id="myModal">
                                         <div className="modal-dialog modal-lg">

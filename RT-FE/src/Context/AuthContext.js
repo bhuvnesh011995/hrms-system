@@ -52,6 +52,10 @@ useEffect(()=>{
     api = axios.create({
         baseURL,headers
     })
+
+
+
+    
     const fromHeaders = {
         'x-access-token':user.token,
         "Content-Type": "multipart/form-data",

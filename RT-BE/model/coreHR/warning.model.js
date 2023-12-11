@@ -5,13 +5,13 @@ const schema = new Schema({
     company:{
         type:Schema.Types.ObjectId,ref:"company"
     },
-    from:{
+    to:{
         type:Schema.Types.ObjectId,ref:"employee"
     },
-    against:{
+    by:{
         type:Schema.Types.ObjectId,ref:"employee"
     },
-    title:{
+    subject:{
         type:String
     },
     description:{
@@ -19,6 +19,9 @@ const schema = new Schema({
     },
     date:{
         type:Date
+    },
+    warningType:{
+        type:Schema.Types.ObjectId,ref:"warningConstant"
     },
     files:[String],
     addedBy:{
@@ -29,9 +32,9 @@ const schema = new Schema({
         default:"Pending"
     }
 },{
-    collection:"complaints",
+    collection:"warnings",
     timestamps:true
 })
 
 
-module.exports = model("complaints",schema)
+module.exports = model("warnings",schema)

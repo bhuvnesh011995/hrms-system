@@ -2,16 +2,16 @@ const db = require("../../model")
 const fs = require("fs")
 
 
-exports.addComplaint = async function(req,res,next){
+exports.addTermination = async function(req,res,next){
     try {
 
 
         let obj = {}
-        if(req.body.title) obj.title = req.body.title
+        if(req.body.terminationType) obj.terminationType = req.body.terminationType
         if(req.body.company) obj.company = req.body.company
-        if(req.body.from) obj.from = req.body.from
-        if(req.body.against) obj.against = req.body.against
-        if(req.body.date) obj.date = new Date(req.body.date)
+        if(req.body.employee) obj.employee = req.body.employee
+        if(req.body.noticeDate) obj.noticeDate = new Date(req.body.noticeDate)
+        if(req.body.terminationDate) obj.terminationDate = new Date(req.body.terminationDate)
         if(req.body.description) obj.description = req.body.description
         if(req.files?.length) {
             let arr = req.files.map(ele=>ele.filename)
@@ -19,7 +19,7 @@ exports.addComplaint = async function(req,res,next){
         }
         obj.addedBy = req.id
 
-        await db.complaints.create(obj)
+        await db.terminations.create(obj)
 
         res.status(201).end()
     } catch (error) {
@@ -34,10 +34,10 @@ exports.addComplaint = async function(req,res,next){
 
 
 
-exports.getAllComplaints = async function(req,res,next){
+exports.getAllTerminations = async function(req,res,next){
     try {
       
-        let complaints = await db.complaints.find().populate([{path:"company",select:"name"},{path:"from",select:"fName lName"},{path:"against",select:"fName lName"}])
+        let complaints = await db.terminations.find().populate([{path:"company",select:"name"},{path:"employee",select:"fName lName"},{path:"terminationType",select:"name"}])
 
         res.status(200).json(complaints)
         
@@ -55,7 +55,7 @@ exports.getAllComplaints = async function(req,res,next){
 
 
 
-exports.updateComplaint = async function(req,res,next){
+exports.updateTermination = async function(req,res,next){
     try {
         const {id} = req.params
 
@@ -63,18 +63,18 @@ exports.updateComplaint = async function(req,res,next){
 
         let obj = {}
 
-        if(req.body.title) obj.title = req.body.title
+        if(req.body.terminationType) obj.terminationType = req.body.terminationType
         if(req.body.status) obj.status = req.body.status
-        if(req.body.company) obj.company = req.body.company
-        if(req.body.date) obj.date = new Date(req.body.date)
+        if(req.body.noticeDate) obj.noticeDate = new Date(req.body.noticeDate)
+        if(req.body.terminationDate) obj.terminationDate = new Date(req.body.terminationDate)
         if(req.body.description) obj.description = req.body.description
         if(req.files?.length){
             let arr = req.files.map(ele=>ele.filename)
-            await db.complaints.updateOne({_id:id},{
+            await db.terminations.updateOne({_id:id},{
             $push:{files:{$each : arr}}
         })
 }
-        await db.complaints.updateOne({_id:id},{
+        await db.terminations.updateOne({_id:id},{
             $set:obj
         })
 
@@ -94,14 +94,14 @@ exports.updateComplaint = async function(req,res,next){
 
 
 
-exports.deleteComplaint = async function(req,res,next){
+exports.deleteTermination = async function(req,res,next){
     try {
         const {id} = req.params
 
-        let complaint = await db.complaints.findOne({_id:id}).select('files')
+        let termination = await db.terminations.findOne({_id:id}).select('files')
 
-        if(complaint.files?.length){
-            complaint.files.forEach(ele=>{
+        if(termination.files?.length){
+            termination.files.forEach(ele=>{
                 if(fs.existsSync("./public/files/"+ele)){
                     fs.unlink("./public/files/"+ele,(err)=>{
                         if(err){
@@ -114,7 +114,7 @@ exports.deleteComplaint = async function(req,res,next){
             })
         }
 
-        await db.complaints.deleteOne({_id:id})
+        await db.terminations.deleteOne({_id:id})
 
         res.status(204).end()
 
@@ -130,9 +130,9 @@ exports.deleteComplaint = async function(req,res,next){
 
 
 
-exports.deleteFileFromComplaint = async (req,res,next)=>{
+exports.deleteFileFromTermination = async (req,res,next)=>{
     try {
-        await db.complaints.updateOne({_id:req.params.id},{
+        await db.terminations.updateOne({_id:req.params.id},{
             $pull:{files:req.params.filename}
         })
         if(fs.existsSync("./public/files/"+req.params.filename)){
@@ -146,7 +146,7 @@ exports.deleteFileFromComplaint = async (req,res,next)=>{
                 }
             })
         }else return res.status(400).end()
-        
+
     } catch (error) {
         console.log(error)
         res.status(500).json({
@@ -158,11 +158,11 @@ exports.deleteFileFromComplaint = async (req,res,next)=>{
 
 
 
-exports.getComplaintById = async (req,res,next)=>{
+exports.getTerminationById = async (req,res,next)=>{
     try {
-        let complaint = await db.complaints.findOne({_id:req.params.id}).populate([{path:"company",select:"name"},{path:"from",select:"fName lName"},{path:"against",select:"fName lName"}])
+        let terminations = await db.terminations.findOne({_id:req.params.id}).populate([{path:"company",select:"name"},{path:"employee",select:"fName lName"},{path:"terminationType",select:"name"}])
 
-        res.status(200).json(complaint)
+        res.status(200).json(terminations)
     } catch (error) {
         console.log(error)
         res.status(500).json({
