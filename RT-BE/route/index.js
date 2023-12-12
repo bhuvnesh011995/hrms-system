@@ -29,4 +29,5 @@ module.exports = (app) => {
   require("./coreHR/complaint.route")(app);
   require("./coreHR/warning.route")(app);
   require("./coreHR/termination.route")(app);
+  require("./holiday.route")(app);
 };

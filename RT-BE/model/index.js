@@ -26,6 +26,6 @@ module.exports = {
     complaints:require("./coreHR/complaint.model"),
     warnings:require("./coreHR/warning.model"),
     terminations:require("./coreHR/termination.model"),
-    
+    holidays:require("./holiday.model")
 
 }
