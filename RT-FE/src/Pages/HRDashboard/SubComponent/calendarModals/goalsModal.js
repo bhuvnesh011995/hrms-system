@@ -1,11 +1,11 @@
 import React, { useEffect } from "react";
 import { Modal } from "react-bootstrap";
-import { useForm } from "react-hook-form";
 import { api } from "../../../../Context/AuthContext";
 import moment from "moment";
 import { toast } from "react-toastify";
+import { useForm } from "react-hook-form";
 
-const NewHolidayModal = ({ show, setShow, eventData, callback }) => {
+const NewGoalModal = ({ show, setShow, eventData, callback }) => {
   const {
     register,
     handleSubmit,
@@ -22,10 +22,10 @@ const NewHolidayModal = ({ show, setShow, eventData, callback }) => {
     }
   }, []);
 
-  const addNewHoliday = async (data) => {
+  const addNewGoal = async (data) => {
     try {
       if (data._id) {
-        let response = await api.put("/holiday/updateHoliday", data);
+        let response = await api.put("/goals/updateGoal", data);
         if (response.status == 200) {
           callback(data);
           toast.success(response.data.message);
@@ -33,8 +33,8 @@ const NewHolidayModal = ({ show, setShow, eventData, callback }) => {
           toast.error("Something went wrong");
         }
       } else {
-        data["eventType"] = "holiday";
-        let response = await api.post("/holiday/addNewHoliday", data);
+        data["eventType"] = "goals";
+        let response = await api.post("/goals/addNewGoal", data);
         if (response.status == 200) {
           callback(response.data.data);
           toast.success(response.data.message);
@@ -63,12 +63,12 @@ const NewHolidayModal = ({ show, setShow, eventData, callback }) => {
         <Modal.Body>
           <form
             className="needs-validation"
-            onSubmit={handleSubmit(addNewHoliday)}
+            onSubmit={handleSubmit(addNewGoal)}
           >
             <div className="row">
-              <div className="col-12">
+              <div className="col-md-6">
                 <div className="mb-3">
-                  <label className="form-label">Company Name</label>
+                  <label className="form-label">Company</label>
                   <input
                     className="form-control"
                     placeholder="company name goes here"
@@ -84,19 +84,53 @@ const NewHolidayModal = ({ show, setShow, eventData, callback }) => {
                   )}
                 </div>
               </div>
-              <div className="col-12">
+              <div className="col-md-6">
                 <div className="mb-3">
-                  <label className="form-label">Event Name</label>
+                  <label className="form-label">Goal Type</label>
                   <input
                     className="form-control"
-                    placeholder="event name goes here"
+                    placeholder="enter goal type"
                     type="text"
-                    {...register("title", {
-                      required: "Please Enter Event Name",
+                    {...register("goalType", {
+                      required: "Please Enter Goal Type",
                     })}
+                  />
+                  {errors?.goalType && (
+                    <span className="text-danger">
+                      {errors?.goalType.message}
+                    </span>
+                  )}
+                </div>
+              </div>
+              <div className="col-md-6">
+                <div className="mb-3">
+                  <label className="form-label">Subject</label>
+                  <input
+                    className="form-control"
+                    placeholder="Enter Subject"
+                    type="text"
+                    {...register("title", { required: "Please Enter Subject" })}
                   />
                   {errors?.title && (
                     <span className="text-danger">{errors?.title.message}</span>
+                  )}
+                </div>
+              </div>
+              <div className="col-md-6">
+                <div className="mb-3">
+                  <label className="form-label">Target Achievement</label>
+                  <input
+                    className="form-control"
+                    placeholder="Target Achievement"
+                    type="text"
+                    {...register("targetAchievement", {
+                      required: "Please Enter Target Achievement",
+                    })}
+                  />
+                  {errors?.targetAchievement && (
+                    <span className="text-danger">
+                      {errors?.targetAchievement.message}
+                    </span>
                   )}
                 </div>
               </div>
@@ -139,7 +173,7 @@ const NewHolidayModal = ({ show, setShow, eventData, callback }) => {
               </div>
               <div className="col-md-12">
                 <div className="mb-3">
-                  <label className="form-label">Description</label> <br />
+                  <label for="form-label">Description</label>
                   <textarea
                     cols="30"
                     rows="10"
@@ -154,32 +188,6 @@ const NewHolidayModal = ({ show, setShow, eventData, callback }) => {
                       {errors?.description.message}
                     </span>
                   )}
-                </div>
-              </div>
-              <div className="col-12">
-                <div className="mb-3">
-                  <label className="form-label">Status</label>
-                  <select
-                    className="form-control form-select"
-                    name="category"
-                    {...register("status", {
-                      required: "Please Select Status",
-                    })}
-                  >
-                    <option selected value="">
-                      --Select--
-                    </option>
-                    <option value="published">Published</option>
-                    <option value="unpublished">Unpublished</option>
-                  </select>
-                  {errors?.status && (
-                    <span className="text-danger">
-                      {errors?.status.message}
-                    </span>
-                  )}
-                  <div className="invalid-feedback">
-                    Please select a valid event category
-                  </div>
                 </div>
               </div>
             </div>
@@ -204,4 +212,4 @@ const NewHolidayModal = ({ show, setShow, eventData, callback }) => {
   );
 };
 
-export default NewHolidayModal;
+export default NewGoalModal;
