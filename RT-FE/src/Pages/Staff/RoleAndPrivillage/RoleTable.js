@@ -22,21 +22,12 @@ useEffect(()=>{
       setIsLoading(true)
       
       let response =  await getAllRole()
-      console.log(response)
-    if(response.status===200){
-      if(response.data?.success){
-        let array = response.data.roles.map(ele=>{
-          return {
-            id:ele._id,
-            name:ele.name,
-            permissions:ele.permission.join(),
-            createdAt:ele.createdAt?.slice(0,10).split("-").reverse().join("/")
-          }
-        })
 
-        setData(array)
+    if(response.status===200 && response.data.success){
+
+        setData(response.data.roles)
         setIsLoading(false)
-      }
+      
     }else if(response.status===201){
       setData([])
       setIsLoading(false)
@@ -50,8 +41,6 @@ useEffect(()=>{
       
       console.log(error)
     }
-    
-
   },[])
 
 
@@ -75,7 +64,7 @@ useEffect(()=>{
   let columns = useMemo(
     () => [
       {
-        accessorKey: "id",
+        accessorKey: "_id",
         header: "ID",
       },
       {
@@ -83,11 +72,8 @@ useEffect(()=>{
         header: "Role Name",
       },
       {
-        accessorKey: "permissions",
-        header: "Permissions",
-      },
-      {
-        accessorKey: "createdAt",
+        accessorFn: (row)=>row.createdAt?.slice(0,10).split("-").reverse().join("/"),
+        id:"createdAt",
         header: "Created At",
       },
     ],

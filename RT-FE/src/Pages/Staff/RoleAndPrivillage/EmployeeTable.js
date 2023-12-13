@@ -24,16 +24,8 @@ useEffect(()=>{
       let response =  await getAllRole()
     if(response.status===200){
       if(response.data?.success){
-        let array = response.data.roles.map(ele=>{
-          return {
-            id:ele._id,
-            name:ele.name,
-            permissions:ele.permissions.join(),
-            createdAt:ele.createdAt?.slice(0,10).split("-").reverse().join("/")
-          }
-        })
-
-        setData(array)
+       
+        setData(response.data.roles)
         setIsLoading(false)
       }
     }else if(response.status===201){
@@ -82,11 +74,7 @@ useEffect(()=>{
         header: "Role Name",
       },
       {
-        accessorKey: "permissions",
-        header: "Permissions",
-      },
-      {
-        accessorKey: "createdAt",
+        accessorFn: (row)=>response.data.roles,
         header: "Created At",
       },
     ],

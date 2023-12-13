@@ -5,7 +5,7 @@ const schema = new Schema({
     lName:String,
     company:{type:Schema.Types.ObjectId,ref:"company"},
     location:{type:Schema.Types.ObjectId,ref:"location"},
-    username:String,
+    username:{type:String,unique:true},
     email:String,
     DOB:Date,
     phone:String,

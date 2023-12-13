@@ -13,6 +13,7 @@ const schema = new Schema({
         },
         employeeLogin:{
             type:String,
+            default:"username",
             enum:["username","email"]
         },
         footerText:{
