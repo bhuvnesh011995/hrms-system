@@ -1,6 +1,20 @@
 import { Modal } from "react-bootstrap";
+import { useForm } from "react-hook-form";
+import { addEmployeeExit } from "../../../Utility/API/employeeexit";
 
 export default function AddNew({show,setShow}) {
+    const { register, handleSubmit,  formState: { errors }} = useForm();
+
+    const submitData = async (data) => {
+        try {
+          let res = await addEmployeeExit(data);
+          console.log("Response:", res);
+          setShow(false)
+        } catch (error) {
+          console.error("Error:", error);
+        }
+      };
+
     return(
         <Modal size="xl" show={show} onHide={() => setShow(false)}>
           <Modal.Header closeButton>
@@ -8,43 +22,44 @@ export default function AddNew({show,setShow}) {
           </Modal.Header>
     
           <Modal.Body>
+          <form onSubmit={handleSubmit(submitData)}>
             <div className="row">
-
 <div className="col-md-6 mb-2">
     <label for="">Company</label> <br/>
-    <select className="form-control select2-templating" style={{width: "100%"}}>
+    <select className="form-control select2-templating" style={{width: "100%"}} {...register('company')}  >
         <option value="KMAC">KMAC International Pte Ltd</option>
     </select>
 </div>
 <div className="col-md-6 mb-2">
     <label for="">Employee To Exit</label> <br/>
-    <select className="form-control select2-templating" style={{width: "100%"}}>
-        <option value=""></option>
+    <select className="form-control select2-templating" style={{width: "100%"}}   {...register("employeeToExit")} >
+        <option value="exit"> Exit</option>
     </select>
 </div>
 <div className="col-md-6">
     <div className="mb-3">
         <label for="">Exit Date</label>
-        <input type="date" className="form-control" placeholder=""/>
+        <input type="date" className="form-control" placeholder=""   {...register("exitDate")}  />
     </div>
 </div>
 <div className="col-md-6 mb-2">
     <label for="">Type of Exit</label> <br/>
-    <select className="form-control select2-templating" style={{width: "100%"}}>
+    <select className="form-control select2-templating" style={{width: "100%"}}   {...register("typeofExit")}
+>
         <option value="res">Resign</option>
         <option value="ter">Terminated</option>
     </select>
 </div>
 <div className="col-md-6 mb-2">
     <label for="">Exit Interview</label> <br/>
-    <select className="form-control select2-templating" style={{width: "100%"}}>
+    <select className="form-control select2-templating" style={{width: "100%"}}   {...register("exitInterview")} >
         <option value="Yes">Yes</option>
         <option value="No.">No.</option>
     </select>
 </div>
 <div className="col-md-6 mb-2">
     <label for="">Disable Account</label> <br/>
-    <select className="form-control select2-templating" style={{width: "100%"}}>
+    <select className="form-control select2-templating" style={{width: "100%"}}  {...register("disableAccount")}>
         <option value="Yes">Yes</option>
         <option value="No">No</option>
     </select>
@@ -52,15 +67,23 @@ export default function AddNew({show,setShow}) {
 <div className="col-md-12">
     <div className="mb-3">
         <label for="">Description</label>
-        <textarea name="" id="" cols="30" rows="10" style={{height: "70px"}} className="form-control"></textarea>
+        <textarea name="" id="" cols="30" rows="10" style={{height: "70px"}} className="form-control" 
+        {...register("description",{ required:"Please Enter Description",
+        })}></textarea>
+        {errors?.description && (
+                  <span className="text-danger">
+                    {errors?.description.message}
+                  </span>
+                )}
     </div>
 </div>
 
 <div className="col-md-12" style={{textAlign: "right"}}>
     <button className="btn btn-primary">Save</button>
 </div>
-
 </div>
+</form>
+
           </Modal.Body>
         </Modal>
     )

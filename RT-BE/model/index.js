@@ -26,6 +26,5 @@ module.exports = {
     complaints:require("./coreHR/complaint.model"),
     warnings:require("./coreHR/warning.model"),
     terminations:require("./coreHR/termination.model"),
-    
-
+    employeeexit:require("./staff/employeeexit.model"),
 }

@@ -3,38 +3,60 @@ import MaterialReactTable from "material-react-table";
 import { Box, IconButton } from "@mui/material";
 import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import { useMemo, useState } from "react";
-
-
-
-
-
-
-
+import { getAllEmployeeExit } from "../../../Utility/API/employeeexit";
+import { useEffect } from "react";
 export default function Table() {
+  const [data, setData] =useState([])
+
+ async function getEmployeeExit(){
+   let res = await  getAllEmployeeExit()
+   if(res.status ===200){
+     let array = res.data.data.map(ele=>({
+       employee:ele.employeeToExit,
+       company:ele.company,
+       typeofExit:ele.typeofExit,
+       exitDate:ele.exitDate,
+       exitInterview:ele.exitInterview,
+       createdAt:ele.createdAt?.slice(0,10).split("-").reverse().join("/"),
+     }))
+     setData(array)
+   }else {
+     setData([])
+   }
+ }
+
+
+ useEffect(()=>{
+  getEmployeeExit()
+ 
+ },[])
+
+
+
 
      const columns = useMemo(() => [
      {
-         accessorKey: 'Employee',
+         accessorKey: 'employee',
          header: 'Employee',                                      
                                               
        },
        {
-           accessorKey: 'Company',
+           accessorKey: 'company',
            header: 'Company',                                      
                                                 
          },
          {
-             accessorKey: 'ExitType',
+             accessorKey: 'typeofExit',
              header: 'ExitType',                                      
                                                   
            },
            {
-               accessorKey: 'ExitDate',
+               accessorKey: 'exitDate',
                header: 'ExitDate',                                      
                                                     
              },
              {
-                 accessorKey: 'ExitInterview',
+                 accessorKey: 'exitInterview',
                  header: 'ExitInterview',                                      
                                                       
                },
@@ -49,7 +71,7 @@ export default function Table() {
 
   <MaterialReactTable
  columns={columns}
- data={[]}
+ data={data}
  enableColumnActions={false}
  enableColumnFilters={false}
  enableSorting={false}
