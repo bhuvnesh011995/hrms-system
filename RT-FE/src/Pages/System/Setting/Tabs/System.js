@@ -129,7 +129,6 @@ export default function System({getSettingData,data}) {
               </label>
               <select value={getValue("employeeLogin")}
                 onChange={e=>setUpdateData(preVal=>({...preVal,employeeLogin:e.target.value}))} class="form-select">
-                <option selected="">Choose...</option>
                 <option value="email">Employee Login With Email </option>
                 <option value="username">Employee Login With Username</option>
               </select>

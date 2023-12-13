@@ -8,6 +8,9 @@ const path = require("path")
 const multer = require('multer');
 const bcrypt = require("bcrypt")
 const express=require('express')
+const session = require("express-session")
+const MongoStore = require("connect-mongo")
+const middleware = require("./middleware")
 // const {GridFsStorage} = require('multer-gridfs-storage');
 // const crypto = require("crypto")
 // const methodOverride = require('method-override');
@@ -47,6 +50,18 @@ mongoose.connect(dbConfig.URI, {
   exports.upload = multer({ storage });
 
 
+  // app.use(session({
+  //   secret:"1234",
+  //   resave:true,
+  //   saveUninitialized:false,
+  //   store: MongoStore.create({mongoUrl:process.env.DBURI,collectionName:"session"})
+  // }))
+
+
+  // app.use(middleware.auth.initialize)
+  // app.use(middleware.auth.session)
+  // app.use(middleware.auth.setUser)
+  
 // checking initial things if not present create one
   async function init(){
 
