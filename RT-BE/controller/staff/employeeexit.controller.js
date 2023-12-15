@@ -1,7 +1,6 @@
 const db = require("../../model")
 
 exports.addEmployeeExit = async (req,res,next)=>{
-    console.log(req.body)
     try {
         let obj = {}
         
@@ -32,7 +31,7 @@ exports.getAllEmployeeExit = async (req,res,next)=>{
     try{
       const employeeExitRecords = await db.employeeexit.find();
       res.status(200).json({
-        data:employeeExitRecords,
+        employeeexit:employeeExitRecords,
       })
 
     }
@@ -43,3 +42,31 @@ exports.getAllEmployeeExit = async (req,res,next)=>{
         });
     }
 }
+
+
+
+exports.deleteEmployeeExit = async function(req, res) {
+    let { id } = req.params;
+    console.log(id)
+    try {
+        let isExit = await db.employeeexit.exists({ _id: id });
+
+        if (!isExit) {
+            return res.status(400).json({
+                success: false,
+                message: "No employeeExit found",
+            });
+        }
+
+        await db.employeeexit.findOneAndDelete({ _id: id });
+
+        res.status(204).end();
+
+    } catch (error) {
+        res.status(500).json({
+            success: false,
+            message: "Error occurred",
+            error: error.message, 
+        });
+    }
+};

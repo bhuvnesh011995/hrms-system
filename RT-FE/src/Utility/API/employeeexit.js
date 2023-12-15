@@ -21,3 +21,15 @@ export const getAllEmployeeExit = async ()=>{
         return error.response
     }
 }
+
+
+
+export const deleteEmployeeExit = async (id)=>{
+    try {
+        let response = await api.delete("/employeeexit/"+id)
+        return response
+    } catch (error) {
+        console.log("error",error)
+        return error.response
+    }
+}

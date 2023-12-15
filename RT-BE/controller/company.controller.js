@@ -170,6 +170,9 @@ exports.getCompanies = async (req,res,next)=>{
 }
 
 
+
+
+
 // exports.getImage = async function(req,res,next){
 //     try {
 //         let dbs = mongoose.connection.db

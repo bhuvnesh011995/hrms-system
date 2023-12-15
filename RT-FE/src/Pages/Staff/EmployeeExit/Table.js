@@ -5,19 +5,21 @@ import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import { useMemo, useState } from "react";
 import { getAllEmployeeExit } from "../../../Utility/API/employeeexit";
 import { useEffect } from "react";
+import { deleteEmployeeExit } from "../../../Utility/API/employeeexit";
 export default function Table() {
   const [data, setData] =useState([])
 
  async function getEmployeeExit(){
    let res = await  getAllEmployeeExit()
    if(res.status ===200){
-     let array = res.data.data.map(ele=>({
+     let array = res.data.employeeexit.map(ele=>({
        employee:ele.employeeToExit,
        company:ele.company,
        typeofExit:ele.typeofExit,
        exitDate:ele.exitDate,
        exitInterview:ele.exitInterview,
        createdAt:ele.createdAt?.slice(0,10).split("-").reverse().join("/"),
+       id:ele._id
      }))
      setData(array)
    }else {
@@ -28,7 +30,6 @@ export default function Table() {
 
  useEffect(()=>{
   getEmployeeExit()
- 
  },[])
 
 
@@ -65,6 +66,23 @@ export default function Table() {
      ],[])
 
 
+     const handleDelete =  async (id) =>{
+      alert(id)
+      try{
+       let res   = await deleteEmployeeExit(id)
+       if(res.status == 204){
+           console.log("success")
+           getEmployeeExit()
+
+       }
+      }
+      catch(error){
+       console.log(error)
+      }
+      
+     }
+
+
   return (
     <>
       
@@ -94,7 +112,7 @@ export default function Table() {
                  </IconButton>
                    <IconButton
                    color="error"
-                   onClick={() => {}}
+                   onClick={() => handleDelete(row.original.id)}
                  >
                    <DeleteIcon />
                  </IconButton>
