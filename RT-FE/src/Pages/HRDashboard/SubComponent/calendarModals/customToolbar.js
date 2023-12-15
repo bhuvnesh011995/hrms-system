@@ -14,7 +14,7 @@ export const CustomToolbar = ({
         <div className="d-flex">
           <p
             type="button"
-            className="btn-dark prev-calendar-btn align-items-center justify-content-center cursor-pointer"
+            className="btn-primary prev-calendar-btn align-items-center justify-content-center cursor-pointer"
             onClick={() => onNavigate("PREV")}
           >
             <span className="calendar-btn-font">{"<"}</span>
@@ -22,7 +22,7 @@ export const CustomToolbar = ({
           </p>
           <p
             type="button"
-            className="btn-dark next-calendar-btn align-items-center justify-content-center cursor-pointer"
+            className="btn-primary next-calendar-btn align-items-center justify-content-center cursor-pointer"
             onClick={() => onNavigate("NEXT")}
           >
             <span className="calendar-btn-font">{">"}</span>
@@ -31,7 +31,7 @@ export const CustomToolbar = ({
         </div>
         <p
           type="button"
-          className="btn-dark today-calendar-btn mx-3 align-items-center justify-content-center cursor-pointer"
+          className="btn-primary today-calendar-btn mx-3 align-items-center justify-content-center cursor-pointer"
           onClick={() => onNavigate("TODAY")}
         >
           <span className="calendar-btn-font">{"today"}</span>
@@ -42,7 +42,7 @@ export const CustomToolbar = ({
         <div className="d-flex">
           {views.map((name) => (
             <p
-              className="btn-dark today-calendar-btn d-flex cursor-pointer"
+              className="btn-primary today-calendar-btn d-flex cursor-pointer"
               onClick={() => onView(name)}
             >
               <span className="calendar-btn-font mx-1 px-1">{name}</span>

@@ -25,7 +25,7 @@ const NewGoalModal = ({ show, setShow, eventData, callback }) => {
   const addNewGoal = async (data) => {
     try {
       if (data._id) {
-        let response = await api.put("/goals/updateGoal", data);
+        let response = await api.put("/events/updateEvent", data);
         if (response.status == 200) {
           callback(data);
           toast.success(response.data.message);
@@ -34,7 +34,7 @@ const NewGoalModal = ({ show, setShow, eventData, callback }) => {
         }
       } else {
         data["eventType"] = "goals";
-        let response = await api.post("/goals/addNewGoal", data);
+        let response = await api.post("/events/addNewEvent", data);
         if (response.status == 200) {
           callback(response.data.data);
           toast.success(response.data.message);
@@ -73,13 +73,13 @@ const NewGoalModal = ({ show, setShow, eventData, callback }) => {
                     className="form-control"
                     placeholder="company name goes here"
                     type="text"
-                    {...register("companyName", {
+                    {...register("companyId", {
                       required: "Please Enter Company Name",
                     })}
                   />
-                  {errors?.companyName && (
+                  {errors?.companyId && (
                     <span className="text-danger">
-                      {errors?.companyName.message}
+                      {errors?.companyId.message}
                     </span>
                   )}
                 </div>

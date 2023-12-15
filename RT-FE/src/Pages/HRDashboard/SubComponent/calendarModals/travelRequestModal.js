@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Modal } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { api } from "../../../../Context/AuthContext";
@@ -14,7 +14,10 @@ const NewTravelRequestModal = ({ show, setShow, eventData, callback }) => {
     reset,
   } = useForm();
 
+  const [allCompanies,setAllCompanies] = useState([])
+
   useEffect(() => {
+    getAllCompanies()
     if (eventData) {
       eventData["startDate"] = moment(eventData.startDate).format("YYYY-MM-DD");
       eventData["endDate"] = moment(eventData.endDate).format("YYYY-MM-DD");
@@ -26,7 +29,7 @@ const NewTravelRequestModal = ({ show, setShow, eventData, callback }) => {
     try {
       if (data._id) {
         let response = await api.put(
-          "/travelRequest/updateTravelRequest",
+          "/events/updateEvent",
           data
         );
         if (response.status == 200) {
@@ -38,7 +41,7 @@ const NewTravelRequestModal = ({ show, setShow, eventData, callback }) => {
       } else {
         data["eventType"] = "travelRequest";
         let response = await api.post(
-          "/travelRequest/addNewTravelRequest",
+          "/events/addNewEvent",
           data
         );
         if (response.status == 200) {
@@ -60,6 +63,15 @@ const NewTravelRequestModal = ({ show, setShow, eventData, callback }) => {
     reset();
   };
 
+  const getAllCompanies = async() => {
+    try{
+      const companies = await api.get("/company")
+      setAllCompanies(companies.data.companies)
+    }catch(err){
+      console.error(err)
+    }
+  }
+
   return (
     <div>
       <Modal show={show} onHide={handleClose}>
@@ -76,17 +88,22 @@ const NewTravelRequestModal = ({ show, setShow, eventData, callback }) => {
               <div className="col-md-6">
                 <div className="mb-3">
                   <label className="form-label">Company Name</label>
-                  <input
-                    className="form-control"
-                    placeholder="company name goes here"
-                    type="text"
-                    {...register("companyName", {
+                  <select 
+                    className="form-select" 
+                    {...register("companyId", {
                       required: "Please Enter Company Name",
                     })}
-                  />
-                  {errors?.companyName && (
+                  >
+                    <option value="">Select Company</option>
+                    {
+                      allCompanies?.length && allCompanies.map(company => (
+                        <option value={company._id} selected={watch("companyId") == company._id && company._id}>{company.name}</option>
+                      ))
+                    }
+                  </select>
+                  {errors?.companyId && (
                     <span className="text-danger">
-                      {errors?.companyName.message}
+                      {errors?.companyId.message}
                     </span>
                   )}
                 </div>

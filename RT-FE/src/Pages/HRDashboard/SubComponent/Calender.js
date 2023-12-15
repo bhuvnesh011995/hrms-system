@@ -32,21 +32,22 @@ export default function Calender() {
 
   const getAllEvents = async () => {
     try {
-      const allEvents = await api.get("/holiday/getAllHolidays");
+      const allEvents = await api.get("/events/getAllEvents");
       setTotalEvents(allEvents.data);
     } catch (err) {
       console.error(err);
     }
   };
 
-  const showHolidayModal = (data) => {
+  const showCalendarModal = (data,type) => {
+    setEventData(null);
+    if(type == "holiday"){
     setHolidayModal(true);
-  };
-  const showTravelModal = (data) => {
-    setTravelModal(true);
-  };
-  const showGoalsModal = (data) => {
-    setGoalsModal(true);
+    }else if(type == "travelRequest"){
+      setTravelModal(true);
+    }else if(type=="goals"){
+      setGoalsModal(true);
+    }
   };
 
   const handleSelectEvent = (event) => {
@@ -77,6 +78,30 @@ export default function Calender() {
     }
   };
 
+  const eventStyleGetter = (event, start, end, isSelected) => {
+    const style = {
+      backgroundColor: "#32de84",
+      color: "white",
+      fontSize: "15px",
+      fontWeight: "bolder",
+      border: "none",
+    };
+    if (event.eventType == "goals") {
+      style.backgroundColor = "#9ADE7B";
+    } else if (event.eventType == "travelRequest") {
+      style.backgroundColor = "#5FBDFF";
+    } else if (event.eventType == "holiday") {
+      style.backgroundColor = "blue";
+    } else if(event.eventType == "leave"){
+      style.backgroundColor = "red"
+    }
+
+    return {
+      className: "",
+      style,
+    };
+  };
+
   return (
     <div className="row">
       <div className="col-12">
@@ -88,20 +113,20 @@ export default function Calender() {
                   <button
                     className="btn font-16 btn-primary mb-3"
                     id="btn-new-event"
-                    onClick={showHolidayModal}
+                    onClick={() => showCalendarModal(null,"holiday")}
                   >
                     <i className="mdi mdi-plus-circle-outline"></i> Holiday
                   </button>
                   <button
                     className="btn font-16 btn-info mb-3"
-                    onClick={showTravelModal}
+                    onClick={() => showCalendarModal(null,"travelRequest")}
                   >
                     <i className="mdi mdi-plus-circle-outline"></i> Travel
                     Request
                   </button>
                   <button
                     className="btn font-16 btn-success mb-3"
-                    onClick={showGoalsModal}
+                    onClick={() => showCalendarModal(null,"goals")}
                   >
                     <i className="mdi mdi-plus-circle-outline"></i> Goals
                   </button>
@@ -132,6 +157,7 @@ export default function Calender() {
                   components={{
                     toolbar: CustomToolbar,
                   }}
+                  eventPropGetter={eventStyleGetter}
                   onSelectEvent={handleSelectEvent}
                 />
               </div>
@@ -163,7 +189,7 @@ export default function Calender() {
           show={goalsModal}
           setShow={setGoalsModal}
           eventData={eventData}
-          callback={(data) => console.log(data)}
+          callback={(data) => updateAllEvents(data)}
         />
       )}
     </div>

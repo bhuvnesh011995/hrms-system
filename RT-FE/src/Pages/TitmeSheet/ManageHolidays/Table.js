@@ -1,4 +1,68 @@
+import { useEffect, useState } from "react";
+import NewHolidayModal from "../../HRDashboard/SubComponent/calendarModals/holidayModal";
+import { api } from "../../../Context/AuthContext";
+import { CommonDataTable } from "../../../Components/Common/commonDataTable";
+import { holidayTableHeader } from "../../../Components/Common/table.constants";
+import { FormattedMessage } from "react-intl";
+import moment from "moment";
+import CommonDeleteModal from "../../../Components/Common/commonDeleteModal";
+import { toast } from "react-toastify";
+
 export default function Table() {
+
+    useEffect(() => {
+        getHolidayEvents()
+    },[])
+
+    const [holidayModal,setHolidayModal] = useState(false)
+    const [holidayEvents, setHolidayEvents] = useState([])
+    const [deleteHolidayEvent, setDeleteHolidayEvent] = useState(false)
+    const [eventIndex, setEventIndex] = useState(null)
+    const [eventData, setEventData] = useState(null)
+
+    const getHolidayEvents = async () => {
+        try{
+            let holidayEvents = await api.get("/events/getEvents/holiday" );
+            setHolidayEvents(holidayEvents.data)
+        }catch(err){
+            console.error(err)
+        }
+    }
+
+    const showHolidayModal = (data,type,index) => {
+        setEventIndex(index)
+        setEventData(data)
+        if(type == "delete") {
+            setDeleteHolidayEvent(true)
+        }
+        if(type !== "delete") setHolidayModal(true)
+    }
+
+    const updateHolidayEvents = (eventData) => {
+        const filteredEvents = holidayEvents.filter(event => event._id == eventData._id)
+        if(filteredEvents.length){
+            holidayEvents[eventIndex] = eventData;
+            setHolidayEvents([...holidayEvents])
+        }else{
+            setHolidayEvents([...holidayEvents,eventData])
+        }
+    }
+
+    const deleteSelectedEvent = async () => {
+        try{
+            const deleteHoliday = await api.delete("/events/deleteEvent/" +eventData._id)
+            if(deleteHoliday.status == 200)
+            {
+                const filteredEvents = holidayEvents.filter(event => event._id != eventData._id)
+                setHolidayEvents([...filteredEvents])
+                toast.success(deleteHoliday.data.message)
+            }
+            
+        }catch(err){
+            console.error(err)
+        }
+    }
+
     return(
         <div className="row">
                         <div className="col-12">
@@ -9,128 +73,62 @@ export default function Table() {
                                             <h4>Holidays</h4>
                                         </div>
                                         <div className="col-md-6 mb-3" style={{textAlign: "right"}}>
-                                            <button className="btn btn-primary text-right" data-bs-toggle="modal" data-bs-target="#myModal">Add New</button>
+                                            <button className="btn btn-primary text-right" onClick={() => showHolidayModal()} data-bs-toggle="modal" data-bs-target="#myModal">Add New</button>
                                         </div>
                                     </div>
 
-
-                                    <p className="card-title-desc" style={{textAlign: "right"}}>
-                                        <button className="btn btn-info text-right">
-                                            CSV
-                                        </button>
-                                        <button className="btn btn-info text-right">
-                                            Excel
-                                        </button>
-                                        <button className="btn btn-info text-right">
-                                            PDF
-                                        </button>
-                                        <button className="btn btn-info text-right">
-                                            Print
-                                        </button>
-                                    </p>
-                                    <table id="datatable" className="table table-bordered dt-responsive nowrap w-100">
-                                        <thead>
-                                            <tr>
-                                                <th>Event Name </th>
-                                                <th>Start Date</th>
-                                                <th>End Date</th>                                        
-                                                <th>Action</th>
-
-
-                                            </tr>
-                                        </thead>
-
-                                        <tbody>
-                                            <tr>
-                                                <td></td>
-                                                <td></td>
-                                                <td></td>
-                                                <td>
-                                                    <button className="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal"><i className="fas fa-edit" style={{fontSize:"10px"}}></i></button>
-                                                    <button className="btn btn-danger"><i className="fas fa-trash-alt" style={{fontSize:"10px"}}></i></button>
-                                                </td>
-
-                                            </tr>
-
-
-                                        </tbody>
-                                    </table>
-                                    {/* <!-- The Modal --> */}
-                                    <div className="modal fade" id="myModal">
-                                        <div className="modal-dialog modal-lg">
-                                            <div className="modal-content">
-
-                                                {/* <!-- Modal Header --> */}
-                                                <div className="modal-header">
-                                                    <h4 className="modal-title">Add New</h4>
-                                                    <button type="button" className="btn-close" data-bs-dismiss="modal"></button>
-                                                </div>
-
-                                                {/* <!-- Modal body --> */}
-                                                <div className="modal-body">
-                                                    <div className="row">
-                                                        <div className="col-md-12">
-                                                            <div className="mb-3">
-                                                                <label for="formrow-firstname-input" className="form-label">Company</label> <br/>
-                                                                <select className="form-control select2-templating " style={{width: "100%"}}>
-                                                                    <option value=""></option>
-                                                                </select>
-                                                            </div>
+                                    <CommonDataTable 
+                                        data={holidayEvents}
+                                        tableHeaders={holidayTableHeader}
+                                        changeSelectedColumnDataDesign={["startDate","endDate"]}
+                                        changedDataCellColumn={(header, accessor) => {
+                                            if(accessor == "startDate" || accessor == "endDate"){
+                                                return {
+                                                    accessorKey:accessor,
+                                                    header:header,
+                                                    Header:() => (
+                                                        <FormattedMessage
+                                                        id={header}
+                                                        defaultMessage={header}
+                                                        />
+                                                    ),
+                                                    Cell:({row}) => (
+                                                        <div>
+                                                            {moment(row.original[accessor]).format("YYYY-DD-MM")}
                                                         </div>
-                                                        <div className="col-md-12">
-                                                            <div className="mb-3">
-                                                                <label for="formrow-firstname-input" className="form-label">Event Name</label> <br/>
-                                                                <input type="text" className="form-control" placeholder=""/>
-                                                            </div>
-                                                        </div>
-
-                                                        <div className="col-md-12">
-                                                            <div className="mb-3">
-                                                                <label for="formrow-firstname-input" className="form-label">Start Date</label> <br/>
-                                                               <input type="date" className="form-control" placeholder=""/>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-12">
-                                                            <div className="mb-3">
-                                                                <label for="formrow-firstname-input" className="form-label">End Date</label> <br/>
-                                                               <input type="date" className="form-control" placeholder=""/>
-                                                            </div>
-                                                        </div>
-                                                        <div className="col-md-12">
-                                                            <div className="mb-3">
-                                                                <label for="formrow-firstname-input" className="form-label">Description</label> <br/>
-                                                               <input type="text" className="form-control" placeholder="Enter Total Hours"/>
-                                                            </div>
-                                                        </div>
-                                                        
-                                                        <div className="col-md-12">
-                                                            <div className="mb-3">
-                                                                <label for="formrow-firstname-input" className="form-label">Status</label> <br/>
-                                                                <select className="form-control select2-templating " style={{width: "100%"}}>
-                                                                    <option value="">Published</option>
-                                                                    <option value="">Unpublished</option>
-                                                                </select>
-                                                            </div>
-                                                        </div>
-
-
-                                                    </div>
-                                                </div>
-
-                                                {/* <!-- Modal footer --> */}
-                                                <div className="modal-footer">
-                                                    <button type="button" className="btn btn-success">SAVE</button>
-                                                </div>
-
-                                            </div>
-                                        </div>
-                                    </div>
-
+                                                    )
+                                                }
+                                            }
+                                        }}
+                                        actionButtons
+                                        editButton
+                                        deleteButton
+                                        callback={(data,type,index) => showHolidayModal(data,type,index)}
+                                    />
 
                                 </div>
                             </div>
                         </div>
-                        {/* <!-- end col --> */}
+                        {
+                            holidayModal &&(
+                                 <NewHolidayModal 
+                                show={holidayModal}
+                                setShow={setHolidayModal}
+                                eventData={eventData} 
+                                callback={(data) => updateHolidayEvents(data)}
+                            />
+                            )
+                        }
+
+                        {
+                            deleteHolidayEvent && <CommonDeleteModal 
+                            header={"Holiday"}
+                             show={deleteHolidayEvent} 
+                             setShow={setDeleteHolidayEvent} 
+                             message={`do you really want to delete event ${eventData?.title}` }
+                              deleteFunction={deleteSelectedEvent}
+                            />
+                        }
                     </div>
     )
 };

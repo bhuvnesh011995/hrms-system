@@ -7,7 +7,7 @@ const schema = new Schema(
     endDate: { type: Date },
     description: { type: String },
     status: { type: String },
-    companyName: { type: String },
+    companyId: { type: String },
     eventType: { type: String },
 
     employeeId: { type: String },
@@ -19,11 +19,17 @@ const schema = new Schema(
     actualBudget: { type: String },
     goalType: { type: String },
     targetAchievement: { type: String },
+  
+    halfDay: { type: Boolean },
+    leaveReason: { type: String } ,
+    remarks: { type: String },
   },
   {
-    collection: "holidays",
-    timestamps: true,
+    collection: "events",
+    timestamps: {
+      createdAt:"created_at",updatedAt:"updated_at"
+    }
   }
 );
 
-module.exports = model("holidays", schema);
+module.exports = model("events", schema);

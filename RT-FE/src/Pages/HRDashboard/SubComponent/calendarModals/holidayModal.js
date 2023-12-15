@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Modal } from "react-bootstrap";
 import { useForm } from "react-hook-form";
 import { api } from "../../../../Context/AuthContext";
@@ -14,7 +14,10 @@ const NewHolidayModal = ({ show, setShow, eventData, callback }) => {
     reset,
   } = useForm();
 
+  const [allCompanies,setAllCompanies] = useState([])
+
   useEffect(() => {
+    getAllCompanies();
     if (eventData) {
       eventData["startDate"] = moment(eventData.startDate).format("YYYY-MM-DD");
       eventData["endDate"] = moment(eventData.endDate).format("YYYY-MM-DD");
@@ -25,7 +28,7 @@ const NewHolidayModal = ({ show, setShow, eventData, callback }) => {
   const addNewHoliday = async (data) => {
     try {
       if (data._id) {
-        let response = await api.put("/holiday/updateHoliday", data);
+        let response = await api.put("/events/updateEvent", data);
         if (response.status == 200) {
           callback(data);
           toast.success(response.data.message);
@@ -34,7 +37,7 @@ const NewHolidayModal = ({ show, setShow, eventData, callback }) => {
         }
       } else {
         data["eventType"] = "holiday";
-        let response = await api.post("/holiday/addNewHoliday", data);
+        let response = await api.post("/events/addNewEvent", data);
         if (response.status == 200) {
           callback(response.data.data);
           toast.success(response.data.message);
@@ -53,6 +56,15 @@ const NewHolidayModal = ({ show, setShow, eventData, callback }) => {
     reset();
   };
 
+  const getAllCompanies = async() => {
+    try{
+      const companies = await api.get("/company")
+      setAllCompanies(companies.data.companies)
+    }catch(err){
+      console.error(err)
+    }
+  }
+
   return (
     <div>
       <Modal show={show} onHide={handleClose}>
@@ -69,17 +81,23 @@ const NewHolidayModal = ({ show, setShow, eventData, callback }) => {
               <div className="col-12">
                 <div className="mb-3">
                   <label className="form-label">Company Name</label>
-                  <input
-                    className="form-control"
-                    placeholder="company name goes here"
-                    type="text"
-                    {...register("companyName", {
+                  
+                  <select 
+                    className="form-select" 
+                    {...register("companyId", {
                       required: "Please Enter Company Name",
                     })}
-                  />
-                  {errors?.companyName && (
+                  >
+                    <option value="">Select Company</option>
+                    {
+                      allCompanies?.length && allCompanies.map(company => (
+                        <option value={company._id} selected={watch("companyId") == company._id && company._id}>{company.name}</option>
+                      ))
+                    }
+                  </select>
+                  {errors?.companyId && (
                     <span className="text-danger">
-                      {errors?.companyName.message}
+                      {errors?.companyId.message}
                     </span>
                   )}
                 </div>
