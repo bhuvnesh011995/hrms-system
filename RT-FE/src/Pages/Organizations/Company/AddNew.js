@@ -28,7 +28,7 @@ export default function AddNew({getCompanies, show, setShow,updateData=null,
         getCompanies()
         setShow(false)
     }else{
-        
+
     }}else{
       if(data.logo){
         data.logo = data.logo[0]
@@ -47,7 +47,9 @@ export default function AddNew({getCompanies, show, setShow,updateData=null,
 
   const getAllCountries = useCallback(async(url)=>{
     try {
+
       let response = await axios.get(url)
+
       if(response.status===200){
         let arr = response.data?.map(ele=>({value:ele.name.common,label:ele.name.common})).sort((a,b)=>{
           let A = a.label.toUpperCase()
@@ -55,7 +57,6 @@ export default function AddNew({getCompanies, show, setShow,updateData=null,
           if(A<B) return -1
           else return 1
         })
-
         setCountries(arr)
       }
     } catch (error) {
@@ -100,7 +101,7 @@ export default function AddNew({getCompanies, show, setShow,updateData=null,
                     }
                     placeholder="Enter Company Name"
                   />)}/>
-                
+
                 {errors?.name && (
                   <span style={{ color: "red" }}>{errors.name.message}</span>
                 )}

@@ -24,5 +24,3 @@ module.exports = app=>{
     app.delete("/rt/api/v1/termination/file/:filename/:id",[],terminationController.deleteFileFromTermination)
     app.get("/rt/api/v1/termination/:id",[],terminationController.getTerminationById)
 }
-
-    

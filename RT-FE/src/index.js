@@ -73,10 +73,10 @@ import SettingProvider from './Context/settingContext';
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <SettingProvider>
-  <AuthProvider>
+  
     
-  <BrowserRouter>
-
+  <BrowserRouter> 
+    <AuthProvider>  
     <Routes>      <Route path='login' element={<Login />} />
       <Route path='reset' element={<ResetPass />} />
       <Route path='' element={<Common><HRDashboard /></Common> }/>
@@ -149,9 +149,10 @@ root.render(
       <Route path='employeereport' element={<Common><Employee/></Common>}/>
       <Route path="practice" element={<Practice/>}/>
       </Routes>
+      </AuthProvider>
   </BrowserRouter>
   
-  </AuthProvider>
+  
   </SettingProvider>
 );
 

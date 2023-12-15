@@ -23,6 +23,7 @@ try {
   let response = await login(data)
   if(!response) return setError("network error")
   if(response.status === 200){
+    localStorage.setItem("token",response.data.accessToken)
     setUser({
       username:response.data.username,
       name:response.data.name || "unknown user",
