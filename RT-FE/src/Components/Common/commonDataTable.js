@@ -16,6 +16,7 @@ export const CommonDataTable = ({
   addNewCellColumns,
   changeSelectedColumnDataDesign,
   changedDataCellColumn,
+  customActionButton,
 }) => {
   const dataKeys = Object.keys(tableHeaders);
   const tableColumns = [];
@@ -50,12 +51,12 @@ export const CommonDataTable = ({
               typeof row.original[e] == "string"
                 ? "text"
                 : typeof row.original[e] == "number"
-                ? "number"
-                : typeof row.original[e] == "date"
-                ? "date"
-                : "text"
+                  ? "number"
+                  : typeof row.original[e] == "date"
+                    ? "date"
+                    : "text"
             }
-            class="form-control"
+            class='form-control'
             onChange={({ target }) => {
               inputTypeColumnCallback(target.value, e, row.index);
             }}
@@ -76,17 +77,17 @@ export const CommonDataTable = ({
     tableColumns.push({
       header: "Actions",
       Header: () => (
-        <FormattedMessage id="Actions" defaultMessage={"Actions"} />
+        <FormattedMessage id='Actions' defaultMessage={"Actions"} />
       ),
       Cell: ({ row }) => (
-        <div className="hstack gap-2 fs-1">
+        <div className='hstack gap-2 fs-1'>
           {viewButton && (
             <button
               disabled={disableFields}
               onClick={() => callback(row.original, "view", row.index)}
-              className="btn btn-icon btn-sm btn-warning rounded-pill"
+              className='btn btn-icon btn-sm btn-warning rounded-pill'
             >
-              <i className="mdi mdi-eye"></i>
+              <i className='mdi mdi-eye'></i>
             </button>
           )}
           {editButton && (
@@ -95,18 +96,18 @@ export const CommonDataTable = ({
               onClick={() => {
                 callback(row.original, null, row.index);
               }}
-              className="btn btn-icon btn-sm btn-info rounded-pill"
+              className='btn btn-icon btn-sm btn-info rounded-pill'
             >
-              <i className="bx bxs-edit-alt" />
+              <i className='bx bxs-edit-alt' />
             </button>
           )}
           {deleteButton && (
             <button
               disabled={disableFields}
               onClick={() => callback(row.original, "delete", row.index)}
-              className="btn btn-icon btn-sm btn-danger rounded-pill"
+              className='btn btn-icon btn-sm btn-danger rounded-pill'
             >
-              <i className="bx bxs-trash" />
+              <i className='bx bxs-trash' />
             </button>
           )}
         </div>
@@ -115,7 +116,7 @@ export const CommonDataTable = ({
   }
 
   return (
-    <div className="p-3">
+    <div className='p-3'>
       <MaterialReactTable
         columns={tableColumns}
         data={data}
@@ -123,11 +124,11 @@ export const CommonDataTable = ({
         enableDensityToggle={false}
         enableHiding={false}
         enableColumnFilters={false}
-        positionGlobalFilter="right"
+        positionGlobalFilter='right'
         initialState={{
           showGlobalFilter: true,
         }}
-        rowNumberMode="static"
+        rowNumberMode='static'
         enableColumnActions={false}
         enableTopToolbar={true}
         muiTableProps={{

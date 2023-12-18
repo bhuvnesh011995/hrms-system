@@ -57,134 +57,134 @@ const NewGoalModal = ({ show, setShow, eventData, callback }) => {
     <div>
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
-          <Modal.Title>Add New Files</Modal.Title>
+          <Modal.Title>{eventData ? "Update" : "Add New"} Goal</Modal.Title>
         </Modal.Header>
 
         <Modal.Body>
           <form
-            className="needs-validation"
+            className='needs-validation'
             onSubmit={handleSubmit(addNewGoal)}
           >
-            <div className="row">
-              <div className="col-md-6">
-                <div className="mb-3">
-                  <label className="form-label">Company</label>
+            <div className='row'>
+              <div className='col-md-6'>
+                <div className='mb-3'>
+                  <label className='form-label'>Company</label>
                   <input
-                    className="form-control"
-                    placeholder="company name goes here"
-                    type="text"
+                    className='form-control'
+                    placeholder='company name goes here'
+                    type='text'
                     {...register("companyId", {
                       required: "Please Enter Company Name",
                     })}
                   />
                   {errors?.companyId && (
-                    <span className="text-danger">
+                    <span className='text-danger'>
                       {errors?.companyId.message}
                     </span>
                   )}
                 </div>
               </div>
-              <div className="col-md-6">
-                <div className="mb-3">
-                  <label className="form-label">Goal Type</label>
+              <div className='col-md-6'>
+                <div className='mb-3'>
+                  <label className='form-label'>Goal Type</label>
                   <input
-                    className="form-control"
-                    placeholder="enter goal type"
-                    type="text"
+                    className='form-control'
+                    placeholder='enter goal type'
+                    type='text'
                     {...register("goalType", {
                       required: "Please Enter Goal Type",
                     })}
                   />
                   {errors?.goalType && (
-                    <span className="text-danger">
+                    <span className='text-danger'>
                       {errors?.goalType.message}
                     </span>
                   )}
                 </div>
               </div>
-              <div className="col-md-6">
-                <div className="mb-3">
-                  <label className="form-label">Subject</label>
+              <div className='col-md-6'>
+                <div className='mb-3'>
+                  <label className='form-label'>Subject</label>
                   <input
-                    className="form-control"
-                    placeholder="Enter Subject"
-                    type="text"
+                    className='form-control'
+                    placeholder='Enter Subject'
+                    type='text'
                     {...register("title", { required: "Please Enter Subject" })}
                   />
                   {errors?.title && (
-                    <span className="text-danger">{errors?.title.message}</span>
+                    <span className='text-danger'>{errors?.title.message}</span>
                   )}
                 </div>
               </div>
-              <div className="col-md-6">
-                <div className="mb-3">
-                  <label className="form-label">Target Achievement</label>
+              <div className='col-md-6'>
+                <div className='mb-3'>
+                  <label className='form-label'>Target Achievement</label>
                   <input
-                    className="form-control"
-                    placeholder="Target Achievement"
-                    type="text"
+                    className='form-control'
+                    placeholder='Target Achievement'
+                    type='text'
                     {...register("targetAchievement", {
                       required: "Please Enter Target Achievement",
                     })}
                   />
                   {errors?.targetAchievement && (
-                    <span className="text-danger">
+                    <span className='text-danger'>
                       {errors?.targetAchievement.message}
                     </span>
                   )}
                 </div>
               </div>
-              <div className="col-md-6">
-                <div className="mb-3">
-                  <label className="form-label">Start Date</label>
+              <div className='col-md-6'>
+                <div className='mb-3'>
+                  <label className='form-label'>Start Date</label>
                   <input
-                    className="form-control"
-                    placeholder=""
-                    type="date"
+                    className='form-control'
+                    placeholder=''
+                    type='date'
                     {...register("startDate", {
                       required: "Please Enter Start Date",
                     })}
                   />
                   {errors?.startDate && (
-                    <span className="text-danger">
+                    <span className='text-danger'>
                       {errors?.startDate.message}
                     </span>
                   )}
                 </div>
               </div>
 
-              <div className="col-md-6">
-                <div className="mb-3">
-                  <label className="form-label">End Date</label>
+              <div className='col-md-6'>
+                <div className='mb-3'>
+                  <label className='form-label'>End Date</label>
                   <input
-                    className="form-control"
-                    placeholder=""
-                    type="date"
+                    className='form-control'
+                    placeholder=''
+                    type='date'
                     {...register("endDate", {
                       required: "Please Enter End Date",
                     })}
                   />
                   {errors?.endDate && (
-                    <span className="text-danger">
+                    <span className='text-danger'>
                       {errors?.endDate.message}
                     </span>
                   )}
                 </div>
               </div>
-              <div className="col-md-12">
-                <div className="mb-3">
-                  <label for="form-label">Description</label>
+              <div className='col-md-12'>
+                <div className='mb-3'>
+                  <label for='form-label'>Description</label>
                   <textarea
-                    cols="30"
-                    rows="10"
-                    className="form-control"
+                    cols='30'
+                    rows='10'
+                    className='form-control'
                     style={{ height: "100px" }}
                     {...register("description", {
                       required: "Please Enter Description",
                     })}
                   ></textarea>
                   {errors?.description && (
-                    <span className="text-danger">
+                    <span className='text-danger'>
                       {errors?.description.message}
                     </span>
                   )}
@@ -192,16 +192,16 @@ const NewGoalModal = ({ show, setShow, eventData, callback }) => {
               </div>
             </div>
             <Modal.Footer>
-              <div className="col-6 text-end">
+              <div className='col-6 text-end'>
                 <button
-                  type="button"
+                  type='button'
                   onClick={handleClose}
-                  className="btn btn-light me-1"
+                  className='btn btn-light me-1'
                 >
                   Close
                 </button>
-                <button type="submit" className="btn btn-success">
-                  Save
+                <button type='submit' className='btn btn-success'>
+                  {eventData ? "Update" : "Save"}
                 </button>
               </div>
             </Modal.Footer>

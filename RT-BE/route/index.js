@@ -30,4 +30,5 @@ module.exports = (app) => {
   require("./coreHR/warning.route")(app);
   require("./coreHR/termination.route")(app);
   require("./event.route")(app);
+  require("./fileManager.route")(app);
 };

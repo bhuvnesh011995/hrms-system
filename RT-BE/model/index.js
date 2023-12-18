@@ -27,4 +27,5 @@ module.exports = {
   warnings: require("./coreHR/warning.model"),
   terminations: require("./coreHR/termination.model"),
   events: require("./event.model"),
+  fileManager: require("./fileManager.model"),
 };
