@@ -37,7 +37,7 @@ export default function Tabs() {
                 <Nav.Link eventKey="otherBene">Other Benefits</Nav.Link>
               </Nav.Item>
             </Nav>
-        
+
         </Col>
         <Col xl={9}>
         

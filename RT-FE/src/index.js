@@ -2,7 +2,7 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
 import reportWebVitals from "./reportWebVitals";
-import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { BrowserRouter, HashRouter, Route, Routes } from "react-router-dom";
 import ResetPass from "./Pages/ForgetPassword/ForgetPassword";
 import Common from "./Components/Common/Common";
 import HRDashboard from "./Pages/HRDashboard/HRDashboard";
@@ -73,7 +73,7 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <SettingProvider>
     
-      <BrowserRouter><AuthProvider>
+      <HashRouter><AuthProvider>
         <Routes>
           {" "}
           <Route path="login" element={<Login />} />
@@ -554,7 +554,7 @@ root.render(
           />
           <Route path="practice" element={<Practice />} />
         </Routes></AuthProvider>
-      </BrowserRouter>
+      </HashRouter>
     
   </SettingProvider>
 );
