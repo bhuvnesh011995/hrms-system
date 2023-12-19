@@ -65,15 +65,16 @@ import PaymentGateway from "./Pages/System/PaymentGateway/PaymentGateway";
 import Constants from "./Pages/System/Constants/Constants";
 import DatabseBackup from "./Pages/System/DatabaseBackup/DatabseBackup";
 import StaffDashboard from "./Pages/Staff/StaffDashboard/StaffDashboard";
-import Practice from "./practice";
 import AuthProvider from "./Context/AuthContext";
 import SettingProvider from "./Context/settingContext";
+import VerticalTabs from "./practice";
+import EmployeeDetails from "./Pages/Staff/Employees/EmployeeDetails/EmployeeDetails";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <SettingProvider>
-    
-      <HashRouter><AuthProvider>
+    <HashRouter>
+      <AuthProvider>
         <Routes>
           {" "}
           <Route path="login" element={<Login />} />
@@ -552,10 +553,18 @@ root.render(
               </Common>
             }
           />
-          <Route path="practice" element={<Practice />} />
-        </Routes></AuthProvider>
-      </HashRouter>
-    
+          <Route
+            path="employeeDetails"
+            element={
+              <Common>
+                <EmployeeDetails />
+              </Common>
+            }
+          />
+          <Route path="practice" element={<VerticalTabs />} />
+        </Routes>
+      </AuthProvider>
+    </HashRouter>
   </SettingProvider>
 );
 
