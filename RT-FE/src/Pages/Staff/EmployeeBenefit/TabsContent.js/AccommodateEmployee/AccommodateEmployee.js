@@ -3,46 +3,58 @@ import { Box, IconButton } from "@mui/material";
 import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import { useMemo, useState } from "react";
 import AddNew from "./AddNew";
-
-
-
-
+import { FormattedMessage } from "react-intl";
 
 export default function AccommodateEmployee() {
-    const [isOpen,setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
 
   const columns = useMemo(
     () => [
       {
         accessorKey: "Employee",
+        Header: () => (
+          <FormattedMessage id='Employee' defaultMessage={"Employee"} />
+        ),
         header: "Employee",
       },
       {
         accessorKey: "Accommodation",
+        Header: () => (
+          <FormattedMessage
+            id='Accommodation'
+            defaultMessage={"Accommodation"}
+          />
+        ),
         header: "Accommodation",
       },
       {
         accessorKey: "Period",
+        Header: () => (
+          <FormattedMessage id='Period' defaultMessage={"Period"} />
+        ),
         header: "Period",
       },
       {
         accessorKey: "RentPaid",
+        Header: () => (
+          <FormattedMessage id='Rent_Paid' defaultMessage={"Rent Paid"} />
+        ),
         header: "Rent Paid",
       },
     ],
-    []
+    [],
   );
 
   return (
     <>
-      <div className="row">
-        <div className="col-md-6 mb-3">
+      <div className='row'>
+        <div className='col-md-6 mb-3'>
           <h4>List All Accommodated Employees</h4>
         </div>
-        <div className="col-md-6 mb-3" style={{ textAlign: "right" }}>
+        <div className='col-md-6 mb-3' style={{ textAlign: "right" }}>
           <button
-            className="btn btn-primary text-right"
-            onClick={()=>setIsOpen(true)}
+            className='btn btn-primary text-right'
+            onClick={() => setIsOpen(true)}
           >
             Add New
           </button>
@@ -57,25 +69,20 @@ export default function AccommodateEmployee() {
         enableSorting={false}
         enableTopToolbar={false}
         enableRowActions
-        positionActionsColumn="last"
+        positionActionsColumn='last'
         enableRowNumbers
-        rowNumberMode="static"
+        rowNumberMode='static'
         renderRowActions={({ row, table }) => (
           <Box sx={{ display: "flex", flexWrap: "nowrap", gap: "8px" }}>
             <IconButton
-              color="secondary"
+              color='secondary'
               onClick={() => {
                 table.setEditingRow(row);
               }}
             >
               <EditIcon />
             </IconButton>
-            <IconButton
-              color="error"
-              onClick={() => {
-                
-              }}
-            >
+            <IconButton color='error' onClick={() => {}}>
               <DeleteIcon />
             </IconButton>
           </Box>
@@ -96,7 +103,7 @@ export default function AccommodateEmployee() {
           },
         }}
       />
-      {isOpen && <AddNew show={isOpen} setShow={setIsOpen}/>}
+      {isOpen && <AddNew show={isOpen} setShow={setIsOpen} />}
     </>
   );
 }

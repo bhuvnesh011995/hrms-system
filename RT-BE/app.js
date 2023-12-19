@@ -11,6 +11,7 @@ const express = require("express");
 const session = require("express-session");
 const MongoStore = require("connect-mongo");
 const middleware = require("./middleware");
+const languageFieldsArrayObjects = require("../RT-BE/utility/languageConstantsArrayObject");
 // const {GridFsStorage} = require('multer-gridfs-storage');
 // const crypto = require("crypto")
 // const methodOverride = require('method-override');
@@ -133,6 +134,27 @@ async function init() {
       await dbs.themes.create({});
       console.log("empty theme is created");
     } else console.log("themes is already present");
+
+    // language addition
+
+    const languageData = await dbs.language.find({});
+    if (!languageData.length) {
+      let createdLanguageData;
+      for (let languageField of languageFieldsArrayObjects) {
+        createdLanguageData = await dbs.language.create({
+          name: languageField.name,
+          code: languageField.code,
+          language: languageField.languageObj,
+        });
+      }
+      await dbs.system.findOneAndUpdate(
+        {},
+        {
+          $set: { defaultLanguage: createdLanguageData._id },
+        },
+      );
+      console.log("language created successfully");
+    }
 
     return;
   } catch (error) {

@@ -1,30 +1,37 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import AddNew from "./AddNew";
 import { CommonDataTable } from "../../Components/Common/commonDataTable";
 import { fileManagerHeader } from "../../Components/Common/table.constants";
-import { getAllDepartmentFiles } from "../../Utility/API/fileManager";
+import { deleteDepartmentFile } from "../../Utility/API/fileManager";
 import { toast } from "react-toastify";
 import moment from "moment";
 import { FormattedMessage } from "react-intl";
 import { fileUrl } from "../../Config/Config";
+import CommonDeleteModal from "../../Components/Common/commonDeleteModal";
 
-export default function Tables() {
+export default function Tables({ filesData, setFilesData }) {
   const [isOpen, setIsOpen] = useState(false);
-  const [allDepartmentFiles, setAllDepartmentFiles] = useState([]);
-  const [fileIndex, setFileIndex] = useState(null);
-
-  useEffect(() => {
-    getDepartments();
-  }, []);
-
-  const getDepartments = async () => {
-    const data = await getAllDepartmentFiles();
-    if (data.status == 200) setAllDepartmentFiles(data.data);
-    else toast.error("something went wrong");
-  };
+  const [deleteModal, setDeleteModal] = useState(false);
+  const [fileData, setFileData] = useState(null);
 
   const showDepartmentFile = (data, type, index) => {
+    setFileData(data);
     if (type !== "delete") window.open(`${fileUrl}/${data.fileName}`);
+    else if (type == "delete") setDeleteModal(true);
+  };
+
+  const deleteDepartmentFileManager = async () => {
+    toast.dismiss();
+    const deleteFileResponse = await deleteDepartmentFile(fileData._id);
+    if (deleteFileResponse.status == 200) {
+      const filterDepartmentFiles = filesData.filter(
+        (departmentFile) => departmentFile._id != fileData._id,
+      );
+      setFilesData([...filterDepartmentFiles]);
+      toast.success(deleteFileResponse.data.message);
+    } else {
+      toast.error("something went wrong");
+    }
   };
 
   return (
@@ -63,7 +70,7 @@ export default function Tables() {
 
                   <CommonDataTable
                     tableHeaders={fileManagerHeader}
-                    data={allDepartmentFiles}
+                    data={filesData}
                     actionButtons
                     deleteButton
                     viewButton
@@ -93,38 +100,28 @@ export default function Tables() {
                         };
                     }}
                   />
-                  {isOpen && (
-                    <AddNew
-                      show={isOpen}
-                      setShow={setIsOpen}
-                      callback={(data) =>
-                        setAllDepartmentFiles([...allDepartmentFiles, data])
-                      }
-                    />
-                  )}
                 </div>
               </div>
             </div>
-            {/* <!-- end col --> */}
           </div>
         </div>
-
-        <div
-          class='tab-pane fade'
-          id='v-pills-profile'
-          role='tabpanel'
-          aria-labelledby='v-pills-profile-tab'
-        >
-          <p>
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Reiciendis
-            similique consequuntur maxime, natus ea dolorum animi soluta numquam
-            voluptate unde ipsam veritatis provident quaerat et dicta sit
-            aliquam, minima consectetur.
-          </p>
-        </div>
       </div>
-
-      {/* <!-- end row --> */}
+      {isOpen && (
+        <AddNew
+          show={isOpen}
+          setShow={setIsOpen}
+          callback={(data) => setFilesData([...filesData, data])}
+        />
+      )}
+      {deleteModal && (
+        <CommonDeleteModal
+          header={"Department File"}
+          show={deleteModal}
+          setShow={setDeleteModal}
+          message={`do you really want to delete ${fileData.departmentName} department file.`}
+          deleteFunction={deleteDepartmentFileManager}
+        />
+      )}
     </div>
   );
 }

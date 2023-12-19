@@ -1,137 +1,141 @@
 import MainPage from "../../../Components/Common/MainPage";
-  import MaterialReactTable from "material-react-table";
- import { Box, IconButton } from "@mui/material";
- import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
+import MaterialReactTable from "material-react-table";
+import { Box, IconButton } from "@mui/material";
+import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import { useMemo, useState } from "react";
 import ReportFilter from "./ReportFilter";
+import { FormattedMessage } from "react-intl";
 export default function Payslip() {
-    const [isOpen,setIsOpen] = useState(false)
+  const [isOpen, setIsOpen] = useState(false);
 
- const columns = useMemo(() => [
-     {
-        
-        
-        
-        
-        
-         accessorKey: 'EmployeeID',
-         header: 'Employee ID',                                      
-                                              
-       },
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: "EmployeeID",
+        header: "Employee ID",
+        Header: () => (
+          <FormattedMessage id='Employee_ID' defaultMessage={"Employee ID"} />
+        ),
+      },
 
-         {                                                   
+      {
+        accessorKey: "EmployeeName",
+        header: "Employee Name",
+        Header: () => (
+          <FormattedMessage
+            id='Employee_Name'
+            defaultMessage={"Employee Name"}
+          />
+        ),
+      },
+      {
+        accessorKey: "PaidAmount",
+        header: "Paid Amount",
+        Header: () => (
+          <FormattedMessage id='Paid_Amount' defaultMessage={"Paid Amount"} />
+        ),
+      },
+      {
+        accessorKey: "PaymentMonth",
+        header: "Payment Month",
+        Header: () => (
+          <FormattedMessage
+            id='Payment_Month'
+            defaultMessage={"Payment Month"}
+          />
+        ),
+      },
 
-             accessorKey: 'EmployeeName',
-             header: 'Employee Name',
-           },
-         {                                                   
+      {
+        accessorKey: "PaymentDate",
+        header: "Payment Date",
+        Header: () => (
+          <FormattedMessage id='Payment_Date' defaultMessage={"Payment Date"} />
+        ),
+      },
+      {
+        accessorKey: "PayslipType",
+        header: "Payslip Type",
+        Header: () => (
+          <FormattedMessage id='Payslip_Type' defaultMessage={"Payslip Type"} />
+        ),
+      },
+    ],
+    [],
+  );
 
-             accessorKey: 'PaidAmount',
-             header: 'Paid Amount',
-           },
-     {
-         accessorKey: 'PaymentMonth',
-         header: 'Payment Month',                                      
-                                              
-       },
+  return (
+    <MainPage title={"Payslip Report"}>
+      <div class='row'>
+        <div class='col-12'>
+          <div class='card'>
+            <div class='card-body'>
+              <div class='row'>
+                <div class='col-md-6 mb-3'>
+                  <h4>View Payslip Report</h4>
+                </div>
+                <div class='col-md-6 mb-3' style={{ textAlign: "right" }}>
+                  <button
+                    class='btn btn-primary text-right'
+                    onClick={() => setIsOpen(true)}
+                  >
+                    Report Filters
+                  </button>
+                </div>
+              </div>
 
-         {                                                   
+              <p class='card-title-desc' style={{ textAlign: "right" }}>
+                <button class='btn btn-info text-right'>CSV</button>
+                <button class='btn btn-info text-right'>Excel</button>
+                <button class='btn btn-info text-right'>PDF</button>
+                <button class='btn btn-info text-right'>Print</button>
+              </p>
 
-             accessorKey: 'PaymentDate',
-             header: 'Payment Date',
-           },
-         {                                                   
+              <MaterialReactTable
+                columns={columns}
+                data={[]}
+                enableColumnActions={false}
+                enableColumnFilters={false}
+                enableSorting={false}
+                enableTopToolbar={false}
+                enableRowActions
+                positionActionsColumn='last'
+                enableRowNumbers
+                rowNumberMode='static'
+                renderRowActions={({ row, table }) => (
+                  <Box sx={{ display: "flex", flexWrap: "nowrap", gap: "8px" }}>
+                    <IconButton
+                      color='secondary'
+                      onClick={() => {
+                        table.setEditingRow(row);
+                      }}
+                    >
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton color='error' onClick={() => {}}>
+                      <DeleteIcon />
+                    </IconButton>
+                  </Box>
+                )}
+                muiTableProps={{
+                  sx: {
+                    border: "1px solid rgba(81, 81, 81, 1)",
+                  },
+                }}
+                muiTableHeadCellProps={{
+                  sx: {
+                    border: "1px solid rgba(81, 81, 81, 1)",
+                  },
+                }}
+                muiTableBodyCellProps={{
+                  sx: {
+                    border: "1px solid rgba(81, 81, 81, 1)",
+                  },
+                }}
+              />
 
-             accessorKey: 'PayslipType',
-             header: 'Payslip Type',
-           },
-     ],[])
-
-
-
-    return(
-        <MainPage title={"Payslip Report"}>
-            <div class="row">
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="row">
-                                        <div class="col-md-6 mb-3">
-                                            <h4>View Payslip Report</h4>
-                                        </div>
-                                        <div class="col-md-6 mb-3" style={{textAlign: "right"}}>
-                                            <button class="btn btn-primary text-right" onClick={()=>setIsOpen(true)}>Report Filters</button>
-                                        </div>
-                                    </div>
-
-
-                                    <p class="card-title-desc" style={{textAlign: "right"}}>
-                                        <button class="btn btn-info text-right">
-                                            CSV
-                                        </button>
-                                        <button class="btn btn-info text-right">
-                                            Excel
-                                        </button>
-                                        <button class="btn btn-info text-right">
-                                            PDF
-                                        </button>
-                                        <button class="btn btn-info text-right">
-                                            Print
-                                        </button>
-                                    </p>
-
-                                    
-
-  <MaterialReactTable
- columns={columns}
- data={[]}
- enableColumnActions={false}
- enableColumnFilters={false}
- enableSorting={false}
- enableTopToolbar={false}
- enableRowActions
-             positionActionsColumn="last"
-             enableRowNumbers
-             rowNumberMode="static"
-             renderRowActions={({ row, table }) => (
-               <Box
-                 sx={{ display: "flex", flexWrap: "nowrap", gap: "8px" }}
-               >
-                   <IconButton
-                   color="secondary"
-                   onClick={() => {
-                     table.setEditingRow(row);
-                   }}
-                 >
-                   <EditIcon />
-                 </IconButton>
-                   <IconButton
-                   color="error"
-                   onClick={() => {}}
-                 >
-                   <DeleteIcon />
-                 </IconButton>
-               </Box>
-             )}
- muiTableProps={{
-   sx: {
-     border: '1px solid rgba(81, 81, 81, 1)',
-   },
- }}
- muiTableHeadCellProps={{
-   sx: {
-     border: '1px solid rgba(81, 81, 81, 1)',
-   },
- }}
- muiTableBodyCellProps={{
-   sx: {
-     border: '1px solid rgba(81, 81, 81, 1)',
-   },
- }}
- /> 
-
-{isOpen && <ReportFilter show={isOpen} setShow={setIsOpen}/>}
-                                    {/* <table id="datatable" class="table display table-bordered dt-responsive nowrap w-100">
+              {isOpen && <ReportFilter show={isOpen} setShow={setIsOpen} />}
+              {/* <table id="datatable" class="table display table-bordered dt-responsive nowrap w-100">
                                         <thead>
                                             <tr>
                                                 <th>Employee ID </th>
@@ -161,66 +165,86 @@ export default function Payslip() {
                                             </tr>
                                         </tbody>
                                     </table> */}
-                                  {/* <!-- The Modal --> */}
-                                  <div class="modal fade" id="myModal">
-                                    <div class="modal-dialog modal-lg">
-                                        <div class="modal-content">
-
-                                            {/* <!-- Modal Header --> */}
-                                            <div class="modal-header">
-                                                <h4 class="modal-title">Report Filters</h4>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                                            </div>
-
-                                            {/* <!-- Modal body --> */}
-                                            <div class="modal-body">
-                                                <div class="row">
-                                                    <div class="col-md-12">
-                                                        <div class="mb-3">
-                                                            <label for="formrow-firstname-input" class="form-label">Company</label> <br/>
-                                                            <select class="form-control select2-templating " style={{width: "100%"}}>
-                                                                <option value="Company">All Company</option>                                                                                                                              
-
-                                                            </select>
-                                                        </div>
-                                                    </div>    
-                                                    <div class="col-md-12">
-                                                        <div class="mb-3">
-                                                            <label for="formrow-firstname-input" class="form-label">Employee</label> <br/>
-                                                            <select class="form-control select2-templating " style={{width: "100%"}}>
-                                                                <option value="employee">Choose an employee</option>                                                                                                                              
-
-                                                            </select>
-                                                        </div>
-                                                    </div>      
-                                                    <div class="col-md-12">
-                                                        <div class="mb-3">
-                                                            <label for="">Month & Year</label>
-                                                            <input type="date" class="form-control" placeholder=""/>
-                                                        </div>
-                                                    </div>                                                                                             
-
-                                                    
-
-
-                                                </div>
-                                            </div>
-
-                                            {/* <!-- Modal footer --> */}
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-success">Generate</button>
-                                            </div>
-
-                                        </div>
-                                    </div>
-                                </div>
-
-
-                                </div>
-                            </div>
-                        </div>
-                        {/* <!-- end col --> */}
+              {/* <!-- The Modal --> */}
+              <div class='modal fade' id='myModal'>
+                <div class='modal-dialog modal-lg'>
+                  <div class='modal-content'>
+                    {/* <!-- Modal Header --> */}
+                    <div class='modal-header'>
+                      <h4 class='modal-title'>Report Filters</h4>
+                      <button
+                        type='button'
+                        class='btn-close'
+                        data-bs-dismiss='modal'
+                      ></button>
                     </div>
-        </MainPage>
-    )
-};
+
+                    {/* <!-- Modal body --> */}
+                    <div class='modal-body'>
+                      <div class='row'>
+                        <div class='col-md-12'>
+                          <div class='mb-3'>
+                            <label
+                              for='formrow-firstname-input'
+                              class='form-label'
+                            >
+                              Company
+                            </label>{" "}
+                            <br />
+                            <select
+                              class='form-control select2-templating '
+                              style={{ width: "100%" }}
+                            >
+                              <option value='Company'>All Company</option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class='col-md-12'>
+                          <div class='mb-3'>
+                            <label
+                              for='formrow-firstname-input'
+                              class='form-label'
+                            >
+                              Employee
+                            </label>{" "}
+                            <br />
+                            <select
+                              class='form-control select2-templating '
+                              style={{ width: "100%" }}
+                            >
+                              <option value='employee'>
+                                Choose an employee
+                              </option>
+                            </select>
+                          </div>
+                        </div>
+                        <div class='col-md-12'>
+                          <div class='mb-3'>
+                            <label for=''>Month & Year</label>
+                            <input
+                              type='date'
+                              class='form-control'
+                              placeholder=''
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* <!-- Modal footer --> */}
+                    <div class='modal-footer'>
+                      <button type='button' class='btn btn-success'>
+                        Generate
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* <!-- end col --> */}
+      </div>
+    </MainPage>
+  );
+}

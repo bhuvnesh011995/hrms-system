@@ -23,7 +23,7 @@ module.exports = (app) => {
     fileManagerController.addNewFile,
   );
   app.get(
-    "/rt/api/v1/fileManager/getAllFiles",
+    "/rt/api/v1/fileManager/getAllFiles/:department",
     [],
     fileManagerController.getAllFiles,
   );

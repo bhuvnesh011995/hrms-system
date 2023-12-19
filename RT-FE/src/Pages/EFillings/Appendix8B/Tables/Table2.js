@@ -1,48 +1,74 @@
-					  
 import MaterialReactTable from "material-react-table";
 import { Box, IconButton } from "@mui/material";
 import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import { useMemo } from "react";
+import { FormattedMessage } from "react-intl";
 
 export default function Table2() {
-    const columns = useMemo(() => [
-             {
-                 accessorKey: 'EEBR',
-                 header: 'Total Gross Amount of Gains (EEBR)',
-               },
-               {
-                   accessorKey: 'ESIR',
-                   header: 'Total Gross Amount of Gains (ESIR)',
-                 },
-                 {
-                     accessorKey: 'ESIR',
-                     header: 'Total Gross Amount of Gains (ESIR)',
-                   },
-         {
-                     accessorKey: 'ESIR',
-                     header: 'Total Gross Amount of Gains (ESIR)',
-                   },
-              
-             ],[])
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: "EEBR",
+        header: "Total Gross Amount of Gains (EEBR)",
+        Header: () => (
+          <FormattedMessage
+            id='Total_Gross_Amount_of_Gains_EEBR'
+            defaultMessage={"Total Gross Amount of Gains (EEBR)"}
+          />
+        ),
+      },
+      {
+        accessorKey: "ESIR",
+        header: "Total Gross Amount of Gains (ESIR)",
+        Header: () => (
+          <FormattedMessage
+            id='Total_Gross_Amount_of_Gains_ESIR'
+            defaultMessage={"Total Gross Amount of Gains (ESIR)"}
+          />
+        ),
+      },
+      {
+        accessorKey: "ESIR",
+        header: "Total Gross Amount of Gains (ESIR)",
+        Header: () => (
+          <FormattedMessage
+            id='Total_Gross_Amount_of_Gains_ESIR'
+            defaultMessage={"Total Gross Amount of Gains (ESIR)"}
+          />
+        ),
+      },
+      {
+        accessorKey: "ESIR",
+        header: "Total Gross Amount of Gains (ESIR)",
+        Header: () => (
+          <FormattedMessage
+            id='Total_Gross_Amount_of_Gains_ESIR'
+            defaultMessage={"Total Gross Amount of Gains (ESIR)"}
+          />
+        ),
+      },
+    ],
+    [],
+  );
 
-    return(
-        <div class="row">
-                        <div class="col-12">
-                            <div class="card">
-                                <div class="card-body">
-                                    <div class="row mb-3">
-                                        <div class="col-md-6">
-                                            <h4>Employees Timesheet</h4>
-                                            <small>For the month of June 2023</small>
-                                        </div>
-                                        <div class="col-md-6" style={{textAlign: "right"}}>
-                                            <button class="btn btn-info">CSV</button>
-                                            <button class="btn btn-info">Excel</button>
-                                            <button class="btn btn-info">PDF</button>
-                                            <button class="btn btn-info">CSV</button>
-                                        </div>
-                                    </div>
-                                    {/* <div class="attendance-table" style={{overflow:"scroll"}}>
+  return (
+    <div class='row'>
+      <div class='col-12'>
+        <div class='card'>
+          <div class='card-body'>
+            <div class='row mb-3'>
+              <div class='col-md-6'>
+                <h4>Employees Timesheet</h4>
+                <small>For the month of June 2023</small>
+              </div>
+              <div class='col-md-6' style={{ textAlign: "right" }}>
+                <button class='btn btn-info'>CSV</button>
+                <button class='btn btn-info'>Excel</button>
+                <button class='btn btn-info'>PDF</button>
+                <button class='btn btn-info'>CSV</button>
+              </div>
+            </div>
+            {/* <div class="attendance-table" style={{overflow:"scroll"}}>
                                         <table id="datatable" class="table display attendance-table table-bordered nowrap" style={{width: "1400px"}}>
                                             <thead>
                                                 <tr>
@@ -71,58 +97,52 @@ export default function Table2() {
                                             </tbody>
                                         </table>
                                     </div> */}
-                                    <MaterialReactTable
- columns={columns}
- data={[]}
- enableColumnActions={false}
- enableColumnFilters={false}
- enableSorting={false}
- enableTopToolbar={false}
- enableRowActions
-             positionActionsColumn="last"
-             enableRowNumbers
-             rowNumberMode="static"
-             renderRowActions={({ row, table }) => (
-               <Box
-                 sx={{ display: "flex", flexWrap: "nowrap", gap: "8px" }}
-               >
-                   <IconButton
-                   color="secondary"
-                   onClick={() => {
-                     table.setEditingRow(row);
-                   }}
-                 >
-                   <EditIcon />
-                 </IconButton>
-                   <IconButton
-                   color="error"
-                   onClick={() => {}}
-                 >
-                   <DeleteIcon />
-                 </IconButton>
-               </Box>
-             )}
- muiTableProps={{
-   sx: {
-     border: '1px solid rgba(81, 81, 81, 1)',
-   },
- }}
- muiTableHeadCellProps={{
-   sx: {
-     border: '1px solid rgba(81, 81, 81, 1)',
-   },
- }}
- muiTableBodyCellProps={{
-   sx: {
-     border: '1px solid rgba(81, 81, 81, 1)',
-   },
- }}
- /> 
-                                    
-                                </div>
-                            </div>
-                        </div>
-                        {/* <!-- end col --> */}
-                    </div>
-    )
-};
+            <MaterialReactTable
+              columns={columns}
+              data={[]}
+              enableColumnActions={false}
+              enableColumnFilters={false}
+              enableSorting={false}
+              enableTopToolbar={false}
+              enableRowActions
+              positionActionsColumn='last'
+              enableRowNumbers
+              rowNumberMode='static'
+              renderRowActions={({ row, table }) => (
+                <Box sx={{ display: "flex", flexWrap: "nowrap", gap: "8px" }}>
+                  <IconButton
+                    color='secondary'
+                    onClick={() => {
+                      table.setEditingRow(row);
+                    }}
+                  >
+                    <EditIcon />
+                  </IconButton>
+                  <IconButton color='error' onClick={() => {}}>
+                    <DeleteIcon />
+                  </IconButton>
+                </Box>
+              )}
+              muiTableProps={{
+                sx: {
+                  border: "1px solid rgba(81, 81, 81, 1)",
+                },
+              }}
+              muiTableHeadCellProps={{
+                sx: {
+                  border: "1px solid rgba(81, 81, 81, 1)",
+                },
+              }}
+              muiTableBodyCellProps={{
+                sx: {
+                  border: "1px solid rgba(81, 81, 81, 1)",
+                },
+              }}
+            />
+          </div>
+        </div>
+      </div>
+      {/* <!-- end col --> */}
+    </div>
+  );
+}

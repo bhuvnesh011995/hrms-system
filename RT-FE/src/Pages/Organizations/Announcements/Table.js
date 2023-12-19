@@ -1,14 +1,18 @@
-import { useCallback, useEffect, useMemo, useState } from "react";					  
+import { useCallback, useEffect, useMemo, useState } from "react";
 import MaterialReactTable from "material-react-table";
 import { Box, IconButton } from "@mui/material";
 import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import AddNew from "./AddNew";
-import { deleteAnnouncement, getAllAnnouncements } from "../../../Utility/API/announcement";
+import {
+  deleteAnnouncement,
+  getAllAnnouncements,
+} from "../../../Utility/API/announcement";
 import View from "./View";
+import { FormattedMessage } from "react-intl";
 
-export default function Table() { 
-    const [isOpen,setIsOpen] = useState(false)
-    const [data, setData] = useState([]);
+export default function Table() {
+  const [isOpen, setIsOpen] = useState(false);
+  const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [viewData, setViewData] = useState(null);
@@ -31,59 +35,74 @@ export default function Table() {
     getAnnouncements();
   }, []);
 
-     const columns = useMemo(() => [
-     {
-         accessorKey: 'title',
-         header: 'Title',
-       },
-       {
-           accessorFn: (row)=>row.company ? `${row.company.name}` :"not available" ,
-           header: 'Company',
-         },
-         {
-             accessorFn:  (row)=>row.start ? row.start.slice(0,10).split("-").reverse().join("/"):"not available",
-             id:"start",
-             header: 'Start Date',
-           },
- {
-             accessorFn:  (row)=>row.end ? row.end.slice(0,10).split("-").reverse().join("/"):"not available",
-             id:"end",
-             header: 'End Date',
-           },
-  
-                       
-     ],[])
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: "title",
+        header: "Title",
+        Header: () => <FormattedMessage id='Title' defaultMessage={"Title"} />,
+      },
+      {
+        accessorFn: (row) =>
+          row.company ? `${row.company.name}` : "not available",
+        header: "Company",
+        Header: () => (
+          <FormattedMessage id='Company' defaultMessage={"Company"} />
+        ),
+      },
+      {
+        accessorFn: (row) =>
+          row.start
+            ? row.start.slice(0, 10).split("-").reverse().join("/")
+            : "not available",
+        id: "start",
+        header: "Start Date",
+        Header: () => (
+          <FormattedMessage id='Start_Date' defaultMessage={"Start Date"} />
+        ),
+      },
+      {
+        accessorFn: (row) =>
+          row.end
+            ? row.end.slice(0, 10).split("-").reverse().join("/")
+            : "not available",
+        id: "end",
+        header: "End Date",
+        Header: () => (
+          <FormattedMessage id='End_Date' defaultMessage={"End Date"} />
+        ),
+      },
+    ],
+    [],
+  );
 
-    return(
-        <div className="row">
-                        <div className="col-12">
-                            <div className="card">
-                                <div className="card-body">
-                                    <div className="row">
-                                        <div className="col-md-6 mb-3">
-                                            <h4>List All Announcements</h4>
-                                        </div>
-                                        <div className="col-md-6 mb-3" style={{textAlign: "right"}}>
-                                            <button className="btn btn-primary text-right" onClick={()=>setIsOpen(true)}>Add New</button>
-                                        </div>
-                                    </div>
+  return (
+    <div className='row'>
+      <div className='col-12'>
+        <div className='card'>
+          <div className='card-body'>
+            <div className='row'>
+              <div className='col-md-6 mb-3'>
+                <h4>List All Announcements</h4>
+              </div>
+              <div className='col-md-6 mb-3' style={{ textAlign: "right" }}>
+                <button
+                  className='btn btn-primary text-right'
+                  onClick={() => setIsOpen(true)}
+                >
+                  Add New
+                </button>
+              </div>
+            </div>
 
-                                    <p className="card-title-desc" style={{textAlign: "right"}}>
-                                        <button className="btn btn-info text-right">
-                                            CSV
-                                        </button>
-                                        <button className="btn btn-info text-right">
-                                            Excel
-                                        </button>
-                                        <button className="btn btn-info text-right">
-                                            PDF
-                                        </button>
-                                        <button className="btn btn-info text-right">
-                                            Print
-                                        </button>
-                                    </p>
-                                    
-                                    {/* <table id="datatable" className="table table-bordered dt-responsive nowrap w-100">
+            <p className='card-title-desc' style={{ textAlign: "right" }}>
+              <button className='btn btn-info text-right'>CSV</button>
+              <button className='btn btn-info text-right'>Excel</button>
+              <button className='btn btn-info text-right'>PDF</button>
+              <button className='btn btn-info text-right'>Print</button>
+            </p>
+
+            {/* <table id="datatable" className="table table-bordered dt-responsive nowrap w-100">
                                         <thead>
                                             <tr>
                                                 <th>Title</th>
@@ -112,74 +131,84 @@ export default function Table() {
 
                                         </tbody>
                                     </table> */}
-                                    
 
-  <MaterialReactTable
- columns={columns}
- data={data||[]}
- enableColumnActions={false}
- enableColumnFilters={false}
- enableSorting={false}
- enableTopToolbar={false}
- enableRowActions
-             positionActionsColumn="last"
-             enableRowNumbers
-             rowNumberMode="static"
-             renderRowActions={({ row, table }) => (
-               <Box
-                 sx={{ display: "flex", flexWrap: "nowrap", gap: "8px" }}
-               >
-                <IconButton
-                    color="info"
+            <MaterialReactTable
+              columns={columns}
+              data={data || []}
+              enableColumnActions={false}
+              enableColumnFilters={false}
+              enableSorting={false}
+              enableTopToolbar={false}
+              enableRowActions
+              positionActionsColumn='last'
+              enableRowNumbers
+              rowNumberMode='static'
+              renderRowActions={({ row, table }) => (
+                <Box sx={{ display: "flex", flexWrap: "nowrap", gap: "8px" }}>
+                  <IconButton
+                    color='info'
                     onClick={() => {
                       setViewData(row.original);
                       setIsViewOpen(true);
                     }}
                   >
-                    <i className="fas fa-eye"></i>
+                    <i className='fas fa-eye'></i>
                   </IconButton>
 
-                   <IconButton
-                   color="secondary"
-                   onClick={() => {
-                     let obj = {...row.original,company:row.original.company._id,department:row.original.department._id,location:row.original.location._id,start:row.original.start.slice(0,10),end:row.original.end.slice(0,10)}
-                     setViewData(obj)
-                     setIsOpen(true)
-                   }}
-                 >
-                   <EditIcon />
-                 </IconButton>
-                   <IconButton
-                   color="error"
-                   onClick={async () => {
-                    let res = await deleteAnnouncement(row.original._id)
-                    if(res.status===204) getAnnouncements()
-                   }}
-                 >
-                   <DeleteIcon />
-                 </IconButton>
-               </Box>
-             )}
- muiTableProps={{
-   sx: {
-     border: '1px solid rgba(81, 81, 81, 1)',
-   },
- }}
- muiTableHeadCellProps={{
-   sx: {
-     border: '1px solid rgba(81, 81, 81, 1)',
-   },
- }}
- muiTableBodyCellProps={{
-   sx: {
-     border: '1px solid rgba(81, 81, 81, 1)',
-   },
- }}
- /> 
-{isOpen && <AddNew viewData={viewData}
-setViewData={setViewData}
-getAnnouncements = {getAnnouncements} show={isOpen} setShow={setIsOpen}/>}
-{isViewOpen && (
+                  <IconButton
+                    color='secondary'
+                    onClick={() => {
+                      let obj = {
+                        ...row.original,
+                        company: row.original.company._id,
+                        department: row.original.department._id,
+                        location: row.original.location._id,
+                        start: row.original.start.slice(0, 10),
+                        end: row.original.end.slice(0, 10),
+                      };
+                      setViewData(obj);
+                      setIsOpen(true);
+                    }}
+                  >
+                    <EditIcon />
+                  </IconButton>
+                  <IconButton
+                    color='error'
+                    onClick={async () => {
+                      let res = await deleteAnnouncement(row.original._id);
+                      if (res.status === 204) getAnnouncements();
+                    }}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </Box>
+              )}
+              muiTableProps={{
+                sx: {
+                  border: "1px solid rgba(81, 81, 81, 1)",
+                },
+              }}
+              muiTableHeadCellProps={{
+                sx: {
+                  border: "1px solid rgba(81, 81, 81, 1)",
+                },
+              }}
+              muiTableBodyCellProps={{
+                sx: {
+                  border: "1px solid rgba(81, 81, 81, 1)",
+                },
+              }}
+            />
+            {isOpen && (
+              <AddNew
+                viewData={viewData}
+                setViewData={setViewData}
+                getAnnouncements={getAnnouncements}
+                show={isOpen}
+                setShow={setIsOpen}
+              />
+            )}
+            {isViewOpen && (
               <View
                 viewData={viewData}
                 setViewData={setViewData}
@@ -187,13 +216,10 @@ getAnnouncements = {getAnnouncements} show={isOpen} setShow={setIsOpen}/>}
                 setShow={setIsViewOpen}
               />
             )}
-                                    
-
-
-                                </div>
-                            </div>
-                        </div>
-                        {/* <!-- end col --> */}
-                    </div>
-    )
-};
+          </div>
+        </div>
+      </div>
+      {/* <!-- end col --> */}
+    </div>
+  );
+}

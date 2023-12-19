@@ -1,10 +1,11 @@
 import { Modal } from "react-bootstrap";
 import { useForm } from "react-hook-form";
-import { formApi } from "../../Context/AuthContext";
 import { useEffect, useState } from "react";
 import { getAllDepartments } from "../../Utility/API/department";
+import { addNewDepartmentFile } from "../../Utility/API/fileManager";
+import { toast } from "react-toastify";
 
-export default function AddNew({ show, setShow }) {
+export default function AddNew({ show, setShow, callback }) {
   const {
     register,
     watch,
@@ -24,21 +25,15 @@ export default function AddNew({ show, setShow }) {
   };
 
   const addNewForm = async (data) => {
-    try {
-      const formdata = new FormData();
-      for (let file of data.documentFiles) {
-        formdata.append("files", file);
-      }
-      formdata.append("fileManagerData", JSON.stringify(data));
-
-      const addNewFile = await formApi.post(
-        "/fileManager/addNewFile",
-        formdata,
-      );
-      console.log(addNewFile);
-    } catch (err) {
-      console.error(err);
+    toast.dismiss();
+    const newDepartmentFileResponse = await addNewDepartmentFile(data);
+    if (newDepartmentFileResponse.status == 200) {
+      callback(newDepartmentFileResponse.data);
+      toast.success("new department file created");
+    } else {
+      toast.error("something went wrong");
     }
+    setShow(false);
   };
 
   return (

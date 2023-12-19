@@ -7,7 +7,6 @@ export default function FileManager() {
     <MainPage title={"Files Manager"}>
       <div className='row'>
         <Tabs />
-        <Tables />
       </div>
     </MainPage>
   );

@@ -5,6 +5,7 @@ import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import AddNew from "./AddNew";
 import { deleteGrouping, getAllGroupings } from "../../../Utility/API/grouping";
 import View from "./View";
+import { FormattedMessage } from "react-intl";
 
 export default function Table() {
   const [isOpen, setIsOpen] = useState(false);
@@ -36,38 +37,53 @@ export default function Table() {
       {
         accessorKey: "name",
         header: "Grouping Name",
+        Header: () => (
+          <FormattedMessage
+            id='Grouping_Name'
+            defaultMessage={"Grouping Name"}
+          />
+        ),
       },
       {
         accessorFn: (row) => `${row.company.name}`,
         id: "company",
-        header: "Comapany",
+        header: "Company",
+        Header: () => (
+          <FormattedMessage id='Company' defaultMessage={"Company"} />
+        ),
       },
       {
         accessorFn: (row) => `${row.department.name}`,
         id: "department",
         header: "Department",
+        Header: () => (
+          <FormattedMessage id='Department' defaultMessage={"Department"} />
+        ),
       },
       {
         accessorFn: (row) => `${row.subdepartment.name}`,
         id: "subdepartment",
         header: "Subepartment",
+        Header: () => (
+          <FormattedMessage id='Designation' defaultMessage={"Designation"} />
+        ),
       },
     ],
-    []
+    [],
   );
 
   return (
-    <div className="row">
-      <div className="col-12">
-        <div className="card">
-          <div className="card-body">
-            <div className="row">
-              <div className="col-md-6 mb-3">
+    <div className='row'>
+      <div className='col-12'>
+        <div className='card'>
+          <div className='card-body'>
+            <div className='row'>
+              <div className='col-md-6 mb-3'>
                 <h4>List All Grouping</h4>
               </div>
-              <div className="col-md-6 mb-3" style={{ textAlign: "right" }}>
+              <div className='col-md-6 mb-3' style={{ textAlign: "right" }}>
                 <button
-                  className="btn btn-primary text-right"
+                  className='btn btn-primary text-right'
                   onClick={() => setIsOpen(true)}
                 >
                   Add New
@@ -75,11 +91,11 @@ export default function Table() {
               </div>
             </div>
 
-            <p className="card-title-desc" style={{ textAlign: "right" }}>
-              <button className="btn btn-info text-right">CSV</button>
-              <button className="btn btn-info text-right">Excel</button>
-              <button className="btn btn-info text-right">PDF</button>
-              <button className="btn btn-info text-right">Print</button>
+            <p className='card-title-desc' style={{ textAlign: "right" }}>
+              <button className='btn btn-info text-right'>CSV</button>
+              <button className='btn btn-info text-right'>Excel</button>
+              <button className='btn btn-info text-right'>PDF</button>
+              <button className='btn btn-info text-right'>Print</button>
             </p>
             <MaterialReactTable
               columns={columns}
@@ -89,22 +105,22 @@ export default function Table() {
               enableSorting={false}
               enableTopToolbar={false}
               enableRowActions
-              positionActionsColumn="last"
+              positionActionsColumn='last'
               enableRowNumbers
-              rowNumberMode="static"
+              rowNumberMode='static'
               renderRowActions={({ row, table }) => (
                 <Box sx={{ display: "flex", flexWrap: "nowrap", gap: "8px" }}>
                   <IconButton
-                    color="info"
+                    color='info'
                     onClick={() => {
                       setViewData(row.original);
                       setIsViewOpen(true);
                     }}
                   >
-                    <i className="fas fa-eye"></i>
+                    <i className='fas fa-eye'></i>
                   </IconButton>
                   <IconButton
-                    color="secondary"
+                    color='secondary'
                     onClick={() => {
                       let obj = {
                         id: row.original._id,
@@ -120,7 +136,7 @@ export default function Table() {
                     <EditIcon />
                   </IconButton>
                   <IconButton
-                    color="error"
+                    color='error'
                     onClick={async () => {
                       let res = await deleteGrouping(row.original._id);
                       if (res.status === 204) getGroupings();
