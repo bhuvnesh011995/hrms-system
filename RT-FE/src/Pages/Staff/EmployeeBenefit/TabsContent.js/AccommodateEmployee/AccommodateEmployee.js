@@ -1,37 +1,76 @@
 import MaterialReactTable from "material-react-table";
 import { Box, IconButton } from "@mui/material";
 import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
-import { useMemo, useState } from "react";
+import { getAllAccommodatedEmployee } from "../../../../../Utility/API/accommodateEmployees";
+import { useMemo, useState ,useEffect} from "react";
+import { useCallback } from "react";
 import AddNew from "./AddNew";
-
-
-
-
-
+import { deleteAccommodatedEmployee } from "../../../../../Utility/API/accommodateEmployees";
 export default function AccommodateEmployee() {
     const [isOpen,setIsOpen] = useState(false)
+    const [data, setData] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isError, setIsError] = useState(false);
+    
+  
+    const getAccommodatedEmployee = useCallback(async () => {
+      setIsLoading(true);
+      let res = await getAllAccommodatedEmployee();
+      if (res.status === 200) {
+        setData(res.data);
+        setIsLoading(false);
+      } else {
+        console.log(res);
+        setIsLoading(false);
+        setIsError(true);
+      }
+    }, []);
+  
+    useEffect(() => {
+      getAccommodatedEmployee();
+    }, []);
+            
+    const deleteAccommodationId= async (id)=>{
 
-  const columns = useMemo(
-    () => [
-      {
-        accessorKey: "Employee",
-        header: "Employee",
-      },
-      {
-        accessorKey: "Accommodation",
-        header: "Accommodation",
-      },
-      {
-        accessorKey: "Period",
-        header: "Period",
-      },
-      {
-        accessorKey: "RentPaid",
-        header: "Rent Paid",
-      },
-    ],
-    []
-  );
+      try{
+      let res = await deleteAccommodatedEmployee(id)
+      getAccommodatedEmployee()
+      console.log("id",res)
+
+      }
+      catch(error){
+      console.log (error)
+      }
+    }
+   
+    
+
+    const columns = useMemo(
+      () => [
+        {
+          accessorFn: (row)=>row.employee?row.employee.fName : "not available",
+          id: "employee",
+          header: "Employee",
+        },
+        {
+          accessorFn: (row)=>row.accommodation?row.accommodation.accommodationTitle:"not available",
+          id:"accommodation",
+          header: "Accommodation",
+        },
+        {
+          accessorFn: (row) => row.accommodationPeriod,
+          id: "accommodationPeriod",
+          header: "Period",
+        },
+        {
+          accessorFn: (row) => row.employeeRentPaid,
+          id: "employeeRentPaid",
+          header: "Rent Paid",
+        },
+      ],
+      []
+    );
+    
 
   return (
     <>
@@ -51,7 +90,7 @@ export default function AccommodateEmployee() {
 
       <MaterialReactTable
         columns={columns}
-        data={[]}
+        data={data || []}
         enableColumnActions={false}
         enableColumnFilters={false}
         enableSorting={false}
@@ -73,7 +112,7 @@ export default function AccommodateEmployee() {
             <IconButton
               color="error"
               onClick={() => {
-                
+                deleteAccommodationId(row.original._id)
               }}
             >
               <DeleteIcon />

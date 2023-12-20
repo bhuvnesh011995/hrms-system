@@ -4,35 +4,74 @@ import { Box, IconButton } from "@mui/material";
 import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import { useMemo, useState } from "react";
 import AddNew from "./AddNew";
-
+import { deleteDriver, getAllDriver } from "../../../../../Utility/API/driver";
+import { useEffect  } from "react";
+import { useCallback } from "react";
 
 
 
 export default function Driver() {
     const [isOpen,setIsOpen] = useState(false)
+    const [data, setData] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isError, setIsError] = useState(false);
+    
+  
+    const getDriver = useCallback(async () => {
+      setIsLoading(true);
+      let res = await getAllDriver();
+      if (res.status === 200) {
+        setData(res.data);
+        setIsLoading(false);
+      } else {
+        console.log(res);
+        setIsLoading(false);
+        setIsError(true);
+      }
+    }, []);
+  
+    useEffect(() => {
+      getDriver();
+    }, []);
+  
+    console.log("data",data)
 
-     const columns = useMemo(() => [
-     {
-         accessorKey: 'Employee',
-         header: 'Employee',                                      
-                                              
-       },
-       {
-           accessorKey: 'BenefitYear',
-           header: 'Benefit Year',                                      
-                                                
-         },
-
+    const columns = useMemo(() => [
+      {
+        accessorFn: (row) =>
+          row.employee ? row.employee.fName : "not available",
+        id: "employee",
+        header: "Employee",
+      },
+      {
+        accessorFn: (row) => row.benefitYear,
+        id: "benefitsYear",
+        header: "Benefit Year",
+      },
+      
          {
-            accessorKey: 'DriveAnnualWage',
-            header: 'Driver Annual Wage',                                      
-                                                 
-          },
-     
+          accessorFn: (row) => row.driverAnnualWage,
+          id:'driverAnnualWage',
+          header: 'driver Annual Wage',                                      
+                                                  
+           },
+          
 
 
      ],[])
 
+     const deleteDriverId= async (id)=>{
+
+      try{
+      let res = await deleteDriver(id)
+      getDriver()
+      console.log("id",res)
+
+      }
+      catch(error){
+      console.log (error)
+      }
+    }
 
   return (
     <>
@@ -48,7 +87,7 @@ export default function Driver() {
 
   <MaterialReactTable
  columns={columns}
- data={[]}
+ data={data || [] }
  enableColumnActions={false}
  enableColumnFilters={false}
  enableSorting={false}
@@ -71,7 +110,8 @@ export default function Driver() {
                  </IconButton>
                    <IconButton
                    color="error"
-                   onClick={() => {}}
+                 
+                   onClick={() => {deleteDriverId(row.original._id)}}
                  >
                    <DeleteIcon />
                  </IconButton>

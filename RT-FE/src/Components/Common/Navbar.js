@@ -5,6 +5,8 @@ import { authContext } from "../../Context/AuthContext";
 import { useSettingContext } from "../../Context/settingContext";
 import { getAllLanguage } from "../../Utility/API/system";
 import { imgUrl } from "../../Config/Config";
+import { logout } from "../../Utility/API/auth";
+import { toast } from "react-toastify";
 
 
 export default function Navbar({inactive,setInactive}){
@@ -43,9 +45,6 @@ export default function Navbar({inactive,setInactive}){
 
     const {user,setUser,initialUser} = useContext(authContext)
 
-    useEffect(()=>{
-        if(!user.token) navigate("/login")
-    },[user])
 async function getAllLanguages(){
     let res = await getAllLanguage()
     if(res?.status ===200){
@@ -110,7 +109,17 @@ function getValue(code){
                                 <a className="dropdown-item d-block" href="#"><span className="badge bg-success float-end">11</span><i className="bx bx-wrench font-size-16 align-middle me-1"></i> <span key="t-settings">Settings</span></a>
                                 <a className="dropdown-item" href="#"><i className="bx bx-lock-open font-size-16 align-middle me-1"></i> <span key="t-lock-screen">Lock screen</span></a>
                                 <div className="dropdown-divider"></div>
-                                <a onClick={()=>{}} className="dropdown-item text-danger" href="#"><i className="bx bx-power-off font-size-16 align-middle me-1 text-danger"></i> <span key="t-logout">Logout</span></a>
+                                <a onClick={async()=>{
+                                    let res =await logout()
+                                    if(res.status===204){
+                                        localStorage.removeItem("token")
+                                        toast.info("logout successfull")
+                                        setUser(initialUser)
+                                        }else{
+                                            console.log(res)
+                                            toast.error("error occured while logging out")
+                                        }
+                                }} className="dropdown-item text-danger" href="#"><i className="bx bx-power-off font-size-16 align-middle me-1 text-danger"></i> <span key="t-logout">Logout</span></a>
                             </div>
                         </div>
                     </div>

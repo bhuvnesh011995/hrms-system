@@ -1,6 +1,7 @@
 const db = require("../model")
 const bcrypt = require("bcrypt")
 const jwt = require("jsonwebtoken")
+const { deletedToken } = require("../store")
 require("dotenv").config()
 
 
@@ -56,4 +57,26 @@ exports.verified = async function(req,res,next){
     res.status(200).json({
         success:true
     })
+}
+
+exports.logout = async (req,res,next)=>{
+    try {
+        let token = req.headers["x-access-token"]
+        deletedToken.push(token)
+
+        res.sendStatus(204)
+    } catch (error) {
+        console.log(error)
+        res.status(500).json(error)
+    }
+}
+
+
+exports.getUserDetails = async (req,res,next)=>{
+    try {
+        let userDetails = await db.employee.findOne({_id:req.id}).select("fName lName email username")
+        res.status(200).json(userDetails)
+    } catch (error) {
+        next(err)
+    }
 }

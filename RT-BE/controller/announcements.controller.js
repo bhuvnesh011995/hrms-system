@@ -6,6 +6,7 @@ const db = require("../model")
 
 exports.addAnnouncement = async function(req,res,next){
 try {
+    console.log(req.body)
     
 
     let obj = {}

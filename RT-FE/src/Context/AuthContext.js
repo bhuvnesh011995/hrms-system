@@ -1,6 +1,8 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useCallback, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import BASEURL from "../Config/Config";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
 
 
 
@@ -16,10 +18,11 @@ const initialUser ={
 let api,formApi;
 
 export default function AuthProvider({children}){
-   
+   const navigate = useNavigate()
+   const [token,setToken] = useState(null)
     const [user,setUser] = useState(initialUser)
     const [permissions,setPermissions] = useState([])
-
+    const [ready,setReady] = useState(false)
     async function getPermission(){
     try {
         if(user.token) {
@@ -36,10 +39,35 @@ export default function AuthProvider({children}){
     }
     return
     }
+
+    const getUserDetails = useCallback(async (token)=>{
+        try {
+            if(!token) return
+            let response = await axios.get(BASEURL+"/auth/user",{headers:{"x-access-token":token}})
+            if(response.status===200) setUser({token,...response.data})
+            else {
+        localStorage.removeItem("token")
+        navigate("/login")
+        toast.info("session expired login again")
+    }
+        } catch (error) {
+            console.log(error)
+            localStorage.removeItem("token")
+            toast.info("session expired login again")
+    
+            navigate("/login")
+        }finally{
+            
+            setReady(true)
+        }
+    },[])
 useEffect(()=>{
-    console.log(BASEURL)
-    getPermission()
-},[user])
+    if(ready){
+        console.log(user)
+        if(!user.token) console.log("3") || navigate("/login")
+        else getPermission()
+    }else getUserDetails(localStorage.getItem("token"))
+},[user,ready])
 
 
 
@@ -55,7 +83,7 @@ useEffect(()=>{
 
 
 
-    
+
     const fromHeaders = {
         'x-access-token':user.token,
         "Content-Type": "multipart/form-data",

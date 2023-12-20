@@ -1,4 +1,3 @@
-
 // import CardsWithData from "../../Components/CardsWithData/CardsWithData";
 import { useContext } from "react";
 import CardsWithData from "../../Components/CardsWithData/CardsWithData";
@@ -48,7 +47,6 @@ import { FormattedMessage } from "react-intl";
 
 // ]
 
-
 // export default function HRDashboard() {
 //   return (
 //     <MainPage title={"WELCOME BACK HR BHUVNESH"}>
@@ -86,45 +84,42 @@ import { FormattedMessage } from "react-intl";
 // }
 
 export default function HRDashboard() {
-  const {name} = useContext(authContext)
+  const { name } = useContext(authContext);
   let year = new Date().getFullYear();
-  return(
+  return (
     <div className="main-content">
       <div className="page-content">
         <div className="container-fluid">
-        
-
-        
           <div className="row">
             <div className="col-12">
               <div className="page-title-box d-sm-flex align-items-center justify-content-between">
-                <h4 className="mb-sm-0 font-size-18"><FormattedMessage id="welcome" defaultMessage={"Welcome"}/> back {name || "Souvik"}</h4>
+                <h4 className="mb-sm-0 font-size-18">
+                  <FormattedMessage id="welcome" defaultMessage={"Welcome"} />{" "}
+                  back {name || "Souvik"}
+                </h4>
               </div>
             </div>
           </div>
-      <CardsWithData />
-      <EmployerrSummery />
-      <Calender />
-    <footer className="footer">
-                <div className="container-fluid">
-                    <div className="row">
-                        <div className="col-sm-6">
-                                
-                           {year} © Braincave HRMS.
-                        </div>
-                        <div className="col-sm-6">
-                            <div className="text-sm-end d-none d-sm-block">
-                                Design & Develop by
-                                <a href="https://braincavesoft.com/" target="_blank">Braincave Software Private
-                                    Limited</a>
-                            </div>
-                        </div>
-                    </div>
+          <CardsWithData />
+          <EmployerrSummery />
+          <Calender />
+          <footer className="footer">
+            <div className="container-fluid">
+              <div className="row">
+                <div className="col-sm-6">{year} © Braincave HRMS.</div>
+                <div className="col-sm-6">
+                  <div className="text-sm-end d-none d-sm-block">
+                    Design & Develop by
+                    <a href="https://braincavesoft.com/" target="_blank">
+                      Braincave Software Private Limited
+                    </a>
+                  </div>
                 </div>
-            </footer>
+              </div>
             </div>
+          </footer>
         </div>
       </div>
-  )
-};
-
+    </div>
+  );
+}

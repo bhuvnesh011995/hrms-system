@@ -1,6 +1,7 @@
 import MaterialReactTable from "material-react-table";
 import { Box, IconButton } from "@mui/material";
-import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
+import { Edit as EditIcon, Delete as DeleteIcon, } from "@mui/icons-material";
+import DownloadForOfflineIcon from '@mui/icons-material/DownloadForOffline';
 import { useMemo, useState } from "react";
 import { useEffect } from "react";
 import { useCallback } from "react";
@@ -32,12 +33,7 @@ export default function OfficialDocument() {
 
 
   const columns = useMemo(() => [
-    {
-        accessorFn: (row)=>row.documentType ? row.documentType.name : "not available",
-        id:"documentType",
-        header: 'Document Type',          
-      },
-
+  
         {                                                   
 
             accessorKey: 'name',
@@ -98,7 +94,7 @@ export default function OfficialDocument() {
                 
               }}
             >
-              <DeleteIcon />
+              <DownloadForOfflineIcon />
             </IconButton>
           </Box>
         )}

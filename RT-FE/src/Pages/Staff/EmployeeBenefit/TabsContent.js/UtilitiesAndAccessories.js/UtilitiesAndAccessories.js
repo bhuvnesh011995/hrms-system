@@ -4,39 +4,79 @@ import { Box, IconButton } from "@mui/material";
 import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import { useMemo, useState } from "react";
 import AddNew from "./AddNew";
-
-
-
-
-
-
+import { getAllUtilitiesAccessories } from "../../../../../Utility/API/utilitiesAccessories";
+import { deleteUtilitiesAccessories } from "../../../../../Utility/API/utilitiesAccessories";
+import { useEffect } from "react";
+import { useCallback } from "react";
 export default function UtilitiesAndAccessories() {
+
     const [isOpen,setIsOpen] = useState(false)
+    const [data, setData] = useState([]);
+    const [isLoading, setIsLoading] = useState(false);
+    const [isError, setIsError] = useState(false);
+    
+  
+    const getUtilitiesAccessories = useCallback(async () => {
+      setIsLoading(true);
+      let res = await getAllUtilitiesAccessories();
+      if (res.status === 200) {
+        setData(res.data);
+        setIsLoading(false);
+      } else {
+        console.log(res);
+        setIsLoading(false);
+        setIsError(true);
+      }
+    }, []);
+  
+    useEffect(() => {
+      getUtilitiesAccessories();
+    }, []);
+
+
+    const deleteUtilitiesAccessoriesId= async (id)=>{
+
+      try{
+      let res = await deleteUtilitiesAccessories(id)
+      getUtilitiesAccessories()
+      console.log("id",res)
+
+      }
+      catch(error){
+      console.log (error)
+      }
+    }
+   
 
      const columns = useMemo(() => [
-     {
-         accessorKey: 'Employee',
-         header: 'Employee',                                      
-                                              
-       },
-       {
-           accessorKey: 'Benefit Year',
-           header: 'Benefit Year',                                      
-                                                
-         },
+      {
+        accessorFn: (row) =>
+          row.employee ? row.employee.fName : "not available",
+        id: "employee",
+        header: "Employee",
+      },
+      {
+        accessorFn: (row) => row.benefitYear,
+        id: "benefitYear",
+        header: "Benefit Year",
+      },
+       
          {
-             accessorKey: 'Utility',
-             header: 'Utility',                                      
+          accessorFn: (row) => row.benefitYear,
+          id:'utilitiesAccessories',
+          header: 'Utility',                                      
                                                   
            },
            {
-               accessorKey: 'Remark',
-               header: 'Remark',                                      
+            accessorFn: (row) => (row.rows && row.rows.length > 0 && row.rows[0] && row.rows[0].remark ? row.rows[0].remark : ''),
+            id:'remark',
+            header: 'Remark',                                      
                                                     
              },
              {
-                 accessorKey: 'Amount',
-                 header: 'Amount',                                      
+              accessorFn: (row) => (row.rows && row.rows.length > 0 && row.rows[0] && row.rows[0].actualAmount ? row.rows[0].actualAmount: ''),
+              id:'actualAmount',
+              header: 'Amount',                                      
                                                       
                },
 
@@ -58,7 +98,7 @@ export default function UtilitiesAndAccessories() {
 
   <MaterialReactTable
  columns={columns}
- data={[]}
+ data={ data || []}
  enableColumnActions={false}
  enableColumnFilters={false}
  enableSorting={false}
@@ -81,7 +121,9 @@ export default function UtilitiesAndAccessories() {
                  </IconButton>
                    <IconButton
                    color="error"
-                   onClick={() => {}}
+                   onClick={() => {
+                    deleteUtilitiesAccessoriesId(row.original._id)
+                  }}
                  >
                    <DeleteIcon />
                  </IconButton>

@@ -1,6 +1,7 @@
 import MaterialReactTable from "material-react-table";
 import { Box, IconButton } from "@mui/material";
 import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
+import DownloadForOfflineIcon from '@mui/icons-material/DownloadForOffline';
 import { useMemo, useState ,useEffect,useCallback} from "react";
 import { getAllDocuments } from "../../../../Utility/API/document";
 
@@ -94,7 +95,7 @@ export default function ExpiredDocment() {
                 
               }}
             >
-              <DeleteIcon />
+              <DownloadForOfflineIcon />
             </IconButton>
           </Box>
         )}

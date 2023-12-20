@@ -1,5 +1,4 @@
 const employeeexitController = require("../../controller/staff/employeeexit.controller")
-const { employeeexit } = require("../../model")
 
 
 module.exports = async function(app){

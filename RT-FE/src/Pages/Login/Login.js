@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 
 import { useNavigate } from "react-router-dom";
 import { login } from "../../Utility/API/auth";
@@ -16,13 +16,16 @@ export default function Login() {
 
 const {setUser} = useContext(authContext)
 
-
+useEffect(()=>{
+  if(localStorage.getItem("token")) navigate("/")
+},[])
   async function handleSubmit(e){
     e.preventDefault()
 try {
   let response = await login(data)
   if(!response) return setError("network error")
   if(response.status === 200){
+    localStorage.setItem("token",response.data.accessToken)
     setUser({
       username:response.data.username,
       name:response.data.name || "unknown user",
@@ -30,7 +33,7 @@ try {
       token:response.data.accessToken
     })
     toast.success("login successfull")
-    navigate(-1 || "/")
+    navigate("/")
   }else if(response.status===401) toast.error("wrong username or password")
   else if(response.status===404) setError("pass correct inputs")
   else if(response.status===500) setError("some internal error occured")

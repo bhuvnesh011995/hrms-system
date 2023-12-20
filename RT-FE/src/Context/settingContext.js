@@ -94,8 +94,6 @@ pauseOnHover
 theme="colored"
 />
 {children}
-<ToastContainer />
-                
             </IntlProvider>
         </settingContext.Provider>
     )

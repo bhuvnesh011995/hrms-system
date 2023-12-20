@@ -7,5 +7,15 @@ export const login = async function(data){
     } catch (error) {
         return error.response
     }
-    
+}
+
+
+export const logout = async function(){
+    try {
+        let response = await api.delete("/auth/logout")
+        return response
+    } catch (error) {
+        console.log(error)
+        return error.response
+    }
 }
