@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Tab, Tabs } from "react-bootstrap";
 import MainPage from "../../../../Components/Common/MainPage";
 import General from "./Tabs/General/General";
@@ -9,6 +9,9 @@ import Core from "./Tabs/Core/Core";
 import Payslip from "./Tabs/Payslip/Payslip";
 import Claim from "./Tabs/Claim/Claim";
 import { useLocation } from "react-router-dom";
+import { getEmployeeDetailById } from "../../../../Utility/API/employee";
+import { toast } from "react-toastify";
+import useCustomEffect from "../../../../customHook/useCustomEffect";
 
 export default function EmployeeDetails() {
   const {
@@ -16,6 +19,7 @@ export default function EmployeeDetails() {
   } = useLocation();
 
   const [key, setKey] = useState("general");
+
   return (
     <MainPage title={"Employee Details"}>
       <Tabs activeKey={key} onSelect={(key) => setKey(key)}>

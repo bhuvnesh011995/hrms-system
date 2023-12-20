@@ -1,9 +1,34 @@
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Card, Col, Nav, Row, Tab } from "react-bootstrap";
 import Basic from "./Tabs/Basic";
+import useCustomEffect from "../../../../../../customHook/useCustomEffect";
+import { toast } from "react-toastify";
+import { getEmployeeDetailById } from "../../../../../../Utility/API/employee";
+import moment from "moment/moment";
 
+let dateFields = [
+  "prEffectiveDate",
+  "dateOfJoining",
+  "dateOfLeaving",
+  "confirmationDate",
+  "DOB",
+];
 export default function General({ id }) {
   const [active, setActive] = useState("basic");
+  const [data, setData] = useState(null);
+  const getEmployeeDetails = useCallback(async (id) => {
+    let res = await getEmployeeDetailById(id);
+    if (res.status === 200) {
+      let modifiedData = { ...res.data };
+      dateFields.forEach((ele) => {
+        if (modifiedData[ele])
+          modifiedData[ele] = moment(modifiedData[ele]).format("YYYY-MM-DD");
+      });
+      setData(modifiedData);
+    } else toast.error("error while fetching employee");
+  }, []);
+
+  useCustomEffect(getEmployeeDetails, id);
   return (
     <Tab.Container
       activeKey={active}
@@ -54,9 +79,9 @@ export default function General({ id }) {
         </Col>
         <Col xl={9} className="mt-4">
           <Tab.Content>
-            {active === "basic" && (
+            {active === "basic" && data && (
               <Tab.Pane eventKey={"basic"}>
-                <Basic id={id} />
+                <Basic data={data} id={id} />
               </Tab.Pane>
             )}
             {active === "immigration" && (

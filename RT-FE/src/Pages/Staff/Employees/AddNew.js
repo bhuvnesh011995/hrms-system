@@ -843,7 +843,7 @@ export default function AddNew({
                       className="form-control select2-templating "
                       style={{ width: "100%" }}
                     >
-                      <option value="">Chose...</option>
+                      <option value="">Choose...</option>
                       <option value="male">Male</option>
                       <option value="female">Female</option>
                     </select>

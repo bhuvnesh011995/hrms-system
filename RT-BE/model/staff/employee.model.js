@@ -10,6 +10,7 @@ const schema = new Schema(
     email: String,
     DOB: Date,
     phone: String,
+    prifilePic: String,
     role: {
       type: Schema.Types.ObjectId,
       ref: "role",
@@ -49,6 +50,7 @@ const schema = new Schema(
     bloodGroup: String,
     nationality: String,
     citizenship: String,
+    religion: { type: Schema.Types.ObjectId, ref: "religionConstant" },
     addedBy: { type: Schema.Types.ObjectId, ref: "employee" },
   },
   {
