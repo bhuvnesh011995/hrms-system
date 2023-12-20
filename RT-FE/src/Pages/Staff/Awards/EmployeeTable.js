@@ -8,8 +8,10 @@ import { deleteAward, getAllAwards } from "../../../Utility/API/award";
 import ReactDatePicker from "react-datepicker";
 import View from "./View";
 import { FormattedMessage } from "react-intl";
+import { useAuth } from "../../../Context/AuthContext";
 
 export default function EmployeeTable() {
+  const { permissions } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -92,14 +94,17 @@ export default function EmployeeTable() {
               <div className='col-md-6 mb-3'>
                 <h4>List All Awards</h4>
               </div>
-              <div className='col-md-6 mb-3' style={{ textAlign: "right" }}>
-                <button
-                  className='btn btn-primary text-right'
-                  onClick={() => setIsOpen(true)}
-                >
-                  Add New
-                </button>
-              </div>
+              {(permissions.includes("All") ||
+                permissions.includes("add10")) && (
+                <div className='col-md-6 mb-3' style={{ textAlign: "right" }}>
+                  <button
+                    className='btn btn-primary text-right'
+                    onClick={() => setIsOpen(true)}
+                  >
+                    Add New
+                  </button>
+                </div>
+              )}
             </div>
 
             <p className='card-title-desc' style={{ textAlign: "right" }}>
@@ -132,31 +137,37 @@ export default function EmployeeTable() {
                     <i className='fas fa-eye'></i>
                   </IconButton>
 
-                  <IconButton
-                    color='secondary'
-                    onClick={() => {
-                      let obj = {
-                        ...row.original,
-                        company: row.original?.company?._id,
-                        employee: row.original.employee?._id,
-                        awardType: row.original.awardType?._id,
-                        date: row.original.date?.slice(0, 10),
-                      };
-                      setViewData(obj);
-                      setIsOpen(true);
-                    }}
-                  >
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton
-                    color='error'
-                    onClick={async () => {
-                      let res = await deleteAward(row.original._id);
-                      if (res.status === 204) getAwards();
-                    }}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
+                  {(permissions.includes("All") ||
+                    permissions.includes("update10")) && (
+                    <IconButton
+                      color='secondary'
+                      onClick={() => {
+                        let obj = {
+                          ...row.original,
+                          company: row.original?.company?._id,
+                          employee: row.original.employee?._id,
+                          awardType: row.original.awardType?._id,
+                          date: row.original.date?.slice(0, 10),
+                        };
+                        setViewData(obj);
+                        setIsOpen(true);
+                      }}
+                    >
+                      <EditIcon />
+                    </IconButton>
+                  )}
+                  {(permissions.includes("All") ||
+                    permissions.includes("delete10")) && (
+                    <IconButton
+                      color='error'
+                      onClick={async () => {
+                        let res = await deleteAward(row.original._id);
+                        if (res.status === 204) getAwards();
+                      }}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  )}
                 </Box>
               )}
               muiTableProps={{

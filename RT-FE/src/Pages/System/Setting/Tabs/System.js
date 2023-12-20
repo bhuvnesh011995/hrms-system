@@ -2,8 +2,10 @@ import { useCallback, useEffect, useState } from "react";
 import { getAConstant, getConstant } from "../../../../Utility/API/constant";
 import { getAllLanguage, updateSetting } from "../../../../Utility/API/system";
 import { Toast, ToastContainer } from "react-bootstrap";
+import { useAuth } from "../../../../Context/AuthContext";
 
 export default function System({ getSettingData, data }) {
+  const { permissions } = useAuth();
   const [language, setLanguage] = useState([]);
   const [currData, setCurrData] = useState(null);
   const [show, setShow] = useState(false);
@@ -388,13 +390,16 @@ export default function System({ getSettingData, data }) {
             </div>
           </div>
 
-          <button
-            onClick={() => handleSubmit()}
-            type='button'
-            class='btn btn-primary waves-effect waves-light w-25'
-          >
-            SAVE
-          </button>
+          {(permissions.includes("All") ||
+            permissions.includes("update81")) && (
+            <button
+              onClick={() => handleSubmit()}
+              type='button'
+              class='btn btn-primary waves-effect waves-light w-25'
+            >
+              SAVE
+            </button>
+          )}
         </div>
       </form>
       <div

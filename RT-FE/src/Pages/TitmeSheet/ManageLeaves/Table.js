@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import NewLeaveModal from "./leaveModal";
 import CommonDeleteModal from "../../../Components/Common/commonDeleteModal";
-import { api } from "../../../Context/AuthContext";
+import { api, useAuth } from "../../../Context/AuthContext";
 import { toast } from "react-toastify";
 import { CommonDataTable } from "../../../Components/Common/commonDataTable";
 import { LeaveTableHeader } from "../../../Components/Common/table.constants";
@@ -9,6 +9,7 @@ import { FormattedMessage } from "react-intl";
 import moment from "moment";
 
 export default function Table() {
+  const { permissions } = useAuth();
   const [leaveModal, setLeaveModal] = useState(false);
   const [leaveData, setLeaveData] = useState(null);
   const [leaveIndex, setLeaveIndex] = useState(null);
@@ -73,24 +74,31 @@ export default function Table() {
               <div class='col-md-6 mb-3'>
                 <h4>Leaves</h4>
               </div>
-              <div class='col-md-6 mb-3' style={{ textAlign: "right" }}>
-                <button
-                  class='btn btn-primary text-right'
-                  data-bs-toggle='modal'
-                  data-bs-target='#myModal'
-                  onClick={() => showLeaveModal()}
-                >
-                  Add New
-                </button>
-              </div>
+              {(permissions.includes("All") ||
+                permissions.includes("add38")) && (
+                <div class='col-md-6 mb-3' style={{ textAlign: "right" }}>
+                  <button
+                    class='btn btn-primary text-right'
+                    data-bs-toggle='modal'
+                    data-bs-target='#myModal'
+                    onClick={() => showLeaveModal()}
+                  >
+                    Add New
+                  </button>
+                </div>
+              )}
             </div>
 
             <CommonDataTable
               data={leaveEvents}
               tableHeaders={LeaveTableHeader}
               actionButtons
-              editButton
-              deleteButton
+              editButton={
+                permissions.includes("All") || permissions.includes("update38")
+              }
+              deleteButton={
+                permissions.includes("All") || permissions.includes("delete38")
+              }
               callback={(data, type, index) =>
                 showLeaveModal(data, type, index)
               }

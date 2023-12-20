@@ -6,8 +6,10 @@ import AddNew from "./AddNew";
 import { deletePolicy, getAllPolicies } from "../../../Utility/API/policy";
 import View from "./View";
 import { FormattedMessage } from "react-intl";
+import { useAuth } from "../../../Context/AuthContext";
 
 export default function Table() {
+  const { permissions } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -91,14 +93,17 @@ export default function Table() {
               <div className='col-md-6 mb-3'>
                 <h4>List All Policies</h4>
               </div>
-              <div className='col-md-6 mb-3' style={{ textAlign: "right" }}>
-                <button
-                  className='btn btn-primary text-right'
-                  onClick={() => setIsOpen(true)}
-                >
-                  Add New
-                </button>
-              </div>
+              {(permissions.includes("All") ||
+                permissions.includes("add28")) && (
+                <div className='col-md-6 mb-3' style={{ textAlign: "right" }}>
+                  <button
+                    className='btn btn-primary text-right'
+                    onClick={() => setIsOpen(true)}
+                  >
+                    Add New
+                  </button>
+                </div>
+              )}
             </div>
 
             <p className='card-title-desc' style={{ textAlign: "right" }}>
@@ -121,40 +126,49 @@ export default function Table() {
               rowNumberMode='static'
               renderRowActions={({ row, table }) => (
                 <Box sx={{ display: "flex", flexWrap: "nowrap", gap: "8px" }}>
-                  <IconButton
-                    color='info'
-                    onClick={() => {
-                      setViewData(row.original);
-                      setIsViewOpen(true);
-                    }}
-                  >
-                    <i className='fas fa-eye'></i>
-                  </IconButton>
+                  {(permissions.includes("All") ||
+                    permissions.includes("view28")) && (
+                    <IconButton
+                      color='info'
+                      onClick={() => {
+                        setViewData(row.original);
+                        setIsViewOpen(true);
+                      }}
+                    >
+                      <i className='fas fa-eye'></i>
+                    </IconButton>
+                  )}
 
-                  <IconButton
-                    color='secondary'
-                    onClick={() => {
-                      let obj = {
-                        id: row.original._id,
-                        company: row.original.company._id,
-                        description: row.original.description,
-                        title: row.original.title,
-                      };
-                      setViewData(obj);
-                      setIsOpen(true);
-                    }}
-                  >
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton
-                    color='error'
-                    onClick={async () => {
-                      let res = await deletePolicy(row.original._id);
-                      if (res.status === 204) getPolicies();
-                    }}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
+                  {(permissions.includes("All") ||
+                    permissions.includes("update28")) && (
+                    <IconButton
+                      color='secondary'
+                      onClick={() => {
+                        let obj = {
+                          id: row.original._id,
+                          company: row.original.company._id,
+                          description: row.original.description,
+                          title: row.original.title,
+                        };
+                        setViewData(obj);
+                        setIsOpen(true);
+                      }}
+                    >
+                      <EditIcon />
+                    </IconButton>
+                  )}
+                  {(permissions.includes("All") ||
+                    permissions.includes("delete28")) && (
+                    <IconButton
+                      color='error'
+                      onClick={async () => {
+                        let res = await deletePolicy(row.original._id);
+                        if (res.status === 204) getPolicies();
+                      }}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  )}
                 </Box>
               )}
               muiTableProps={{

@@ -6,8 +6,10 @@ import { deleteTransfer, getAllTransfers } from "../../../Utility/API/transfer";
 import AddNew from "./AddNew";
 import View from "./View";
 import { FormattedMessage } from "react-intl";
+import { useAuth } from "../../../Context/AuthContext";
 
 export default function EmployeeTable() {
+  const { permissions } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -96,14 +98,17 @@ export default function EmployeeTable() {
               <div className='col-md-6 mb-3'>
                 <h4>List All Transfers</h4>
               </div>
-              <div className='col-md-6 mb-3' style={{ textAlign: "right" }}>
-                <button
-                  className='btn btn-primary text-right'
-                  onClick={() => setIsOpen(true)}
-                >
-                  Add New
-                </button>
-              </div>
+              {(permissions.includes("All") ||
+                permissions.includes("add11")) && (
+                <div className='col-md-6 mb-3' style={{ textAlign: "right" }}>
+                  <button
+                    className='btn btn-primary text-right'
+                    onClick={() => setIsOpen(true)}
+                  >
+                    Add New
+                  </button>
+                </div>
+              )}
             </div>
 
             <p className='card-title-desc' style={{ textAlign: "right" }}>
@@ -135,34 +140,40 @@ export default function EmployeeTable() {
                     <i className='fas fa-eye'></i>
                   </IconButton>
 
-                  <IconButton
-                    color='secondary'
-                    onClick={() => {
-                      let obj = {
-                        id: row.original._id,
-                        company: row.original.company?._id,
-                        department: row.original.to?.department?._id,
-                        subdepartment: row.original.to?.subdepartment?._id,
-                        location: row.original.to?.location?._id,
-                        description: row.original.description,
-                        date: row.original.date?.slice(0, 10),
-                        employee: row.original.employee?._id,
-                      };
-                      setViewData(obj);
-                      setIsOpen(true);
-                    }}
-                  >
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton
-                    color='error'
-                    onClick={async () => {
-                      let res = await deleteTransfer(row.original._id);
-                      if (res.status === 204) getTransfers();
-                    }}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
+                  {(permissions.includes("All") ||
+                    permissions.includes("update11")) && (
+                    <IconButton
+                      color='secondary'
+                      onClick={() => {
+                        let obj = {
+                          id: row.original._id,
+                          company: row.original.company?._id,
+                          department: row.original.to?.department?._id,
+                          subdepartment: row.original.to?.subdepartment?._id,
+                          location: row.original.to?.location?._id,
+                          description: row.original.description,
+                          date: row.original.date?.slice(0, 10),
+                          employee: row.original.employee?._id,
+                        };
+                        setViewData(obj);
+                        setIsOpen(true);
+                      }}
+                    >
+                      <EditIcon />
+                    </IconButton>
+                  )}
+                  {(permissions.includes("All") ||
+                    permissions.includes("delete11")) && (
+                    <IconButton
+                      color='error'
+                      onClick={async () => {
+                        let res = await deleteTransfer(row.original._id);
+                        if (res.status === 204) getTransfers();
+                      }}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  )}
                 </Box>
               )}
               muiTableProps={{

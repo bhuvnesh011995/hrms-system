@@ -18,19 +18,26 @@ export default function ListAllEmployees() {
   const [viewData, setViewData] = useState(null);
   const [isViewOpen, setIsViewOpen] = useState(false);
   const { permissions } = useAuth();
-
+  console.log(permissions, "these are permissions");
   const havePermission = useCallback(
     (type, role) => {
-      if (type === "edit") {
+      if (type === "update") {
         if (role === "Super Admin") return false;
-        if (permissions.includes("All")) return true;
+        if (permissions?.includes("All") || permissions?.includes("update"))
+          return true;
         else return false;
       } else if (type === "delete") {
         if (role === "Super Admin") return false;
-        if (permissions?.includes("All")) return true;
+        if (permissions?.includes("All") || permissions?.includes("delete"))
+          return true;
         else return false;
       } else if (type === "add") {
-        if (permissions.includes("All")) return true;
+        if (permissions?.includes("All") || permissions?.includes("add"))
+          return true;
+        else return false;
+      } else if (type === "view") {
+        if (permissions?.includes("All") || permissions?.includes("view"))
+          return true;
         else return false;
       }
       return true;
@@ -231,7 +238,7 @@ export default function ListAllEmployees() {
                 </IconButton>
               ) : null}
 
-              {havePermission("edit", row.original.role?.name) ? (
+              {havePermission("update", row.original.role?.name) ? (
                 <IconButton
                   color='secondary'
                   onClick={() => {

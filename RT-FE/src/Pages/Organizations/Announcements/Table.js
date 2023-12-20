@@ -9,6 +9,7 @@ import {
 } from "../../../Utility/API/announcement";
 import View from "./View";
 import { FormattedMessage } from "react-intl";
+import { useAuth } from "../../../Context/AuthContext";
 
 export default function Table() {
   const [isOpen, setIsOpen] = useState(false);
@@ -17,6 +18,7 @@ export default function Table() {
   const [isError, setIsError] = useState(false);
   const [viewData, setViewData] = useState(null);
   const [isViewOpen, setIsViewOpen] = useState(false);
+  const { permissions } = useAuth();
 
   const getAnnouncements = useCallback(async () => {
     setIsLoading(true);
@@ -85,14 +87,17 @@ export default function Table() {
               <div className='col-md-6 mb-3'>
                 <h4>List All Announcements</h4>
               </div>
-              <div className='col-md-6 mb-3' style={{ textAlign: "right" }}>
-                <button
-                  className='btn btn-primary text-right'
-                  onClick={() => setIsOpen(true)}
-                >
-                  Add New
-                </button>
-              </div>
+              {(permissions.includes("All") ||
+                permissions.includes("add27")) && (
+                <div className='col-md-6 mb-3' style={{ textAlign: "right" }}>
+                  <button
+                    className='btn btn-primary text-right'
+                    onClick={() => setIsOpen(true)}
+                  >
+                    Add New
+                  </button>
+                </div>
+              )}
             </div>
 
             <p className='card-title-desc' style={{ textAlign: "right" }}>
@@ -145,42 +150,51 @@ export default function Table() {
               rowNumberMode='static'
               renderRowActions={({ row, table }) => (
                 <Box sx={{ display: "flex", flexWrap: "nowrap", gap: "8px" }}>
-                  <IconButton
-                    color='info'
-                    onClick={() => {
-                      setViewData(row.original);
-                      setIsViewOpen(true);
-                    }}
-                  >
-                    <i className='fas fa-eye'></i>
-                  </IconButton>
+                  {(permissions.includes("All") ||
+                    permissions.includes("view27")) && (
+                    <IconButton
+                      color='info'
+                      onClick={() => {
+                        setViewData(row.original);
+                        setIsViewOpen(true);
+                      }}
+                    >
+                      <i className='fas fa-eye'></i>
+                    </IconButton>
+                  )}
 
-                  <IconButton
-                    color='secondary'
-                    onClick={() => {
-                      let obj = {
-                        ...row.original,
-                        company: row.original.company._id,
-                        department: row.original.department._id,
-                        location: row.original.location._id,
-                        start: row.original.start.slice(0, 10),
-                        end: row.original.end.slice(0, 10),
-                      };
-                      setViewData(obj);
-                      setIsOpen(true);
-                    }}
-                  >
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton
-                    color='error'
-                    onClick={async () => {
-                      let res = await deleteAnnouncement(row.original._id);
-                      if (res.status === 204) getAnnouncements();
-                    }}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
+                  {(permissions.includes("All") ||
+                    permissions.includes("update27")) && (
+                    <IconButton
+                      color='secondary'
+                      onClick={() => {
+                        let obj = {
+                          ...row.original,
+                          company: row.original.company._id,
+                          department: row.original.department._id,
+                          location: row.original.location._id,
+                          start: row.original.start.slice(0, 10),
+                          end: row.original.end.slice(0, 10),
+                        };
+                        setViewData(obj);
+                        setIsOpen(true);
+                      }}
+                    >
+                      <EditIcon />
+                    </IconButton>
+                  )}
+                  {(permissions.includes("All") ||
+                    permissions.includes("delete27")) && (
+                    <IconButton
+                      color='error'
+                      onClick={async () => {
+                        let res = await deleteAnnouncement(row.original._id);
+                        if (res.status === 204) getAnnouncements();
+                      }}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  )}
                 </Box>
               )}
               muiTableProps={{

@@ -5,6 +5,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import AddNew from "./AddNew";
 import { deleteShift, getAllShifts } from "../../../Utility/API/shift";
 import { FormattedMessage } from "react-intl";
+import { useAuth } from "../../../Context/AuthContext";
 export default function Table() {
   const [isOpen, setIsOpen] = useState(false);
   const [data, setData] = useState([
@@ -18,6 +19,8 @@ export default function Table() {
   const [isError, setIsError] = useState(false);
   const [viewData, setViewData] = useState(null);
   const [isViewOpen, setIsViewOpen] = useState(false);
+
+  const { permissions } = useAuth();
 
   const getShifts = useCallback(async () => {
     setIsLoading(true);
@@ -214,14 +217,17 @@ export default function Table() {
               <div class='col-md-6 mb-3'>
                 <h4>Office Shifts</h4>
               </div>
-              <div class='col-md-6 mb-3' style={{ textAlign: "right" }}>
-                <button
-                  class='btn btn-primary text-right'
-                  onClick={() => setIsOpen(true)}
-                >
-                  Add New
-                </button>
-              </div>
+              {(permissions.includes("All") ||
+                permissions.includes("add36")) && (
+                <div class='col-md-6 mb-3' style={{ textAlign: "right" }}>
+                  <button
+                    class='btn btn-primary text-right'
+                    onClick={() => setIsOpen(true)}
+                  >
+                    Add New
+                  </button>
+                </div>
+              )}
             </div>
 
             <p class='card-title-desc' style={{ textAlign: "right" }}>
@@ -243,28 +249,34 @@ export default function Table() {
               rowNumberMode='static'
               renderRowActions={({ row, table }) => (
                 <Box sx={{ display: "flex", flexWrap: "nowrap", gap: "8px" }}>
-                  <IconButton
-                    color='secondary'
-                    onClick={() => {
-                      let obj = {
-                        ...row.original,
-                        company: row.original.company?._id,
-                      };
-                      setViewData(obj);
-                      setIsOpen(true);
-                    }}
-                  >
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton
-                    color='error'
-                    onClick={async () => {
-                      let res = await deleteShift(row.original._id);
-                      if (res.status === 204) getShifts();
-                    }}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
+                  {(permissions.includes("All") ||
+                    permissions.includes("update36")) && (
+                    <IconButton
+                      color='secondary'
+                      onClick={() => {
+                        let obj = {
+                          ...row.original,
+                          company: row.original.company?._id,
+                        };
+                        setViewData(obj);
+                        setIsOpen(true);
+                      }}
+                    >
+                      <EditIcon />
+                    </IconButton>
+                  )}
+                  {(permissions.includes("All") ||
+                    permissions.includes("delete36")) && (
+                    <IconButton
+                      color='error'
+                      onClick={async () => {
+                        let res = await deleteShift(row.original._id);
+                        if (res.status === 204) getShifts();
+                      }}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  )}
                 </Box>
               )}
               muiTableProps={{

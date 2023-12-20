@@ -8,8 +8,10 @@ import moment from "moment";
 import { FormattedMessage } from "react-intl";
 import { fileUrl } from "../../Config/Config";
 import CommonDeleteModal from "../../Components/Common/commonDeleteModal";
+import { useAuth } from "../../Context/AuthContext";
 
 export default function Tables({ filesData, setFilesData }) {
+  const { permissions } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [deleteModal, setDeleteModal] = useState(false);
   const [fileData, setFileData] = useState(null);
@@ -51,14 +53,17 @@ export default function Tables({ filesData, setFilesData }) {
                     <div class='col-md-6 mb-3'>
                       <h4>List All Files</h4>
                     </div>
-                    <div class='col-md-6 mb-3' style={{ textAlign: "right" }}>
-                      <button
-                        class='btn btn-primary text-right'
-                        onClick={() => setIsOpen(true)}
-                      >
-                        Add New
-                      </button>
-                    </div>
+                    {(permissions.includes("All") ||
+                      permissions.includes("add70")) && (
+                      <div class='col-md-6 mb-3' style={{ textAlign: "right" }}>
+                        <button
+                          class='btn btn-primary text-right'
+                          onClick={() => setIsOpen(true)}
+                        >
+                          Add New
+                        </button>
+                      </div>
+                    )}
                   </div>
 
                   <p class='card-title-desc' style={{ textAlign: "right" }}>
@@ -72,8 +77,14 @@ export default function Tables({ filesData, setFilesData }) {
                     tableHeaders={fileManagerHeader}
                     data={filesData}
                     actionButtons
-                    deleteButton
-                    viewButton
+                    deleteButton={
+                      permissions.includes("All") ||
+                      permissions.includes("delete70")
+                    }
+                    viewButton={
+                      permissions.includes("All") ||
+                      permissions.includes("view70")
+                    }
                     callback={(data, type, index) =>
                       showDepartmentFile(data, type, index)
                     }

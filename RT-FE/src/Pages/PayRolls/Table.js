@@ -3,8 +3,10 @@ import MaterialReactTable from "material-react-table";
 import { Box, IconButton } from "@mui/material";
 import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import { FormattedMessage } from "react-intl";
+import { useAuth } from "../../Context/AuthContext";
 
 export default function Table() {
+  const { permissions } = useAuth();
   const columns = useMemo(
     () => [
       {
@@ -62,14 +64,17 @@ export default function Table() {
               <div className='col-md-6 mb-3'>
                 <h4>Payment Info for 2023-07</h4>
               </div>
-              <div className='col-md-6 mb-3' style={{ textAlign: "right" }}>
-                <a
-                  href='payslip-history.html'
-                  className='btn btn-primary text-right'
-                >
-                  Payslip History
-                </a>
-              </div>
+              {(permissions.includes("All") ||
+                permissions.includes("add40")) && (
+                <div className='col-md-6 mb-3' style={{ textAlign: "right" }}>
+                  <a
+                    href='payslip-history.html'
+                    className='btn btn-primary text-right'
+                  >
+                    Payslip History
+                  </a>
+                </div>
+              )}
             </div>
 
             <p className='card-title-desc' style={{ textAlign: "right" }}>
@@ -123,17 +128,23 @@ export default function Table() {
               rowNumberMode='static'
               renderRowActions={({ row, table }) => (
                 <Box sx={{ display: "flex", flexWrap: "nowrap", gap: "8px" }}>
-                  <IconButton
-                    color='secondary'
-                    onClick={() => {
-                      table.setEditingRow(row);
-                    }}
-                  >
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton color='error' onClick={() => {}}>
-                    <DeleteIcon />
-                  </IconButton>
+                  {(permissions.includes("All") ||
+                    permissions.includes("update40")) && (
+                    <IconButton
+                      color='secondary'
+                      onClick={() => {
+                        table.setEditingRow(row);
+                      }}
+                    >
+                      <EditIcon />
+                    </IconButton>
+                  )}
+                  {(permissions.includes("All") ||
+                    permissions.includes("delete40")) && (
+                    <IconButton color='error' onClick={() => {}}>
+                      <DeleteIcon />
+                    </IconButton>
+                  )}
                 </Box>
               )}
               muiTableProps={{

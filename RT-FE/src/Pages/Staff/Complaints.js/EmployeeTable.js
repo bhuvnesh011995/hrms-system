@@ -10,6 +10,7 @@ import {
 import { toast } from "react-toastify";
 import View from "./View";
 import { FormattedMessage } from "react-intl";
+import { useAuth } from "../../../Context/AuthContext";
 export default function EmployeeTable() {
   const [isOpen, setIsOpen] = useState(false);
   const [data, setData] = useState([]);
@@ -17,6 +18,7 @@ export default function EmployeeTable() {
   const [isError, setIsError] = useState(false);
   const [viewData, setViewData] = useState(null);
   const [isViewOpen, setIsViewOpen] = useState(false);
+  const { permissions } = useAuth();
 
   const getComplaints = useCallback(async () => {
     setIsLoading(true);
@@ -110,14 +112,17 @@ export default function EmployeeTable() {
               <div className='col-md-6 mb-3'>
                 <h4>List All Complaints</h4>
               </div>
-              <div className='col-md-6 mb-3' style={{ textAlign: "right" }}>
-                <button
-                  className='btn btn-primary text-right'
-                  onClick={() => setIsOpen(true)}
-                >
-                  Add New
-                </button>
-              </div>
+              {(permissions.includes("All") ||
+                permissions.includes("add15")) && (
+                <div className='col-md-6 mb-3' style={{ textAlign: "right" }}>
+                  <button
+                    className='btn btn-primary text-right'
+                    onClick={() => setIsOpen(true)}
+                  >
+                    Add New
+                  </button>
+                </div>
+              )}
             </div>
 
             <p className='card-title-desc' style={{ textAlign: "right" }}>
@@ -140,47 +145,56 @@ export default function EmployeeTable() {
               rowNumberMode='static'
               renderRowActions={({ row, table }) => (
                 <Box sx={{ display: "flex", flexWrap: "nowrap", gap: "8px" }}>
-                  <IconButton
-                    color='info'
-                    onClick={() => {
-                      setViewData(row.original);
-                      setIsViewOpen(true);
-                    }}
-                  >
-                    <i className='fas fa-eye'></i>
-                  </IconButton>
-                  <IconButton
-                    color='secondary'
-                    onClick={() => {
-                      let obj = {
-                        ...row.original,
-                        company: row.original?.company?._id,
-                        against: row.original.against?._id,
-                        from: row.original.from?._id,
-                        date: row.original.date?.slice(0, 10),
-                      };
-                      setViewData(obj);
-                      setIsOpen(true);
-                    }}
-                  >
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton
-                    color='error'
-                    onClick={async () => {
-                      try {
-                        let res = await deleteComplaint(row.original._id);
-                        if (res.status === 204) {
-                          toast.success("complaint deleted");
-                          getComplaints();
-                        } else console.log(res);
-                      } catch (error) {
-                        console.log(error);
-                      }
-                    }}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
+                  {(permissions.includes("All") ||
+                    permissions.includes("view15")) && (
+                    <IconButton
+                      color='info'
+                      onClick={() => {
+                        setViewData(row.original);
+                        setIsViewOpen(true);
+                      }}
+                    >
+                      <i className='fas fa-eye'></i>
+                    </IconButton>
+                  )}
+                  {(permissions.includes("All") ||
+                    permissions.includes("update15")) && (
+                    <IconButton
+                      color='secondary'
+                      onClick={() => {
+                        let obj = {
+                          ...row.original,
+                          company: row.original?.company?._id,
+                          against: row.original.against?._id,
+                          from: row.original.from?._id,
+                          date: row.original.date?.slice(0, 10),
+                        };
+                        setViewData(obj);
+                        setIsOpen(true);
+                      }}
+                    >
+                      <EditIcon />
+                    </IconButton>
+                  )}
+                  {(permissions.includes("All") ||
+                    permissions.includes("delete15")) && (
+                    <IconButton
+                      color='error'
+                      onClick={async () => {
+                        try {
+                          let res = await deleteComplaint(row.original._id);
+                          if (res.status === 204) {
+                            toast.success("complaint deleted");
+                            getComplaints();
+                          } else console.log(res);
+                        } catch (error) {
+                          console.log(error);
+                        }
+                      }}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  )}
                 </Box>
               )}
               muiTableProps={{

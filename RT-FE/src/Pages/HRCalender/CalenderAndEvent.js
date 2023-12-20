@@ -1,6 +1,6 @@
 import { Calendar, momentLocalizer } from "react-big-calendar";
 import moment from "moment";
-import { api } from "../../Context/AuthContext";
+import { api, useAuth } from "../../Context/AuthContext";
 import { useEffect } from "react";
 import { useState } from "react";
 import { convertUtcDateAndTime } from "../../Components/Common/Common";
@@ -20,6 +20,7 @@ export default function CalenderAndEvent() {
   const [goalsModal, setGoalsModal] = useState(false);
   const [leaveModal, setLeaveModal] = useState(false);
   const [eventData, setEventData] = useState(null);
+  const { permissions } = useAuth();
 
   useEffect(() => {
     getAllEvents();
@@ -84,34 +85,37 @@ export default function CalenderAndEvent() {
           <div class='col-lg-3'>
             <div class='card'>
               <div class='card-body'>
-                <div className='d-grid' id='external-events'>
-                  <button
-                    className='btn font-16 btn-primary mb-3'
-                    id='btn-new-event'
-                    onClick={() => showCalendarModal(null, "holiday")}
-                  >
-                    <i className='mdi mdi-plus-circle-outline'></i> Holiday
-                  </button>
-                  <button
-                    className='btn font-16 btn-info mb-3'
-                    onClick={() => showCalendarModal(null, "travelRequest")}
-                  >
-                    <i className='mdi mdi-plus-circle-outline'></i> Travel
-                    Request
-                  </button>
-                  <button
-                    className='btn font-16 btn-success mb-3'
-                    onClick={() => showCalendarModal(null, "goals")}
-                  >
-                    <i className='mdi mdi-plus-circle-outline'></i> Goals
-                  </button>
-                  <button
-                    className='btn font-16 btn-danger mb-3'
-                    onClick={() => showCalendarModal(null, "leave")}
-                  >
-                    <i className='mdi mdi-plus-circle-outline'></i> Leave
-                  </button>
-                </div>
+                {(permissions.includes("All") ||
+                  permissions.includes("add60")) && (
+                  <div className='d-grid' id='external-events'>
+                    <button
+                      className='btn font-16 btn-primary mb-3'
+                      id='btn-new-event'
+                      onClick={() => showCalendarModal(null, "holiday")}
+                    >
+                      <i className='mdi mdi-plus-circle-outline'></i> Holiday
+                    </button>
+                    <button
+                      className='btn font-16 btn-info mb-3'
+                      onClick={() => showCalendarModal(null, "travelRequest")}
+                    >
+                      <i className='mdi mdi-plus-circle-outline'></i> Travel
+                      Request
+                    </button>
+                    <button
+                      className='btn font-16 btn-success mb-3'
+                      onClick={() => showCalendarModal(null, "goals")}
+                    >
+                      <i className='mdi mdi-plus-circle-outline'></i> Goals
+                    </button>
+                    <button
+                      className='btn font-16 btn-danger mb-3'
+                      onClick={() => showCalendarModal(null, "leave")}
+                    >
+                      <i className='mdi mdi-plus-circle-outline'></i> Leave
+                    </button>
+                  </div>
+                )}
 
                 {/* <div id='external-events' class='mt-2'>
                   <br />
@@ -165,7 +169,11 @@ export default function CalenderAndEvent() {
               <div class='card-body'>
                 <CommonCalendar
                   events={totalEvents}
-                  callback={(event) => handleSelectEvent(event)}
+                  callback={(event) =>
+                    (permissions.includes("All") ||
+                      permissions.includes("update60")) &&
+                    handleSelectEvent(event)
+                  }
                 />
               </div>
             </div>

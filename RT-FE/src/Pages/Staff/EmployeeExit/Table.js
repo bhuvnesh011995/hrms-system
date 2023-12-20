@@ -3,8 +3,10 @@ import { Box, IconButton } from "@mui/material";
 import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import { useMemo, useState } from "react";
 import { FormattedMessage } from "react-intl";
+import { useAuth } from "../../../Context/AuthContext";
 
 export default function Table() {
+  const { permissions } = useAuth();
   const columns = useMemo(
     () => [
       {
@@ -64,17 +66,23 @@ export default function Table() {
         rowNumberMode='static'
         renderRowActions={({ row, table }) => (
           <Box sx={{ display: "flex", flexWrap: "nowrap", gap: "8px" }}>
-            <IconButton
-              color='secondary'
-              onClick={() => {
-                table.setEditingRow(row);
-              }}
-            >
-              <EditIcon />
-            </IconButton>
-            <IconButton color='error' onClick={() => {}}>
-              <DeleteIcon />
-            </IconButton>
+            {(permissions.includes("All") ||
+              permissions.includes("update4")) && (
+              <IconButton
+                color='secondary'
+                onClick={() => {
+                  table.setEditingRow(row);
+                }}
+              >
+                <EditIcon />
+              </IconButton>
+            )}
+            {(permissions.includes("All") ||
+              permissions.includes("delete4")) && (
+              <IconButton color='error' onClick={() => {}}>
+                <DeleteIcon />
+              </IconButton>
+            )}
           </Box>
         )}
         muiTableProps={{

@@ -4,7 +4,7 @@ import { useContext, useEffect, useMemo, useState } from "react";
 import { Box, IconButton } from "@mui/material";
 import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
 import { deleteRole, getAllRole } from "../../../utility/role/role";
-import { authContext } from "../../../Context/AuthContext";
+import { useAuth } from "../../../Context/AuthContext";
 import AddNewRole from "./AddNewRole";
 import { FormattedMessage } from "react-intl";
 
@@ -12,7 +12,7 @@ export default function Empl() {
   const [isOpen, setIsOpen] = useState(false);
   const [error, setError] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const { permissions } = useContext(authContext);
+  const { permissions } = useAuth();
   useEffect(() => {
     getRoles();
   }, []);
@@ -92,8 +92,8 @@ export default function Empl() {
                   <div class='col-sm-6'>
                     <h2></h2>
                   </div>
-                  {(permissions.includes("All") ||
-                    permissions.includes("203")) && (
+                  {(permissions?.includes("All") ||
+                    permissions?.includes("add2")) && (
                     <div class='col-sm-6 text-end'>
                       <button
                         onClick={() => setIsOpen(true)}
@@ -117,8 +117,8 @@ export default function Empl() {
                 rowNumberMode='static'
                 renderRowActions={({ row, table }) => (
                   <Box sx={{ display: "flex", flexWrap: "nowrap", gap: "8px" }}>
-                    {(permissions.includes("All") ||
-                      permissions.includes("201")) && (
+                    {(permissions?.includes("All") ||
+                      permissions?.includes("update2")) && (
                       <IconButton
                         color='secondary'
                         onClick={() => {
@@ -128,8 +128,8 @@ export default function Empl() {
                         <EditIcon />
                       </IconButton>
                     )}
-                    {(permissions.includes("All") ||
-                      permissions.includes("202")) && (
+                    {(permissions?.includes("All") ||
+                      permissions?.includes("delete2")) && (
                       <IconButton
                         color='error'
                         onClick={() => {

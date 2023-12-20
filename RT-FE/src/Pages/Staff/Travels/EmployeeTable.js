@@ -17,20 +17,6 @@ export default function EmployeeTable() {
   const [isViewOpen, setIsViewOpen] = useState(false);
   const { permissions } = useAuth();
 
-  const havePermission = useCallback(
-    (type, status) => {
-      if (type === "edit") {
-        if (status != "Pending") return false;
-        else return true;
-      } else if (type === "delete") {
-        if (status != "Pending") return false;
-        else return true;
-      } else if (type === "view") {
-        return true;
-      }
-    },
-    [permissions],
-  );
   const getTravels = useCallback(async () => {
     setIsLoading(true);
     let res = await getAllTravels();
@@ -130,14 +116,17 @@ export default function EmployeeTable() {
               <div className='col-md-6 mb-3'>
                 <h4>List All Travels</h4>
               </div>
-              <div className='col-md-6 mb-3' style={{ textAlign: "right" }}>
-                <button
-                  className='btn btn-primary text-right'
-                  onClick={() => setIsOpen(true)}
-                >
-                  Add New
-                </button>
-              </div>
+              {(permissions.includes("All") ||
+                permissions.includes("add13")) && (
+                <div className='col-md-6 mb-3' style={{ textAlign: "right" }}>
+                  <button
+                    className='btn btn-primary text-right'
+                    onClick={() => setIsOpen(true)}
+                  >
+                    Add New
+                  </button>
+                </div>
+              )}
             </div>
 
             <p className='card-title-desc' style={{ textAlign: "right" }}>
@@ -159,7 +148,8 @@ export default function EmployeeTable() {
               rowNumberMode='static'
               renderRowActions={({ row, table }) => (
                 <Box sx={{ display: "flex", flexWrap: "nowrap", gap: "8px" }}>
-                  {havePermission("view") && (
+                  {(permissions.includes("All") ||
+                    permissions.includes("view13")) && (
                     <IconButton
                       color='info'
                       onClick={() => {
@@ -171,7 +161,8 @@ export default function EmployeeTable() {
                     </IconButton>
                   )}
 
-                  {havePermission("edit", row.original.status) && (
+                  {(permissions.includes("All") ||
+                    permissions.includes("update11")) && (
                     <IconButton
                       color='secondary'
                       onClick={() => {
@@ -190,7 +181,8 @@ export default function EmployeeTable() {
                       <EditIcon />
                     </IconButton>
                   )}
-                  {havePermission("delete", row.original.status) && (
+                  {(permissions.includes("All") ||
+                    permissions.includes("delete13")) && (
                     <IconButton
                       color='error'
                       onClick={async () => {

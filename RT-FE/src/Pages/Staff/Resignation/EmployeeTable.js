@@ -9,8 +9,10 @@ import {
 import AddNew from "./AddNew";
 import View from "./View";
 import { FormattedMessage } from "react-intl";
+import { useAuth } from "../../../Context/AuthContext";
 
 export default function EmployeeTable() {
+  const { permissions } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -119,14 +121,17 @@ export default function EmployeeTable() {
               <div className='col-md-6 mb-3'>
                 <h4>List All Resignations</h4>
               </div>
-              <div className='col-md-6 mb-3' style={{ textAlign: "right" }}>
-                <button
-                  className='btn btn-primary text-right'
-                  onClick={() => setIsOpen(true)}
-                >
-                  Add New
-                </button>
-              </div>
+              {(permissions.includes("All") ||
+                permissions.includes("add12")) && (
+                <div className='col-md-6 mb-3' style={{ textAlign: "right" }}>
+                  <button
+                    className='btn btn-primary text-right'
+                    onClick={() => setIsOpen(true)}
+                  >
+                    Add New
+                  </button>
+                </div>
+              )}
             </div>
 
             <p className='card-title-desc' style={{ textAlign: "right" }}>
@@ -158,36 +163,42 @@ export default function EmployeeTable() {
                     <i className='fas fa-eye'></i>
                   </IconButton>
 
-                  <IconButton
-                    color='secondary'
-                    onClick={() => {
-                      let obj = {
-                        id: row.original._id,
-                        company: row.original.company?._id,
-                        resignationReason: row.original.resignationReason,
-                        noticeDate: row.original.noticeDate?.slice(0, 10),
-                        resignationDate: row.original.resignationDate?.slice(
-                          0,
-                          10,
-                        ),
-                        employee: row.original.employee?._id,
-                        status: row.original.status,
-                      };
-                      setViewData(obj);
-                      setIsOpen(true);
-                    }}
-                  >
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton
-                    color='error'
-                    onClick={async () => {
-                      let res = await deleteResignation(row.original._id);
-                      if (res.status === 204) getResignations();
-                    }}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
+                  {(permissions.includes("All") ||
+                    permissions.includes("update12")) && (
+                    <IconButton
+                      color='secondary'
+                      onClick={() => {
+                        let obj = {
+                          id: row.original._id,
+                          company: row.original.company?._id,
+                          resignationReason: row.original.resignationReason,
+                          noticeDate: row.original.noticeDate?.slice(0, 10),
+                          resignationDate: row.original.resignationDate?.slice(
+                            0,
+                            10,
+                          ),
+                          employee: row.original.employee?._id,
+                          status: row.original.status,
+                        };
+                        setViewData(obj);
+                        setIsOpen(true);
+                      }}
+                    >
+                      <EditIcon />
+                    </IconButton>
+                  )}
+                  {(permissions.includes("All") ||
+                    permissions.includes("delete12")) && (
+                    <IconButton
+                      color='error'
+                      onClick={async () => {
+                        let res = await deleteResignation(row.original._id);
+                        if (res.status === 204) getResignations();
+                      }}
+                    >
+                      <DeleteIcon />
+                    </IconButton>
+                  )}
                 </Box>
               )}
               muiTableProps={{
