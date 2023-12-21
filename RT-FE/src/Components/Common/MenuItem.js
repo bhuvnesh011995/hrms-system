@@ -6,7 +6,6 @@ export default [
   },
   {
     name: "Staffs",
-    to: "#",
     icon: "bx bx-user",
     children: [
       { to: "/staffs/staffDashboard", name: "Staff Dashboard" },
@@ -21,7 +20,6 @@ export default [
   },
   {
     name: "CORE HR",
-    to: "#",
     icon: "bx bx-briefcase-alt-2",
     children: [
       { to: "/coreHr/awards", name: "Awards" },
@@ -36,7 +34,6 @@ export default [
   },
   {
     name: "Organizations",
-    to: "#",
     icon: "bx bx-home-circle",
     children: [
       { to: "/organizations/company", name: "Company" },
@@ -52,7 +49,6 @@ export default [
   },
   {
     name: "Timesheet",
-    to: "#",
     icon: "bx bx-time-five",
     children: [
       { to: "/timesheet/timesheetDashboard", name: "Timesheet Dashboard" },
@@ -75,7 +71,6 @@ export default [
   },
   {
     name: "E-Filling",
-    to: "#",
     icon: "bx bx-time-five",
     children: [
       { to: "/Efilling/eFillingDetails", name: "E-Filling Details" },
@@ -109,7 +104,6 @@ export default [
   },
   {
     name: "System",
-    to: "#",
     icon: "bx bx-cog",
     children: [
       { to: "/system/multiLanguage", name: "Multi Language" },

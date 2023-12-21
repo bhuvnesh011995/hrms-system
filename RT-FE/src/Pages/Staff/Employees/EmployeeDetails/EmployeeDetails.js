@@ -8,15 +8,16 @@ import Salery from "./Tabs/Salery/Salery";
 import Core from "./Tabs/Core/Core";
 import Payslip from "./Tabs/Payslip/Payslip";
 import Claim from "./Tabs/Claim/Claim";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { getEmployeeDetailById } from "../../../../Utility/API/employee";
 import { toast } from "react-toastify";
 import useCustomEffect from "../../../../customHook/useCustomEffect";
 
 export default function EmployeeDetails() {
-  const {
-    state: { id },
-  } = useLocation();
+  const navigate = useNavigate();
+  const { state } = useLocation();
+  console.log(state);
+  if (!state.id) navigate(-1);
 
   const [key, setKey] = useState("general");
 
@@ -24,7 +25,7 @@ export default function EmployeeDetails() {
     <MainPage title={"Employee Details"}>
       <Tabs activeKey={key} onSelect={(key) => setKey(key)}>
         <Tab eventKey={"general"} title="General">
-          {key === "general" && <General id={id} />}
+          {key === "general" && <General id={state.id} />}
         </Tab>
         <Tab eventKey={"profile"} title="profile">
           {key === "profile" && <Profile />}

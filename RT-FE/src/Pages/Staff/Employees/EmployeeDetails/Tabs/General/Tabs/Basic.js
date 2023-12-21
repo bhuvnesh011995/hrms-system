@@ -11,6 +11,7 @@ import { getAllRolesName } from "../../../../../../../Utility/API/role";
 import { toast } from "react-toastify";
 import { getEmployeeByCompany } from "../../../../../../../Utility/API/employee";
 import { getAllCompanies } from "../../../../../../../Utility/API/company";
+import { useSettingContext } from "../../../../../../../Context/settingContext";
 
 export default function Basic({ data }) {
   const {
@@ -22,6 +23,7 @@ export default function Basic({ data }) {
     reset,
     formState: { errors, isDirty, dirtyFields },
   } = useForm();
+  const { constants } = useSettingContext();
   useCustomEffect(reset, data);
   const onSubmit = useCallback(
     async (formData) => {
