@@ -1,51 +1,96 @@
 import MaterialReactTable from "material-react-table";
 import { Box, IconButton } from "@mui/material";
 import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
-import { useContext, useMemo, useState } from "react";
+import { useContext, useMemo, useState, useEffect, useCallback } from "react";
 import AddNew from "./AddNew";
 import { FormattedMessage } from "react-intl";
 import { useAuth } from "../../../../../Context/AuthContext";
+import {
+  deleteAccommodation,
+  getAllAccommodation,
+} from "../../../../../Utility/API/accommodation";
 
 export default function Accommodation() {
   const { permissions } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+  const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+
+  async function getAccommodation() {
+    let res = await getAllAccommodation();
+    if (res.status === 200) {
+      let array = res.data.accommodation.map((ele) => ({
+        accommodationTitle: ele.accommodationTitle,
+        address: ele.addressLine1 + ele.addressLine2,
+        periodFrom:
+          ele.periodForm?.slice(0, 10).split("-").reverse().join("/") +
+          " - " +
+          ele.periodTo?.slice(0, 10).split("-").reverse().join("/"),
+        annualValue: ele.annualValue,
+        furnished: ele.furnished,
+        rent: ele.annualRentPaid,
+        createdAt: ele.createdAt?.slice(0, 10).split("-").reverse().join("/"),
+        id: ele._id,
+      }));
+      setData(array);
+    } else {
+      setData([]);
+    }
+  }
+
+  const deleteAccommodationId = async (id) => {
+    try {
+      let res = await deleteAccommodation(id);
+      getAccommodation();
+      console.log("id", res);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+  useEffect(() => {
+    getAccommodation();
+  }, []);
+
+  console.log("accommodation", data);
   const columns = useMemo(
     () => [
       {
-        accessorKey: "Title",
+        accessorFn: (row) => row.accommodationTitle,
         header: "Title",
         Header: () => <FormattedMessage id='Title' defaultMessage={"Title"} />,
       },
       {
-        accessorKey: "Address",
+        accessorFn: (row) => row.address,
         header: "Address",
         Header: () => (
           <FormattedMessage id='Address' defaultMessage={"Address"} />
         ),
       },
       {
-        accessorKey: "Period",
+        accessorFn: (row) => row.periodFrom,
         header: "Period",
         Header: () => (
           <FormattedMessage id='Period' defaultMessage={"Period"} />
         ),
       },
       {
-        accessorKey: "AnnualValue",
+        accessorFn: (row) => row.annualValue,
         header: "Annual Value",
         Header: () => (
           <FormattedMessage id='Annual_Value' defaultMessage={"Annual Value"} />
         ),
       },
       {
-        accessorKey: "Furnished",
+        accessorFn: (row) => row.furnished,
         header: "Furnished",
         Header: () => (
           <FormattedMessage id='Furnished' defaultMessage={"Furnished"} />
         ),
       },
       {
-        accessorKey: "Rent",
+        accessorFn: (row) => row.rent,
         header: "Rent",
         Header: () => <FormattedMessage id='Rent' defaultMessage={"Rent"} />,
       },
@@ -73,7 +118,7 @@ export default function Accommodation() {
 
       <MaterialReactTable
         columns={columns}
-        data={[]}
+        data={data || []}
         enableColumnActions={false}
         enableColumnFilters={false}
         enableSorting={false}
@@ -97,7 +142,12 @@ export default function Accommodation() {
             )}
             {(permissions?.includes("All") ||
               permissions?.includes("delete1")) && (
-              <IconButton color='error' onClick={() => {}}>
+              <IconButton
+                color='error'
+                onClick={() => {
+                  deleteAccommodationId(row.original.id);
+                }}
+              >
                 <DeleteIcon />
               </IconButton>
             )}

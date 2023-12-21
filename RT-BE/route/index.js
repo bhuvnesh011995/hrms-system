@@ -31,4 +31,10 @@ module.exports = (app) => {
   require("./coreHR/termination.route")(app);
   require("./event.route")(app);
   require("./fileManager.route")(app);
+  require("./staff/employeeexit.route")(app);
+  require("./staff/EmployeeBenefit/accommodation.route")(app);
+  require("./staff/EmployeeBenefit/accommodateEmployee.route")(app);
+  require("./staff/EmployeeBenefit/utilitiesAccessories.route")(app);
+  require("./staff/EmployeeBenefit/driver.route")(app);
+  require("./staff/EmployeeBenefit/housingKeeping.route")(app);
 };

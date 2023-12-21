@@ -6,7 +6,7 @@ import { getEmployeeByCompany } from "../../../Utility/API/employee";
 import { toast } from "react-toastify";
 import { addTermination, updateTermination } from "../../../Utility/API/termination";
 
-export default function AddNew({viewData,
+export default function AddNewTermination({viewData,
     setViewData,
     getTerminations,show,setShow}) {
 
@@ -324,7 +324,7 @@ export default function AddNew({viewData,
                                                         </div>
 
                                                     </div>
-                                                    <button type="submit" className="btn btn-success">SAVE</button>
+        <button type="submit" className="btn btn-success">SAVE</button>
 
 </form>
           </Modal.Body>

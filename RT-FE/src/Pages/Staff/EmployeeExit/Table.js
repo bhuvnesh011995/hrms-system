@@ -1,44 +1,72 @@
 import MaterialReactTable from "material-react-table";
 import { Box, IconButton } from "@mui/material";
 import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
-import { useMemo, useState } from "react";
+import { useMemo, useState, useEffect } from "react";
 import { FormattedMessage } from "react-intl";
 import { useAuth } from "../../../Context/AuthContext";
+import {
+  getAllEmployeeExit,
+  deleteEmployeeExit,
+} from "../../../Utility/API/employeeexit";
 
 export default function Table() {
   const { permissions } = useAuth();
+  const [data, setData] = useState([]);
+
+  async function getEmployeeExit() {
+    let res = await getAllEmployeeExit();
+    if (res.status === 200) {
+      let array = res.data.employeeexit.map((ele) => ({
+        employee: ele.employeeToExit,
+        company: ele.company,
+        typeofExit: ele.typeofExit,
+        exitDate: ele.exitDate,
+        exitInterview: ele.exitInterview,
+        createdAt: ele.createdAt?.slice(0, 10).split("-").reverse().join("/"),
+        id: ele._id,
+      }));
+      setData(array);
+    } else {
+      setData([]);
+    }
+  }
+
+  useEffect(() => {
+    getEmployeeExit();
+  }, []);
+
   const columns = useMemo(
     () => [
       {
-        accessorKey: "Employee",
+        accessorKey: "employee",
         header: "Employee",
         Header: () => (
           <FormattedMessage id='Employee' defaultMessage={"Employee"} />
         ),
       },
       {
-        accessorKey: "Company",
+        accessorKey: "company",
         header: "Company",
         Header: () => (
           <FormattedMessage id='Company' defaultMessage={"Company"} />
         ),
       },
       {
-        accessorKey: "ExitType",
+        accessorKey: "typeofExit",
         header: "Exit Type",
         Header: () => (
           <FormattedMessage id='Exit_Type' defaultMessage={"Exit Type"} />
         ),
       },
       {
-        accessorKey: "ExitDate",
+        accessorKey: "exitDate",
         header: "Exit Date",
         Header: () => (
           <FormattedMessage id='Exit_Date' defaultMessage={"Exit Date"} />
         ),
       },
       {
-        accessorKey: "ExitInterview",
+        accessorKey: "exitInterview",
         header: "Exit Interview",
         Header: () => (
           <FormattedMessage
@@ -50,6 +78,19 @@ export default function Table() {
     ],
     [],
   );
+
+  const handleDelete = async (id) => {
+    alert(id);
+    try {
+      let res = await deleteEmployeeExit(id);
+      if (res.status == 204) {
+        console.log("success");
+        getEmployeeExit();
+      }
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <>
@@ -80,7 +121,7 @@ export default function Table() {
             {(permissions.includes("All") ||
               permissions.includes("delete4")) && (
               <IconButton color='error' onClick={() => {}}>
-                <DeleteIcon />
+                <DeleteIcon onClick={() => handleDelete(row.original.id)} />
               </IconButton>
             )}
           </Box>

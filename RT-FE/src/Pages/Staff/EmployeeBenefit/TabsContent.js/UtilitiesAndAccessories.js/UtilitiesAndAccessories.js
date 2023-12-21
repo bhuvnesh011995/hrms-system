@@ -1,47 +1,96 @@
 import MaterialReactTable from "material-react-table";
 import { Box, IconButton } from "@mui/material";
 import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
-import { useContext, useMemo, useState } from "react";
+import { useContext, useMemo, useState, useEffect, useCallback } from "react";
 import AddNew from "./AddNew";
 import { FormattedMessage } from "react-intl";
 import { useAuth } from "../../../../../Context/AuthContext";
+import {
+  getAllUtilitiesAccessories,
+  deleteUtilitiesAccessories,
+} from "../../../../../Utility/API/utilitiesAccessories";
 
 export default function UtilitiesAndAccessories() {
   const { permissions } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
+  const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+
+  const getUtilitiesAccessories = useCallback(async () => {
+    setIsLoading(true);
+    let res = await getAllUtilitiesAccessories();
+    if (res.status === 200) {
+      setData(res.data);
+      setIsLoading(false);
+    } else {
+      console.log(res);
+      setIsLoading(false);
+      setIsError(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    getUtilitiesAccessories();
+  }, []);
+
+  const deleteUtilitiesAccessoriesId = async (id) => {
+    try {
+      let res = await deleteUtilitiesAccessories(id);
+      getUtilitiesAccessories();
+      console.log("id", res);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   const columns = useMemo(
     () => [
       {
-        accessorKey: "Employee",
+        accessorFn: (row) =>
+          row.employee ? row.employee.fName : "not available",
+        id: "employee",
         header: "Employee",
         Header: () => (
           <FormattedMessage id='Employee' defaultMessage={"Employee"} />
         ),
       },
       {
-        accessorKey: "Benefit Year",
+        accessorFn: (row) => row.benefitYear,
+        id: "benefitYear",
         header: "Benefit Year",
         Header: () => (
           <FormattedMessage id='Benefit_Year' defaultMessage={"Benefit Year"} />
         ),
       },
       {
-        accessorKey: "Utility",
+        accessorFn: (row) => row.benefitYear,
+        id: "utilitiesAccessories",
         header: "Utility",
         Header: () => (
           <FormattedMessage id='Utility' defaultMessage={"Utility"} />
         ),
       },
       {
-        accessorKey: "Remark",
+        accessorFn: (row) =>
+          row.rows && row.rows.length > 0 && row.rows[0] && row.rows[0].remark
+            ? row.rows[0].remark
+            : "",
+        id: "remark",
         header: "Remark",
         Header: () => (
           <FormattedMessage id='Remark' defaultMessage={"Remark"} />
         ),
       },
       {
-        accessorKey: "Amount",
+        accessorFn: (row) =>
+          row.rows &&
+          row.rows.length > 0 &&
+          row.rows[0] &&
+          row.rows[0].actualAmount
+            ? row.rows[0].actualAmount
+            : "",
+        id: "actualAmount",
         header: "Amount",
         Header: () => (
           <FormattedMessage id='Amount' defaultMessage={"Amount"} />
@@ -96,7 +145,12 @@ export default function UtilitiesAndAccessories() {
             )}
             {(permissions?.includes("All") ||
               permissions?.includes("delete1")) && (
-              <IconButton color='error' onClick={() => {}}>
+              <IconButton
+                color='error'
+                onClick={() => {
+                  deleteUtilitiesAccessoriesId(row.original._id);
+                }}
+              >
                 <DeleteIcon />
               </IconButton>
             )}

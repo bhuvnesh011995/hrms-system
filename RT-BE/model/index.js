@@ -28,4 +28,10 @@ module.exports = {
   terminations: require("./coreHR/termination.model"),
   events: require("./event.model"),
   fileManager: require("./fileManager.model"),
+  employeeexit: require("./staff/employeeexit.model"),
+  accommodation: require("./staff/EmployeeBenefit/accommodation.model"),
+  accommodateEmployee: require("./staff/EmployeeBenefit/accommodateemployee.model"),
+  utilitiesAccessories: require("./staff/EmployeeBenefit/utilitiesAccessories"),
+  driver: require("./staff/EmployeeBenefit/driver.model"),
+  housingKeeping: require("./staff/EmployeeBenefit/housingKeeping.model"),
 };

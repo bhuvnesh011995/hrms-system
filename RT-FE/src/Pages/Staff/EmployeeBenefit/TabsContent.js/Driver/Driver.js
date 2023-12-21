@@ -1,8 +1,9 @@
 import MaterialReactTable from "material-react-table";
 import { Box, IconButton } from "@mui/material";
 import { Edit as EditIcon, Delete as DeleteIcon } from "@mui/icons-material";
-import { useContext, useMemo, useState } from "react";
+import { useContext, useMemo, useState, useEffect, useCallback } from "react";
 import AddNew from "./AddNew";
+import { deleteDriver, getAllDriver } from "../../../../../Utility/API/driver";
 import { FormattedMessage } from "react-intl";
 import { useAuth } from "../../../../../Context/AuthContext";
 
@@ -10,18 +11,43 @@ export default function Driver() {
   const { permissions } = useAuth();
 
   const [isOpen, setIsOpen] = useState(false);
+  const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [isError, setIsError] = useState(false);
+
+  const getDriver = useCallback(async () => {
+    setIsLoading(true);
+    let res = await getAllDriver();
+    if (res.status === 200) {
+      setData(res.data);
+      setIsLoading(false);
+    } else {
+      console.log(res);
+      setIsLoading(false);
+      setIsError(true);
+    }
+  }, []);
+
+  useEffect(() => {
+    getDriver();
+  }, []);
+
+  console.log("data", data);
 
   const columns = useMemo(
     () => [
       {
-        accessorKey: "Employee",
+        accessorFn: (row) =>
+          row.employee ? row.employee.fName : "not available",
+        id: "employee",
         header: "Employee",
         Header: () => (
           <FormattedMessage id='Employee' defaultMessage={"Employee"} />
         ),
       },
       {
-        accessorKey: "BenefitYear",
+        accessorFn: (row) => row.benefitYear,
+        id: "benefitsYear",
         header: "Benefit Year",
         Header: () => (
           <FormattedMessage id='Benefit_Year' defaultMessage={"Benefit Year"} />
@@ -29,7 +55,8 @@ export default function Driver() {
       },
 
       {
-        accessorKey: "DriveAnnualWage",
+        accessorFn: (row) => row.driverAnnualWage,
+        id: "driverAnnualWage",
         header: "Driver Annual Wage",
         Header: () => (
           <FormattedMessage
@@ -41,6 +68,16 @@ export default function Driver() {
     ],
     [],
   );
+
+  const deleteDriverId = async (id) => {
+    try {
+      let res = await deleteDriver(id);
+      getDriver();
+      console.log("id", res);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <>
@@ -87,7 +124,12 @@ export default function Driver() {
             )}
             {(permissions?.includes("All") ||
               permissions?.includes("delete1")) && (
-              <IconButton color='error' onClick={() => {}}>
+              <IconButton
+                color='error'
+                onClick={() => {
+                  deleteDriverId(row.original._id);
+                }}
+              >
                 <DeleteIcon />
               </IconButton>
             )}

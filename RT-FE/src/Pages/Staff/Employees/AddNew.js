@@ -68,6 +68,8 @@ export default function AddNew({
       setCompanies(res.data);
     }
   }, []);
+
+  
   const getEmployeesOfCompany = useCallback(async (id) => {
     let res = await getEmployeeByCompany(id);
 

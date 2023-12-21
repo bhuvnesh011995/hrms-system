@@ -8,6 +8,8 @@ export default function View({ viewData, setViewData, show, setShow }) {
       setViewData(null);
     };
   }, []);
+   console.log("dataView",viewData)
+
   return (
     <Modal size="lg" show={show} onHide={() => setShow(false)}>
       <Modal.Header closeButton>

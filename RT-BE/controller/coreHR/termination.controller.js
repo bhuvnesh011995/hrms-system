@@ -3,6 +3,7 @@ const fs = require("fs")
 
 
 exports.addTermination = async function(req,res,next){
+    console.log(req.body)
     try {
 
 
@@ -40,7 +41,6 @@ exports.getAllTerminations = async function(req,res,next){
         let complaints = await db.terminations.find().populate([{path:"company",select:"name"},{path:"employee",select:"fName lName"},{path:"terminationType",select:"name"}])
 
         res.status(200).json(complaints)
-        
         
     } catch (error) {
         console.log(error)
