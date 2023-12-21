@@ -1,4 +1,10 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
 import { IntlProvider } from "react-intl";
 import { api } from "./AuthContext";
 import axios from "axios";
@@ -19,9 +25,10 @@ export default function SettingProvider({ children }) {
   const [setupModule, setSetupModule] = useState();
   const [lanCode, setLanCode] = useState("");
   const [systemLogo, setSystemLogo] = useState();
+
   getLanguage = async (id = "") => {
     let res = await api.get("/language/?id=" + id);
-    console.log(res, "hahaha", id);
+
     if (res.status === 200) {
       setLanCode(res?.data?.language?.code);
       setLanguage(res?.data?.language?.language);
@@ -42,7 +49,6 @@ export default function SettingProvider({ children }) {
       }
 
       if (constantRes.status === 200) {
-        console.log(constantRes);
         setConstant(constantRes.data.constants);
       }
     } catch (error) {

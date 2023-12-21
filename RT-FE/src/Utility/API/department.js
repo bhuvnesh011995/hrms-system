@@ -31,6 +31,16 @@ export const updateDepartment = async (id, data) => {
   }
 };
 
+// export const deleteDepartment = async (id) => {
+//   try {
+//     let response = await api.delete("/department/" + id);
+//     return response;
+//   } catch (error) {
+//     console.log(error);
+//     return error.response;
+//   }
+// };
+
 export const deleteDepartment = async (id) => {
   try {
     let response = await api.delete("/department/" + id);

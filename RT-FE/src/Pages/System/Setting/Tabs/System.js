@@ -79,7 +79,7 @@ export default function System({ getSettingData, data }) {
   }, []);
   return (
     <div class='tab-pane'>
-      <h4>System Configuration</h4>
+      <h4>System Confuguration</h4>
       <form action=''>
         <div class='row'>
           <div class='col-md-4'>
@@ -277,6 +277,7 @@ export default function System({ getSettingData, data }) {
                 class='form-select'
                 id=''
               >
+                <option value=''>Choose...</option>
                 {language?.map((ele, i) => (
                   <option key={i} value={ele._id}>
                     {ele.name + "(" + ele.code + ")"}

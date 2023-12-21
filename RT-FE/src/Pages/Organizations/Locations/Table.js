@@ -47,7 +47,8 @@ export default function Table() {
         ),
       },
       {
-        accessorFn: (row) => `${row.head.fName} ${row.head.lName}`,
+        accessorFn: (row) =>
+          row.head ? `${row.head.fName} ${row.head.lName}` : "NA",
         id: "head",
         header: "Location Head",
         Header: () => (

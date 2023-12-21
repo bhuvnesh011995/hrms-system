@@ -9,8 +9,10 @@ import View from "./View";
 import { toast } from "react-toastify";
 import { useAuth } from "../../../Context/AuthContext";
 import { FormattedMessage } from "react-intl";
+import { useNavigate } from "react-router-dom";
 
 export default function ListAllEmployees() {
+  const navigate = useNavigate();
   const [isOpen, setIsOpen] = useState(false);
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
@@ -233,7 +235,14 @@ export default function ListAllEmployees() {
           renderRowActions={({ row }) => (
             <Box sx={{ display: "flex", flexWrap: "nowrap", gap: "8px" }}>
               {havePermission("view", row.original.role?.name) ? (
-                <IconButton color='info'>
+                <IconButton
+                  onClick={() =>
+                    navigate("/employeeDetails", {
+                      state: { id: row.original._id },
+                    })
+                  }
+                  color='info'
+                >
                   <i className='fas fa-eye'></i>
                 </IconButton>
               ) : null}

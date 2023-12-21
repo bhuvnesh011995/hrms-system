@@ -1,7 +1,18 @@
+import { useCallback, useEffect, useState } from "react";
+import useCustomEffect from "../../../customHook/useCustomEffect";
+import { getOnlyEmplpoyees } from "../../../Utility/API/employee";
 import { useAuth } from "../../../Context/AuthContext";
 
 export default function FilterStaff() {
   const { permissions } = useAuth();
+  const [data, setData] = useState(null);
+  const getEmployees = useCallback(async () => {
+    let res = await getOnlyEmplpoyees();
+    if (res.status === 200) {
+      setData(res.data);
+    }
+  });
+  useCustomEffect(getEmployees);
   return (
     <>
       <div className='card'>
@@ -36,7 +47,7 @@ export default function FilterStaff() {
                 </select>
               </div>
             </div>
-            <div className='col'>
+            {/* <div className='col'>
               <div className='mb-3'>
                 <label for='formrow-firstname-input' className='form-label'>
                   Employee
@@ -50,7 +61,7 @@ export default function FilterStaff() {
                   <option value=''>Employee 2</option>
                 </select>
               </div>
-            </div>
+            </div> */}
             <div className='col'>
               <div className='mb-3'>
                 <label for='formrow-firstname-input' className='form-label'>
@@ -89,34 +100,31 @@ export default function FilterStaff() {
       </div>
       <div className='row mt-4'>
         <div className='col-md-3'>
-          <div className='card'>
-            <div className='card-body'>
-              <div className='staff-directory'>
-                <img
-                  src='assets/images/users/avatar-1.jpg'
-                  alt=''
-                  className='img-fluid'
-                />
-              </div>
-              <div className='staff-directory-details'>
-                <h5>Kong Hui Chein</h5>
-                <small>Hr Executive</small>
-                {/* <!-- <ul>
-                                            <li><a href="#"><i className="fab fa-google"></i></a></li>
-                                            <li><a href="#"><i className="fab fa-facebook-f"></i></a></li>
-                                            <li><a href="#"><i className="fab fa-instagram"></i></a></li>
-                                            <li><a href="#"><i className="fab fa-twitter"></i></a></li>
-                                        </ul> --> */}
-                <p>Blk 289E Bukit Batok Street 25 #03-156 Singapore 654289</p>
-                <a href='' className='btn btn-info'>
-                  View More
-                </a>
-                <a href='' className='btn btn-success'>
-                  Profile
-                </a>
+          {data?.map((ele) => (
+            <div key={ele._id} className='card'>
+              <div className='card-body'>
+                <div className='staff-directory'>
+                  <img
+                    src='assets/images/users/avatar-1.jpg'
+                    alt=''
+                    className='img-fluid'
+                  />
+                </div>
+                <div className='staff-directory-details'>
+                  <h5>{ele.fName + " " + ele.lName}</h5>
+                  <small>{ele.role}</small>
+
+                  <p>Blk 289E Bukit Batok Street 25 #03-156 Singapore 654289</p>
+                  <a href='' className='btn btn-info'>
+                    View More
+                  </a>
+                  <a href='' className='btn btn-success'>
+                    Profile
+                  </a>
+                </div>
               </div>
             </div>
-          </div>
+          ))}
         </div>
       </div>
     </>

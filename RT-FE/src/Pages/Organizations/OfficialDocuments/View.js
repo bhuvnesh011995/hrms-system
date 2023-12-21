@@ -85,7 +85,7 @@ export default function View({ viewData, setViewData, show, setShow }) {
             </p>
           </div>
           <div className="col-md-8">
-            <p>{viewData?.filename} " " <a target="_blank" download={viewData.filename} href={`${fileUrl}/`+viewData.filename}>Download</a></p>
+            <p>{viewData?.filename} <a target="_blank" download={viewData.filename} href={`${fileUrl}/`+viewData.filename}>Download</a></p>
           </div>
         </div>
         

@@ -31,7 +31,6 @@ export default function AuthProvider({ children }) {
     try {
       if (user.token) {
         let response = await api.get("/permissions");
-        console.log(response, "permissions");
         if (response.status === 200)
           return setPermissions(response.data.permission);
         else if (response.status === 201) return setPermissions([]);
@@ -69,8 +68,7 @@ export default function AuthProvider({ children }) {
   }, []);
   useEffect(() => {
     if (ready) {
-      console.log(user);
-      if (!user.token) console.log("3") || navigate("/login");
+      if (!user.token) navigate("/login");
       else getPermission();
     } else getUserDetails(localStorage.getItem("token"));
   }, [user, ready]);
